@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Snake XX</string>
+    <string name="tick_interval">тик %1$d</string>
+    <string name="remaining_length">осталось %1$d</string>
+    <string name="score">очки %1$d</string>
+    <string name="omnivorous_ticks">всеядность %1$d</string>
+    <string name="game_over">Игра Окончена</string>
+    <string name="high_score">максимум %1$d</string>
+    <string name="level">Уровень %1$d</string>
+    <string name="boost_button">ускорение</string>
+    <string name="confirmation">нажмите чтобы продолжить</string>
+    <string name="new_game">новая игра</string>
+    <string name="continue_game">продолжить</string>
+    <string name="open_settings">настройки</string>
+    <string name="level_menu_item">уровень %1$d</string>
+    <string name="vibration_setting">вибрация</string>
+    <string name="music_setting">музыка</string>
+    <string name="sound_effects_setting">звуки</string>
+    <string name="setting_on">вкл</string>
+    <string name="setting_off">выкл</string>
+    <string name="settings_screen">Настройки</string>
+    <string name="language_settings_item">язык</string>
+    <string name="language_russian">русский</string>
+    <string name="language_english">английский</string>
+    <string name="language_system">как в системе</string>
+    <string name="language_settings_screen">Язык</string>
+</resources>

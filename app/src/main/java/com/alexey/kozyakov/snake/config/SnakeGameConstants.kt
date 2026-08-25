@@ -1,0 +1,14 @@
+package com.alexey.kozyakov.snake.config
+
+const val ADDITIONAL_SCORE_FOR_OMNIVOROUS_APPLE = 9
+const val ADDITIONAL_SCORE_FOR_GOLDEN_APPLE = 4
+const val INITIAL_SNAKE_LENGTH = 3
+const val APPLE_COUNT = 6
+const val OMNIVOROUS_TICKS = 100
+const val BOOST_PER_LEVEL = 1.2
+const val BOOST_BY_BUTTON = 2.5
+const val MAX_TICK_INTERVAL_MS = 400
+const val AI_FAIL_PROBABILITY_DEFAULT = 0.2
+const val AI_FAIL_DECREASE_BY_LEVEL_RATIO = 1.5
+const val LEVEL_GAIN_LENGTH_MULTIPLIER = 1.25
+const val MAIN_GRID_DIMENSION = 30
