@@ -15,6 +15,8 @@ import java.io.DataInputStream
 import java.io.DataOutputStream
 import java.io.File
 
+private const val VERSION = 1
+
 class SnakeGameModelFileSaver(context: Context) {
     private val saveFile = File(context.filesDir, "snake_game.save")
 
@@ -23,6 +25,7 @@ class SnakeGameModelFileSaver(context: Context) {
         saveFile.createNewFile()
         DataOutputStream(saveFile.outputStream()).use { outputStream ->
             with(outputStream) {
+                writeInt(VERSION)
                 writeInt(model.gridWidth)
                 writeInt(model.gridHeight)
                 writeInt(model.level)
@@ -81,6 +84,7 @@ class SnakeGameModelFileSaver(context: Context) {
             try {
                 DataInputStream(saveFile.inputStream()).use { dataInputStream ->
                     with(dataInputStream) {
+                        readInt() // VERSION
                         val gridWidth = readInt()
                         val gridHeight = readInt()
                         val level = readInt()
