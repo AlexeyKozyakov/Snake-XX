@@ -24,6 +24,7 @@ import com.alexey.kozyakov.snake.effects.haptic.SnakeGameHapticFeedbackPlayer
 import com.alexey.kozyakov.snake.effects.sound.SnakeGameSoundEffectsPlayer
 import com.alexey.kozyakov.snake.engine.SnakeGameEngine
 import com.alexey.kozyakov.snake.model.Direction
+import com.alexey.kozyakov.snake.model.SnakeGameModel
 import com.alexey.kozyakov.snake.model.SnakeType
 import com.alexey.kozyakov.snake.storage.SnakeGameHighScoreRepository
 import com.alexey.kozyakov.snake.storage.model.SnakeGameModelRepository
@@ -169,7 +170,7 @@ class SnakeGameState(
 
     fun pause() {
         resumed = false
-        saveGame()
+        saveGame(model)
     }
 
     fun resume() {
@@ -181,7 +182,7 @@ class SnakeGameState(
         soundPlayer.dispose()
     }
 
-    private fun saveGame() {
+    private fun saveGame(model: SnakeGameModel) {
         if (!gameIsOver) {
             stateHolderScope.launch {
                 gameModelRepository.save(model)
@@ -209,7 +210,7 @@ class SnakeGameState(
             }
 
             newModel.level > model.level -> {
-                saveGame()
+                saveGame(newModel)
                 needsConfirmationToRun = true
                 showLevel()
             }
