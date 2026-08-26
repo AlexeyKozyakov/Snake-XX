@@ -97,6 +97,10 @@ sealed interface Wall {
         override fun transposed(): Wall {
             return SingleBlock(position.transposed())
         }
+
+        companion object {
+            const val ORDINAL = 0
+        }
     }
 
     class VerticalLine(val startPosition: Position, val endPosition: Position) : Wall {
@@ -112,6 +116,10 @@ sealed interface Wall {
         override fun transposed(): Wall {
             return HorizontalLine(startPosition.transposed(), endPosition.transposed())
         }
+
+        companion object {
+            const val ORDINAL = 1
+        }
     }
 
     class HorizontalLine(val startPosition: Position, val endPosition: Position) : Wall {
@@ -126,6 +134,10 @@ sealed interface Wall {
 
         override fun transposed(): Wall {
             return VerticalLine(startPosition.transposed(), endPosition.transposed())
+        }
+
+        companion object {
+            const val ORDINAL = 2
         }
     }
 }
