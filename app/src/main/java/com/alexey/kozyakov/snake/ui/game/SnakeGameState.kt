@@ -183,7 +183,7 @@ class SnakeGameState(
     }
 
     private fun saveGame(model: SnakeGameModel) {
-        if (!gameIsOver) {
+        if (!model.gameIsOver) {
             stateHolderScope.launch {
                 gameModelRepository.save(model)
             }
