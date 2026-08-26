@@ -92,7 +92,7 @@ class SnakeGameState(
     private var resumed by mutableStateOf(true)
     val highScore by highScoreRepository
         .observe()
-        .asComposeState(stateHolderScope, initialValue = 0)
+        .asComposeState(initialValue = 0)
     val gameIsOver by derivedStateOf { model.gameIsOver }
     val level by derivedStateOf { model.level }
     val tickInterval by derivedStateOf {

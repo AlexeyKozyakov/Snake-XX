@@ -14,7 +14,7 @@ class SnakeGameLanguageState(
 ) : RetainedStateHolder() {
     val language by languageRepository
         .observe()
-        .asComposeState(stateHolderScope, initialValue = SnakeGameLanguage.SYSTEM)
+        .asComposeState(initialValue = SnakeGameLanguage.SYSTEM)
 
     fun setLanguage(language: SnakeGameLanguage) {
         languageRepository.save(language)

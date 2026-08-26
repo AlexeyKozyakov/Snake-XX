@@ -26,11 +26,11 @@ class SnakeGameSettingsState(
 
     val settings by settingsRepository
         .observe()
-        .asComposeState(stateHolderScope, initialValue = SnakeGameSettings())
+        .asComposeState(initialValue = SnakeGameSettings())
 
     val language by languageRepository
         .observe()
-        .asComposeState(stateHolderScope, initialValue = SnakeGameLanguage.SYSTEM)
+        .asComposeState(initialValue = SnakeGameLanguage.SYSTEM)
 
     private val hapticFeedbackPlayer =
         SnakeGameHapticFeedbackPlayer(context, stateHolderScope, settingsRepository)

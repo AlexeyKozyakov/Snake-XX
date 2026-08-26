@@ -16,12 +16,12 @@ class SnakeGameMenuScreenState(
     val canContinueGame by gameModelRepository
         .observe()
         .map { model -> model != null }
-        .asComposeState(stateHolderScope, initialValue = false)
+        .asComposeState(initialValue = false)
 
     val level by gameModelRepository
         .observe()
         .map { model -> (model?.level ?: 0) + 1 }
-        .asComposeState(stateHolderScope, initialValue = 1)
+        .asComposeState(initialValue = 1)
 
     fun resetGame() {
         stateHolderScope.launch {
