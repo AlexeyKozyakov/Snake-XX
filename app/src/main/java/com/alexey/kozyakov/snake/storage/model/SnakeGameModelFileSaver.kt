@@ -19,6 +19,7 @@ class SnakeGameModelFileSaver(context: Context) {
     private val saveFile = File(context.filesDir, "snake_game.save")
 
     suspend fun save(model: SnakeGameModel) = withContext(Dispatchers.IO) {
+        require(!model.gameIsOver) { "Cannot save model in game over state" }
         saveFile.createNewFile()
         DataOutputStream(saveFile.outputStream()).use { outputStream ->
             with(outputStream) {
