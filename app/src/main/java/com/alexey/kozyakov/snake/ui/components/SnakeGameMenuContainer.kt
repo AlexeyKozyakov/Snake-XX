@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.FlowColumn
 import androidx.compose.foundation.layout.FlowColumnScope
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,6 +25,8 @@ fun SnakeGameMenuContainer(
         modifier
             .fillMaxSize()
             .background(color = Color.Black)
+            .statusBarsPadding()
+            .navigationBarsPadding()
     ) {
         FlowColumn(
             Modifier.align(Alignment.Center),
