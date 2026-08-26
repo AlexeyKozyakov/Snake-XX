@@ -89,7 +89,7 @@ class SnakeGameEngine private constructor(
         )
 
     val events: List<SnakeGameEvent>
-    field = mutableListOf()
+        field = mutableListOf()
 
     fun step() {
         if (gameIsOver) {
@@ -105,7 +105,7 @@ class SnakeGameEngine private constructor(
         val tmp = gridWidth
         gridWidth = gridHeight
         gridHeight = tmp
-        walls = levelWalls(level, gridWidth, gridHeight)
+        walls = walls.map { wall -> wall.transposed() }
         for (snake in snakes) {
             snake.transpose()
         }
@@ -164,15 +164,14 @@ class SnakeGameEngine private constructor(
                 )
                 snake.length++
                 addScore(snakeId, 1)
-                if (isMainSnake(snakeId)) {
-                    events.add(SnakeGameEvent.SNAKE_GROWS)
-                }
+                addEvent(snakeId, SnakeGameEvent.SNAKE_GROWS)
             }
             apples.remove(head.position)?.let { eatenApple ->
                 when (eatenApple.type) {
                     AppleType.GOOD_1, AppleType.GOOD_2 -> {
                         grow()
                     }
+
                     AppleType.BAD -> {
                         if (snake.omnivorousTicksRemaining > 0) {
                             grow()
@@ -183,9 +182,7 @@ class SnakeGameEngine private constructor(
                                     snake.length--
                                 }
                             }
-                            if (isMainSnake(snakeId)) {
-                                events.add(SnakeGameEvent.BAD_APPLE_EATEN)
-                            }
+                            addEvent(snakeId, SnakeGameEvent.BAD_APPLE_EATEN)
                         }
                     }
 
@@ -193,9 +190,7 @@ class SnakeGameEngine private constructor(
                         grow()
                         addScore(snakeId, ADDITIONAL_SCORE_FOR_OMNIVOROUS_APPLE)
                         snake.omnivorousTicksRemaining = omnivorousTicks
-                        if (isMainSnake(snakeId)) {
-                            events.add(SnakeGameEvent.OMNIVOROUS_APPLE_EATEN)
-                        }
+                        addEvent(snakeId, SnakeGameEvent.OMNIVOROUS_APPLE_EATEN)
                     }
 
                     AppleType.BOMB -> {
@@ -209,9 +204,7 @@ class SnakeGameEngine private constructor(
                                     1
                                 }
                             shrinkSnake(snake, newSnakeLength)
-                            if (isMainSnake(snakeId)) {
-                                events.add(SnakeGameEvent.BOMB_EATEN)
-                            }
+                            addEvent(snakeId, SnakeGameEvent.BOMB_EATEN)
                         }
                     }
 
@@ -219,9 +212,7 @@ class SnakeGameEngine private constructor(
                         grow()
                         addScore(snakeId, ADDITIONAL_SCORE_FOR_GOLDEN_APPLE)
                         goldAppleEaten = true
-                        if (isMainSnake(snakeId)) {
-                            events.add(SnakeGameEvent.GOLDEN_APPLE_EATEN)
-                        }
+                        addEvent(snakeId, SnakeGameEvent.GOLDEN_APPLE_EATEN)
                     }
                 }
             }
@@ -250,6 +241,12 @@ class SnakeGameEngine private constructor(
         }
     }
 
+    private fun addEvent(snakeId: Int, event: SnakeGameEvent) {
+        if (isMainSnake(snakeId)) {
+            events.add(event)
+        }
+    }
+
     private fun randomGoodAppleType(): AppleType {
         return if (Random.nextBoolean()) {
             AppleType.GOOD_1
@@ -269,7 +266,7 @@ class SnakeGameEngine private constructor(
             walls = levelWalls(level, gridWidth, gridHeight)
             snakes = initSnakes()
             apples = initApples(snakes, walls)
-            events.add(SnakeGameEvent.LEVEL_GAINED)
+            addEvent(MAIN_SNAKE_ID, SnakeGameEvent.LEVEL_GAINED)
             return
         }
         snakes.forEachIndexed { snakeId, snake ->
@@ -289,13 +286,13 @@ class SnakeGameEngine private constructor(
         }
     }
 
-    private fun isMainSnake(snakeId: Int) : Boolean {
+    private fun isMainSnake(snakeId: Int): Boolean {
         return snakeId == MAIN_SNAKE_ID
     }
 
     private fun gameOver() {
         gameIsOver = true
-        events.add(SnakeGameEvent.GAME_OVER)
+        addEvent(MAIN_SNAKE_ID, SnakeGameEvent.GAME_OVER)
     }
 
     private fun checkCollisionWithSelfOrOtherSnakes(snakeId: Int): Boolean {
