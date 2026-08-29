@@ -63,7 +63,7 @@ fun SnakeShopScreen(
 }
 
 @Composable
-fun SnakeShopScreen(
+private fun SnakeShopScreen(
     modifier: Modifier = Modifier,
     categories: List<SnakeShopCategory>,
     balance: Int,
