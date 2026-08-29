@@ -38,7 +38,7 @@ fun SnakeGameLanguageScreen(
     val state = retainSnakeGameLanguageState()
     SnakeGameLanguageScreen(
         modifier,
-        language = state.language,
+        languages = state.languages,
         onBackClick = navigateBack,
         onLanguageClick = state::setLanguage
     )
@@ -48,7 +48,7 @@ fun SnakeGameLanguageScreen(
 @Composable
 private fun SnakeGameLanguageScreen(
     modifier: Modifier = Modifier,
-    language: SnakeGameLanguage,
+    languages: List<LanguageItem>,
     onBackClick: () -> Unit,
     onLanguageClick: (language: SnakeGameLanguage) -> Unit
 ) {
@@ -86,28 +86,16 @@ private fun SnakeGameLanguageScreen(
                 )
             }
             Spacer(Modifier.size(32.dp))
-            SnakeGameMenuTextItem(
-                Modifier
-                    .padding(bottom = 24.dp)
-                    .fillMaxColumnWidth(),
-                primaryText = stringResource(R.string.language_system),
-                onClick = { onLanguageClick(SnakeGameLanguage.SYSTEM) },
-                selected = language == SnakeGameLanguage.SYSTEM
-            )
-            SnakeGameMenuTextItem(
-                Modifier
-                    .padding(bottom = 24.dp)
-                    .fillMaxColumnWidth(),
-                primaryText = stringResource(R.string.language_english),
-                onClick = { onLanguageClick(SnakeGameLanguage.ENGLISH) },
-                selected = language == SnakeGameLanguage.ENGLISH
-            )
-            SnakeGameMenuTextItem(
-                Modifier.fillMaxColumnWidth(),
-                primaryText = stringResource(R.string.language_russian),
-                onClick = { onLanguageClick(SnakeGameLanguage.RUSSIAN) },
-                selected = language == SnakeGameLanguage.RUSSIAN
-            )
+            languages.forEach { (language, selected) ->
+                SnakeGameMenuTextItem(
+                    Modifier
+                        .padding(bottom = 24.dp)
+                        .fillMaxColumnWidth(),
+                    primaryText = stringResource(language.nameResId),
+                    onClick = { onLanguageClick(language) },
+                    selected = selected
+                )
+            }
         }
         Image(
             imageVector = Icons.AutoMirrored.Default.ArrowBack,
@@ -126,8 +114,14 @@ private fun SnakeGameLanguageScreen(
 @Preview
 @Composable
 private fun Preview() {
+    val selectedLanguageId = 1
     SnakeGameLanguageScreen(
-        language = SnakeGameLanguage.ENGLISH,
+        languages = SnakeGameLanguage.entries.map { language ->
+            LanguageItem(
+                language = language,
+                selected = language.ordinal == selectedLanguageId
+            )
+        },
         onBackClick = { },
         onLanguageClick = { }
     )

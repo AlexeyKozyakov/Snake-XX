@@ -4,9 +4,11 @@ import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.retain.retain
 import androidx.compose.runtime.setValue
+import com.alexey.kozyakov.snake.balance.SnakeGameBalanceUpdater
 import com.alexey.kozyakov.snake.config.AI_FAIL_DECREASE_BY_LEVEL_RATIO
 import com.alexey.kozyakov.snake.config.AI_FAIL_PROBABILITY_DEFAULT
 import com.alexey.kozyakov.snake.config.APPLE_COUNT
@@ -16,21 +18,29 @@ import com.alexey.kozyakov.snake.config.INITIAL_SNAKE_LENGTH
 import com.alexey.kozyakov.snake.config.LEVEL_GAIN_LENGTH_MULTIPLIER
 import com.alexey.kozyakov.snake.config.MAX_TICK_INTERVAL_MS
 import com.alexey.kozyakov.snake.config.OMNIVOROUS_TICKS
+import com.alexey.kozyakov.snake.di.balanceRepository
 import com.alexey.kozyakov.snake.di.context
 import com.alexey.kozyakov.snake.di.gameModelRepository
 import com.alexey.kozyakov.snake.di.gameSettingsRepository
 import com.alexey.kozyakov.snake.di.highScoreRepository
+import com.alexey.kozyakov.snake.di.snakeSkinRepository
+import com.alexey.kozyakov.snake.di.upgradeRepository
 import com.alexey.kozyakov.snake.effects.haptic.SnakeGameHapticFeedbackPlayer
 import com.alexey.kozyakov.snake.effects.sound.SnakeGameSoundEffectsPlayer
 import com.alexey.kozyakov.snake.engine.SnakeGameEngine
 import com.alexey.kozyakov.snake.model.Direction
 import com.alexey.kozyakov.snake.model.SnakeGameModel
 import com.alexey.kozyakov.snake.model.SnakeType
+import com.alexey.kozyakov.snake.storage.SnakeGameBalanceRepository
 import com.alexey.kozyakov.snake.storage.SnakeGameHighScoreRepository
 import com.alexey.kozyakov.snake.storage.model.SnakeGameModelRepository
 import com.alexey.kozyakov.snake.storage.settings.SnakeGameSettingsRepository
+import com.alexey.kozyakov.snake.storage.skins.SnakeSkin
+import com.alexey.kozyakov.snake.storage.skins.SnakeSkinRepository
+import com.alexey.kozyakov.snake.storage.upgrade.SnakeUpgradeRepository
 import com.alexey.kozyakov.snake.ui.base.RetainedStateHolder
 import com.alexey.kozyakov.snake.ui.base.asComposeState
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.pow
@@ -53,6 +63,9 @@ class SnakeGameState(
     private val gameModelRepository: SnakeGameModelRepository,
     private val highScoreRepository: SnakeGameHighScoreRepository,
     gameSettingsRepository: SnakeGameSettingsRepository,
+    snakeSkinRepository: SnakeSkinRepository,
+    balanceRepository: SnakeGameBalanceRepository,
+    upgradeRepository: SnakeUpgradeRepository,
     context: Context
 ) : RetainedStateHolder() {
     private var engine = gameModelRepository.observe().value.let { restoredModel ->
@@ -82,7 +95,14 @@ class SnakeGameState(
         SnakeGameSoundEffectsPlayer(context, stateHolderScope, gameSettingsRepository)
     private val hapticFeedbackPlayer =
         SnakeGameHapticFeedbackPlayer(context, stateHolderScope, gameSettingsRepository)
+    private val balanceUpdater =
+        SnakeGameBalanceUpdater(stateHolderScope, balanceRepository, upgradeRepository)
 
+    private val tickInterval by derivedStateOf {
+        maxTickInterval /
+                boostPerLevel.pow(level) /
+                (if (boost) boostByButton else 1.0)
+    }
     var model by mutableStateOf(engine.model)
         private set
     var boost by mutableStateOf(false)
@@ -90,17 +110,15 @@ class SnakeGameState(
         private set
     var showLevel by mutableStateOf(true)
         private set
+    var addedBalanceAmount by mutableIntStateOf(0)
+    var addedBalanceVisible by mutableStateOf(false)
+    private var balanceHideJob: Job? = null
     private var resumed by mutableStateOf(true)
     val highScore by highScoreRepository
         .observe()
         .asComposeState(initialValue = 0)
     val gameIsOver by derivedStateOf { model.gameIsOver }
     val level by derivedStateOf { model.level }
-    val tickInterval by derivedStateOf {
-        maxTickInterval /
-                boostPerLevel.pow(level) /
-                (if (boost) boostByButton else 1.0)
-    }
     val mainSnakeOmnivorousTicks by derivedStateOf {
         model.snakes
             .first { it.type == SnakeType.MAIN }
@@ -115,6 +133,12 @@ class SnakeGameState(
     val shouldRun by derivedStateOf {
         resumed && !gameIsOver && !needsConfirmationToRun
     }
+    val snakeSkin by snakeSkinRepository
+        .observe()
+        .asComposeState(initialValue = SnakeSkin.DEFAULT)
+    val balance by balanceRepository
+        .observe()
+        .asComposeState(initialValue = 0)
 
     init {
         showLevel()
@@ -195,6 +219,10 @@ class SnakeGameState(
         updateState()
         soundPlayer.playSoundEffects(engine.events)
         hapticFeedbackPlayer.playHapticFeedback(engine.events)
+        val balanceDiff = balanceUpdater.update(model, engine.events)
+        if (balanceDiff > 0) {
+            showAddedBalance(balanceDiff)
+        }
     }
 
     private fun updateState() {
@@ -231,6 +259,17 @@ class SnakeGameState(
             }
         }
     }
+
+    private fun showAddedBalance(amount: Int) {
+        balanceHideJob?.cancel()
+        addedBalanceAmount = amount
+        addedBalanceVisible = true
+        balanceHideJob = stateHolderScope.launch {
+            delay(300.milliseconds)
+            addedBalanceVisible = false
+            balanceHideJob = null
+        }
+    }
 }
 
 @Composable
@@ -253,8 +292,11 @@ fun retainSnakeGameState(
             levelGainLengthMultiplier = LEVEL_GAIN_LENGTH_MULTIPLIER,
             gameModelRepository = gameModelRepository,
             highScoreRepository = highScoreRepository,
-            context = context,
-            gameSettingsRepository = gameSettingsRepository
+            snakeSkinRepository = snakeSkinRepository,
+            gameSettingsRepository = gameSettingsRepository,
+            balanceRepository = balanceRepository,
+            upgradeRepository = upgradeRepository,
+            context = context
         )
     }
 }

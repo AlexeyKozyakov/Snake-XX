@@ -26,7 +26,9 @@ class SnakeGameSoundEffectsPlayer(
         SnakeGameEvent.OMNIVOROUS_APPLE_EATEN to loadSound(R.raw.sound_omnivorous_apple_eaten),
         SnakeGameEvent.BOMB_EATEN to loadSound(R.raw.sound_bomb_eaten),
         SnakeGameEvent.LEVEL_GAINED to loadSound(R.raw.sound_level_gained),
-        SnakeGameEvent.GAME_OVER to loadSound(R.raw.sound_game_over)
+        SnakeGameEvent.GAME_OVER to loadSound(R.raw.sound_game_over),
+        SnakeGameEvent.COIN_PICKED to loadSound(R.raw.sound_coin_picked),
+        SnakeGameEvent.DIAMOND_PICKED to loadSound(R.raw.sound_diamond_picked)
     )
 
     init {

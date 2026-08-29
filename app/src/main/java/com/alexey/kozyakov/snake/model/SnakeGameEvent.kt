@@ -7,5 +7,7 @@ enum class SnakeGameEvent {
     OMNIVOROUS_APPLE_EATEN,
     BOMB_EATEN,
     LEVEL_GAINED,
-    GAME_OVER
+    GAME_OVER,
+    COIN_PICKED,
+    DIAMOND_PICKED
 }

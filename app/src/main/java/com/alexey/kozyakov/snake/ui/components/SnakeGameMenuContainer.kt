@@ -2,6 +2,7 @@ package com.alexey.kozyakov.snake.ui.components
 
 import android.content.res.Configuration
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.FlowColumn
@@ -9,6 +10,8 @@ import androidx.compose.foundation.layout.FlowColumnScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,7 +32,10 @@ fun SnakeGameMenuContainer(
             .navigationBarsPadding()
     ) {
         FlowColumn(
-            Modifier.align(Alignment.Center),
+            Modifier
+                .align(Alignment.Center)
+                .verticalScroll(rememberScrollState())
+                .horizontalScroll(rememberScrollState()),
             itemHorizontalAlignment = Alignment.CenterHorizontally,
             horizontalArrangement = Arrangement.spacedBy(42.dp),
             verticalArrangement = Arrangement.Center,

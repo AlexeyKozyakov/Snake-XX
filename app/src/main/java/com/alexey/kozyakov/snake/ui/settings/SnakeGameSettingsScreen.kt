@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.sp
 import com.alexey.kozyakov.R
 import com.alexey.kozyakov.snake.storage.language.SnakeGameLanguage
 import com.alexey.kozyakov.snake.storage.settings.SnakeGameSettings
+import com.alexey.kozyakov.snake.storage.skins.SnakeSkin
 import com.alexey.kozyakov.snake.ui.components.SnakeGameMenuContainer
 import com.alexey.kozyakov.snake.ui.components.SnakeGameMenuTextItem
 
@@ -42,6 +43,7 @@ fun SnakeGameSettingsScreen(
         modifier,
         settings = state.settings,
         language = state.language,
+        skin = state.skin,
         onBackClick = navigateBack,
         onVibrationSettingClick = state::toggleVibration,
         onMusicSettingClick = state::toggleMusic,
@@ -56,6 +58,7 @@ fun SnakeGameSettingsScreen(
     modifier: Modifier = Modifier,
     settings: SnakeGameSettings,
     language: SnakeGameLanguage,
+    skin: SnakeSkin,
     onBackClick: () -> Unit,
     onVibrationSettingClick: () -> Unit,
     onMusicSettingClick: () -> Unit,
@@ -76,7 +79,7 @@ fun SnakeGameSettingsScreen(
             )
             Row {
                 Image(
-                    painter = painterResource(R.drawable.snake_green_xx),
+                    painter = painterResource(skin.headXXResId),
                     contentDescription = null,
                     Modifier
                         .padding(end = 18.dp)
@@ -107,13 +110,13 @@ fun SnakeGameSettingsScreen(
             )
             SnakeGameMenuTextItem(
                 Modifier
-                    .padding(bottom = 24.dp)
                     .fillMaxColumnWidth(),
                 primaryText = stringResource(R.string.music_setting),
                 secondaryText = enabledText(settings.musicEnabled),
                 secondaryTextSize = 22.sp,
                 onClick = onMusicSettingClick
             )
+            Spacer(Modifier.size(24.dp))
             SnakeGameMenuTextItem(
                 modifier = Modifier
                     .padding(bottom = 24.dp)
@@ -126,11 +129,7 @@ fun SnakeGameSettingsScreen(
             SnakeGameMenuTextItem(
                 modifier = Modifier.fillMaxColumnWidth(),
                 primaryText = stringResource(R.string.language_settings_item),
-                secondaryText = when (language) {
-                    SnakeGameLanguage.RUSSIAN -> stringResource(R.string.language_russian)
-                    SnakeGameLanguage.ENGLISH -> stringResource(R.string.language_english)
-                    SnakeGameLanguage.SYSTEM -> stringResource(R.string.language_system)
-                },
+                secondaryText = stringResource(language.nameResId),
                 secondaryTextSize = 22.sp,
                 onClick = onLanguageSettingClick
             )
@@ -164,6 +163,7 @@ private fun Preview() {
             musicEnabled = false
         ),
         language = SnakeGameLanguage.SYSTEM,
+        skin = SnakeSkin.SLIME,
         onBackClick = { },
         onVibrationSettingClick = { },
         onMusicSettingClick = { },

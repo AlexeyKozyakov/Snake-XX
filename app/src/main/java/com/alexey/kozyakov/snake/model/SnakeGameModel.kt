@@ -70,19 +70,32 @@ enum class AppleType {
     BAD,
     OMNIVOROUSNESS,
     BOMB,
-    GOLDEN
+    GOLDEN,
+    COIN,
+    DIAMOND
 }
 
 val AppleType.isGoodOrBonus
     get() = when (this) {
-        AppleType.GOOD_1, AppleType.GOOD_2, AppleType.GOLDEN, AppleType.OMNIVOROUSNESS -> true
+        AppleType.GOOD_1, AppleType.GOOD_2, AppleType.GOLDEN, AppleType.OMNIVOROUSNESS,
+        AppleType.COIN, AppleType.DIAMOND -> true
+
         AppleType.BAD, AppleType.BOMB -> false
     }
 
 val AppleType.isBonus
     get() = when (this) {
         AppleType.GOLDEN, AppleType.OMNIVOROUSNESS -> true
-        AppleType.GOOD_1, AppleType.GOOD_2, AppleType.BAD, AppleType.BOMB -> false
+
+        AppleType.GOOD_1, AppleType.GOOD_2, AppleType.BAD, AppleType.BOMB, AppleType.COIN,
+        AppleType.DIAMOND -> false
+    }
+
+val AppleType.isMoney
+    get() = when (this) {
+        AppleType.COIN, AppleType.DIAMOND -> true
+        AppleType.GOOD_1, AppleType.GOOD_2, AppleType.BAD, AppleType.BOMB, AppleType.OMNIVOROUSNESS,
+        AppleType.GOLDEN -> false
     }
 
 sealed interface Wall {

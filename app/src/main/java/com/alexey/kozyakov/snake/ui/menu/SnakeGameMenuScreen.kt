@@ -3,6 +3,7 @@ package com.alexey.kozyakov.snake.ui.menu
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
@@ -19,6 +20,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.alexey.kozyakov.R
+import com.alexey.kozyakov.snake.storage.skins.SnakeSkin
 import com.alexey.kozyakov.snake.ui.components.SnakeGameMenuContainer
 import com.alexey.kozyakov.snake.ui.components.SnakeGameMenuTextItem
 
@@ -26,19 +28,22 @@ import com.alexey.kozyakov.snake.ui.components.SnakeGameMenuTextItem
 fun SnakeGameMenuScreen(
     modifier: Modifier = Modifier,
     navigateToGameScreen: () -> Unit,
-    navigateToSettingsScreen: () -> Unit
+    navigateToSettingsScreen: () -> Unit,
+    navigateToShopScreen: () -> Unit
 ) {
     val state = retainSnakeGameMenuState()
     SnakeGameMenuScreen(
         modifier = modifier,
         continueButtonEnabled = state.canContinueGame,
         level = state.level,
+        skin = state.skin,
         onNewGameClick = {
             state.resetGame()
             navigateToGameScreen()
         },
         onContinueClick = navigateToGameScreen,
-        onSettingsClick = navigateToSettingsScreen
+        onSettingsClick = navigateToSettingsScreen,
+        onShopClick = navigateToShopScreen
     )
 }
 
@@ -48,9 +53,11 @@ private fun SnakeGameMenuScreen(
     modifier: Modifier = Modifier,
     continueButtonEnabled: Boolean,
     level: Int,
+    skin: SnakeSkin,
     onNewGameClick: () -> Unit,
     onContinueClick: () -> Unit,
     onSettingsClick: () -> Unit,
+    onShopClick: () -> Unit
 ) {
     SnakeGameMenuContainer(modifier) {
         Text(
@@ -67,21 +74,21 @@ private fun SnakeGameMenuScreen(
             Modifier.padding(bottom = 32.dp)
         ) {
             Image(
-                painter = painterResource(R.drawable.snake_green_head),
+                painter = painterResource(skin.headResId),
                 contentDescription = null,
                 Modifier
                     .size(60.dp)
                     .scale(1.2f)
             )
             Image(
-                painter = painterResource(R.drawable.snake_green_blob),
+                painter = painterResource(skin.bodyResId),
                 contentDescription = null,
                 Modifier
                     .size(60.dp)
                     .scale(1.2f)
             )
             Image(
-                painter = painterResource(R.drawable.snake_green_blob),
+                painter = painterResource(skin.bodyResId),
                 contentDescription = null,
                 Modifier
                     .size(60.dp)
@@ -118,7 +125,7 @@ private fun SnakeGameMenuScreen(
             onClick = onNewGameClick
         )
         SnakeGameMenuTextItem(
-            Modifier.padding(bottom = 24.dp).fillMaxColumnWidth(),
+            Modifier.fillMaxColumnWidth(),
             primaryText = stringResource(R.string.continue_game),
             secondaryText = if (continueButtonEnabled) {
                 stringResource(R.string.level_menu_item, level)
@@ -128,6 +135,14 @@ private fun SnakeGameMenuScreen(
             primaryTextSize = 42.sp,
             enabled = continueButtonEnabled,
             onClick = onContinueClick
+        )
+        Spacer(Modifier.size(24.dp))
+        SnakeGameMenuTextItem(
+            Modifier.padding(bottom = 24.dp).fillMaxColumnWidth(),
+            primaryText = stringResource(R.string.shop_menu_item),
+            primaryTextSize = 42.sp,
+            enabled = true,
+            onClick = onShopClick
         )
         SnakeGameMenuTextItem(
             Modifier.fillMaxColumnWidth(),
@@ -144,8 +159,10 @@ private fun Preview() {
     SnakeGameMenuScreen(
         continueButtonEnabled = true,
         level = 1,
+        skin = SnakeSkin.SLIME,
         onNewGameClick = { },
         onContinueClick = { },
-        onSettingsClick = { }
+        onSettingsClick = { },
+        onShopClick = { }
     )
 }

@@ -13,6 +13,7 @@ import com.alexey.kozyakov.snake.model.SnakeGameModel
 import com.alexey.kozyakov.snake.model.SnakeModel
 import com.alexey.kozyakov.snake.model.SnakeType
 import com.alexey.kozyakov.snake.model.Wall
+import com.alexey.kozyakov.snake.storage.skins.SnakeSkin
 import com.alexey.kozyakov.snake.ui.game.rememberSnakeGameRenderer
 
 private val levels = levels {
@@ -106,7 +107,7 @@ private class PreviewLevelProvider : PreviewParameterProvider<Int> {
 private fun Preview(
     @PreviewParameter(provider = PreviewLevelProvider::class) level: Int
 ) {
-    val renderer = rememberSnakeGameRenderer()
+    val renderer = rememberSnakeGameRenderer(SnakeSkin.DEFAULT)
     val gridWidth = 15
     val gridHeight = 30
     Canvas(Modifier.fillMaxSize()) {

@@ -7,6 +7,7 @@ import androidx.compose.runtime.retain.retain
 import com.alexey.kozyakov.snake.di.context
 import com.alexey.kozyakov.snake.di.gameSettingsRepository
 import com.alexey.kozyakov.snake.di.languageRepository
+import com.alexey.kozyakov.snake.di.snakeSkinRepository
 import com.alexey.kozyakov.snake.effects.haptic.SnakeGameHapticFeedbackPlayer
 import com.alexey.kozyakov.snake.effects.sound.SnakeGameSoundEffectsPlayer
 import com.alexey.kozyakov.snake.model.SnakeGameEvent
@@ -14,6 +15,8 @@ import com.alexey.kozyakov.snake.storage.language.SnakeGameLanguage
 import com.alexey.kozyakov.snake.storage.language.SnakeGameLanguageRepository
 import com.alexey.kozyakov.snake.storage.settings.SnakeGameSettings
 import com.alexey.kozyakov.snake.storage.settings.SnakeGameSettingsRepository
+import com.alexey.kozyakov.snake.storage.skins.SnakeSkin
+import com.alexey.kozyakov.snake.storage.skins.SnakeSkinRepository
 import com.alexey.kozyakov.snake.ui.base.RetainedStateHolder
 import com.alexey.kozyakov.snake.ui.base.asComposeState
 import kotlinx.coroutines.launch
@@ -21,6 +24,7 @@ import kotlinx.coroutines.launch
 class SnakeGameSettingsState(
     private val settingsRepository: SnakeGameSettingsRepository,
     languageRepository: SnakeGameLanguageRepository,
+    skinRepository: SnakeSkinRepository,
     context: Context
 ) : RetainedStateHolder() {
 
@@ -31,6 +35,10 @@ class SnakeGameSettingsState(
     val language by languageRepository
         .observe()
         .asComposeState(initialValue = SnakeGameLanguage.SYSTEM)
+
+    val skin by skinRepository
+        .observe()
+        .asComposeState(initialValue = SnakeSkin.DEFAULT)
 
     private val hapticFeedbackPlayer =
         SnakeGameHapticFeedbackPlayer(context, stateHolderScope, settingsRepository)
@@ -73,6 +81,11 @@ class SnakeGameSettingsState(
 @Composable
 fun retainSnakeGameSettingsState(): SnakeGameSettingsState {
     return retain {
-        SnakeGameSettingsState(gameSettingsRepository, languageRepository, context)
+        SnakeGameSettingsState(
+            gameSettingsRepository,
+            languageRepository,
+            snakeSkinRepository,
+            context
+        )
     }
 }

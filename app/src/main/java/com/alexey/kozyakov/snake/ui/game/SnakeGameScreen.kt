@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -44,6 +45,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -60,6 +62,7 @@ import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
 
 private val pressedButtonColor = Color(red = 211, green = 44, blue = 44, alpha = 255)
+private val goldColor = Color(0xFFECCA32)
 
 @Composable
 fun SnakeGameScreen(modifier: Modifier = Modifier) {
@@ -89,7 +92,7 @@ fun SnakeGameScreen(modifier: Modifier = Modifier) {
         val resizeDebounce = 50.milliseconds
         var resizeJob by remember { mutableStateOf<Job?>(null) }
 
-        val renderer = rememberSnakeGameRenderer()
+        val renderer = rememberSnakeGameRenderer(state.snakeSkin)
 
         Canvas(
             Modifier
@@ -119,11 +122,7 @@ fun SnakeGameScreen(modifier: Modifier = Modifier) {
             renderer.renderSnakeGame(state.model)
         }
 
-        Text(
-            text = stringResource(
-                R.string.tick_interval,
-                state.tickInterval.inWholeMilliseconds
-            ),
+        Row(
             Modifier
                 .align(Alignment.TopStart)
                 .padding(
@@ -131,9 +130,34 @@ fun SnakeGameScreen(modifier: Modifier = Modifier) {
                     vertical = 8.dp
                 )
                 .statusBarsPadding(),
-            fontSize = 14.sp,
-            color = if (state.boost) Color.Red else Color.White
-        )
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painter = painterResource(R.drawable.coin),
+                contentDescription = null,
+                Modifier.size(24.dp)
+            )
+            Spacer(Modifier.size(8.dp))
+            Text(
+                text = state.balance.toString(),
+                color = Color.White,
+                fontFamily = FontFamily.Monospace,
+                fontSize = 16.sp,
+            )
+            Spacer(Modifier.size(4.dp))
+            AnimatedVisibility(
+                visible = state.addedBalanceVisible,
+                enter = EnterTransition.None,
+                exit = fadeOut(animationSpec = tween(durationMillis = 700)),
+            ) {
+                Text(
+                    text = "+${state.addedBalanceAmount}",
+                    color = goldColor,
+                    fontFamily = FontFamily.Monospace,
+                    fontSize = 16.sp,
+                )
+            }
+        }
 
         Text(
             text = stringResource(R.string.remaining_length, state.remainingLengthToGainLevel),
@@ -141,7 +165,8 @@ fun SnakeGameScreen(modifier: Modifier = Modifier) {
                 .align(Alignment.TopCenter)
                 .padding(vertical = 8.dp)
                 .statusBarsPadding(),
-            fontSize = 14.sp,
+            fontFamily = FontFamily.Monospace,
+            fontSize = 16.sp,
             color = Color.White
         )
 
@@ -159,7 +184,8 @@ fun SnakeGameScreen(modifier: Modifier = Modifier) {
                 )
                 .statusBarsPadding(),
             color = Color.White,
-            fontSize = 14.sp
+            fontFamily = FontFamily.Monospace,
+            fontSize = 16.sp,
         )
 
         if (state.gameIsOver) {

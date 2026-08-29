@@ -25,6 +25,7 @@ import com.alexey.kozyakov.snake.model.SnakeModel
 import com.alexey.kozyakov.snake.model.SnakeType
 import com.alexey.kozyakov.snake.model.Wall
 import com.alexey.kozyakov.snake.model.isBonus
+import com.alexey.kozyakov.snake.storage.skins.SnakeSkin
 
 
 class SnakeGameSprites(
@@ -32,12 +33,14 @@ class SnakeGameSprites(
     val greenApple: ImageBitmap,
     val goldApple: ImageBitmap,
     val badApple: ImageBitmap,
-    val greenSnakeBody: ImageBitmap,
-    val greenSnakeHead: ImageBitmap,
-    val greenSnakeHeadXX: ImageBitmap,
-    val yellowSnakeBody: ImageBitmap,
-    val yellowSnakeHead: ImageBitmap,
-    val yellowSnakeHeadXX: ImageBitmap,
+    val coin: ImageBitmap,
+    val diamond: ImageBitmap,
+    val mainSnakeBody: ImageBitmap,
+    val mainSnakeHead: ImageBitmap,
+    val mainSnakeHeadXX: ImageBitmap,
+    val secondarySnakeBody: ImageBitmap,
+    val secondarySnakeHead: ImageBitmap,
+    val secondarySnakeHeadXX: ImageBitmap,
     val easterEgg: ImageBitmap,
     val bomb: ImageBitmap,
     val blockWall: ImageBitmap,
@@ -88,14 +91,14 @@ class SnakeGameRenderer(private val sprites: SnakeGameSprites) {
     private fun DrawScope.renderSnake(snake: SnakeModel, cellSize: Float) {
         val headSprite = when (snake.type) {
             SnakeType.MAIN ->
-                if (snake.omnivorousTicksRemaining > 0) sprites.greenSnakeHeadXX else sprites.greenSnakeHead
+                if (snake.omnivorousTicksRemaining > 0) sprites.mainSnakeHeadXX else sprites.mainSnakeHead
 
             SnakeType.SECONDARY ->
-                if (snake.omnivorousTicksRemaining > 0) sprites.yellowSnakeHeadXX else sprites.yellowSnakeHead
+                if (snake.omnivorousTicksRemaining > 0) sprites.secondarySnakeHeadXX else sprites.secondarySnakeHead
         }
         val bodySprite = when (snake.type) {
-            SnakeType.MAIN -> sprites.greenSnakeBody
-            SnakeType.SECONDARY -> sprites.yellowSnakeBody
+            SnakeType.MAIN -> sprites.mainSnakeBody
+            SnakeType.SECONDARY -> sprites.secondarySnakeBody
         }
         val iterator = snake.elements.iterator()
         while (iterator.hasNext()) {
@@ -114,6 +117,8 @@ class SnakeGameRenderer(private val sprites: SnakeGameSprites) {
                 AppleType.OMNIVOROUSNESS -> sprites.easterEgg
                 AppleType.BOMB -> sprites.bomb
                 AppleType.GOLDEN -> sprites.goldApple
+                AppleType.COIN -> sprites.coin
+                AppleType.DIAMOND -> sprites.diamond
             }
             if (apple.type.isBonus) {
                 drawCircle(
@@ -221,18 +226,20 @@ class SnakeGameRenderer(private val sprites: SnakeGameSprites) {
 }
 
 @Composable
-fun rememberSnakeGameRenderer(): SnakeGameRenderer {
+fun rememberSnakeGameRenderer(snakeSkin: SnakeSkin): SnakeGameRenderer {
     val sprites = SnakeGameSprites(
         redApple = ImageBitmap.imageResource(R.drawable.apple_red_64),
         greenApple = ImageBitmap.imageResource(R.drawable.apple_green_64),
         goldApple = ImageBitmap.imageResource(R.drawable.apple_gold_64),
         badApple = ImageBitmap.imageResource(R.drawable.oliebol_64),
-        greenSnakeBody = ImageBitmap.imageResource(R.drawable.snake_green_blob_64),
-        greenSnakeHead = ImageBitmap.imageResource(R.drawable.snake_green_head_64),
-        greenSnakeHeadXX = ImageBitmap.imageResource(R.drawable.snake_green_xx),
-        yellowSnakeBody = ImageBitmap.imageResource(R.drawable.snake_yellow_blob_64),
-        yellowSnakeHead = ImageBitmap.imageResource(R.drawable.snake_yellow_head_64),
-        yellowSnakeHeadXX = ImageBitmap.imageResource(R.drawable.snake_yellow_xx),
+        coin = ImageBitmap.imageResource(R.drawable.coin),
+        diamond = ImageBitmap.imageResource(R.drawable.diamond),
+        mainSnakeBody = ImageBitmap.imageResource(snakeSkin.bodyResId),
+        mainSnakeHead = ImageBitmap.imageResource(snakeSkin.headResId),
+        mainSnakeHeadXX = ImageBitmap.imageResource(snakeSkin.headXXResId),
+        secondarySnakeBody = ImageBitmap.imageResource(R.drawable.snake_yellow_blob_64),
+        secondarySnakeHead = ImageBitmap.imageResource(R.drawable.snake_yellow_head_64),
+        secondarySnakeHeadXX = ImageBitmap.imageResource(R.drawable.snake_yellow_xx),
         easterEgg = ImageBitmap.imageResource(R.drawable.easter_egg_64),
         bomb = ImageBitmap.imageResource(R.drawable.bomb_64),
         blockWall = ImageBitmap.imageResource(R.drawable.wall_block_64_0),
@@ -243,7 +250,7 @@ fun rememberSnakeGameRenderer(): SnakeGameRenderer {
         verticalWall = ImageBitmap.imageResource(R.drawable.wall_block_64_5),
         topWall = ImageBitmap.imageResource(R.drawable.wall_block_64_4)
     )
-    return remember { SnakeGameRenderer(sprites) }
+    return remember(snakeSkin) { SnakeGameRenderer(sprites) }
 }
 
 private class PreviewGameIsOverProvider : PreviewParameterProvider<Boolean> {
@@ -257,7 +264,7 @@ private class PreviewGameIsOverProvider : PreviewParameterProvider<Boolean> {
 private fun Preview(
     @PreviewParameter(provider = PreviewGameIsOverProvider::class) gameIsOver: Boolean
 ) {
-    val renderer = rememberSnakeGameRenderer()
+    val renderer = rememberSnakeGameRenderer(SnakeSkin.DEFAULT)
     val model = SnakeGameModel(
         gridWidth = 15,
         gridHeight = 30,

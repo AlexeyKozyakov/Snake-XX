@@ -214,6 +214,14 @@ class SnakeGameEngine private constructor(
                         goldAppleEaten = true
                         addEvent(snakeId, SnakeGameEvent.GOLDEN_APPLE_EATEN)
                     }
+
+                    AppleType.COIN -> {
+                        addEvent(snakeId, SnakeGameEvent.COIN_PICKED)
+                    }
+
+                    AppleType.DIAMOND -> {
+                        addEvent(snakeId, SnakeGameEvent.DIAMOND_PICKED)
+                    }
                 }
             }
 
@@ -384,7 +392,9 @@ class SnakeGameEngine private constructor(
         val type = when (seed) {
             in 0..5 -> AppleType.OMNIVOROUSNESS
             in 6..12 -> AppleType.BOMB
-            in 13..39 -> AppleType.BAD
+            in 13..33 -> AppleType.BAD
+            in 34..38 -> AppleType.COIN
+            in 39..39 -> AppleType.DIAMOND
             in 40..47 -> AppleType.GOLDEN
             in 48..73 -> AppleType.GOOD_1
             else -> AppleType.GOOD_2

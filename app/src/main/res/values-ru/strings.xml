@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Snake XX</string>
-    <string name="tick_interval">тик %1$d</string>
     <string name="remaining_length">осталось %1$d</string>
     <string name="score">очки %1$d</string>
     <string name="omnivorous_ticks">всеядность %1$d</string>
@@ -25,4 +24,18 @@
     <string name="language_english">английский</string>
     <string name="language_system">как в системе</string>
     <string name="language_settings_screen">Язык</string>
+    <string name="skin_default">стандарт</string>
+    <string name="skin_slime">слайм</string>
+    <string name="skin_ice">лёд</string>
+    <string name="skin_magma">магма</string>
+    <string name="skin_android">андроид</string>
+    <string name="skin_king">король</string>
+    <string name="shop_menu_item">магазин</string>
+    <string name="upgrade_name_coins_for_apples">монеты за яблоки</string>
+    <string name="upgrade_description_coins_for_apples">получайте дополнительные монеты за сбор золотых яблок</string>
+    <string name="upgrade_name_coins_for_levels">монеты за уровни</string>
+    <string name="upgrade_description_coins_for_levels">получайте всё больше и больше монет за каждый пройденный уровень</string>
+    <string name="offer_group_skins">Скины</string>
+    <string name="offer_group_upgrades">Улучшения</string>
+    <string name="purchased">куплено</string>
 </resources>

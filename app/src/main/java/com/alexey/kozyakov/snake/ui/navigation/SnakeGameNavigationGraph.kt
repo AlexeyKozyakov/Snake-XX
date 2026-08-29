@@ -9,6 +9,7 @@ import com.alexey.kozyakov.snake.ui.game.SnakeGameScreen
 import com.alexey.kozyakov.snake.ui.language.SnakeGameLanguageScreen
 import com.alexey.kozyakov.snake.ui.menu.SnakeGameMenuScreen
 import com.alexey.kozyakov.snake.ui.settings.SnakeGameSettingsScreen
+import com.alexey.kozyakov.snake.ui.shop.SnakeShopScreen
 
 @Composable
 fun SnakeGameNavigationGraph(modifier: Modifier = Modifier) {
@@ -25,6 +26,9 @@ fun SnakeGameNavigationGraph(modifier: Modifier = Modifier) {
                 },
                 navigateToSettingsScreen = {
                     navController.navigate(SnakeGameDestination.SettingsScreen)
+                },
+                navigateToShopScreen = {
+                    navController.navigate(SnakeGameDestination.ShopScreen)
                 }
             )
         }
@@ -45,6 +49,13 @@ fun SnakeGameNavigationGraph(modifier: Modifier = Modifier) {
 
         composable<SnakeGameDestination.LanguageScreen> {
             SnakeGameLanguageScreen(
+                modifier,
+                navigateBack = navController::popBackStack
+            )
+        }
+
+        composable<SnakeGameDestination.ShopScreen> {
+            SnakeShopScreen(
                 modifier,
                 navigateBack = navController::popBackStack
             )

@@ -14,4 +14,7 @@ sealed interface SnakeGameDestination {
 
     @Serializable
     data object LanguageScreen
+
+    @Serializable
+    data object ShopScreen
 }

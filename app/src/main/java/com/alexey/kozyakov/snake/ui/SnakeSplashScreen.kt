@@ -22,7 +22,7 @@ fun SnakeSplashScreen(modifier: Modifier = Modifier) {
             .background(Color.Black)
     ) {
         Image(
-            painter = painterResource(R.drawable.snake_green_xx),
+            painter = painterResource(R.drawable.snake_head_xx_default),
             contentDescription = null,
             Modifier.align(Alignment.Center).size(160.dp)
         )

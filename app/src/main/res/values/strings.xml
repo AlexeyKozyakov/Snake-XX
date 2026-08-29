@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Snake XX</string>
-    <string name="tick_interval">tick %1$d</string>
     <string name="remaining_length">remaining %1$d</string>
     <string name="score">score %1$d</string>
     <string name="omnivorous_ticks">omnivorous ticks %1$d</string>
@@ -24,4 +23,18 @@
     <string name="language_english">english</string>
     <string name="language_system">system</string>
     <string name="language_settings_screen">Language</string>
+    <string name="skin_default">default</string>
+    <string name="skin_slime">slime</string>
+    <string name="skin_ice">ice</string>
+    <string name="skin_magma">magma</string>
+    <string name="skin_android">android</string>
+    <string name="skin_king">king</string>
+    <string name="shop_menu_item">shop</string>
+    <string name="upgrade_name_coins_for_apples">coins for apples</string>
+    <string name="upgrade_description_coins_for_apples">get additional coins for golden apples picking</string>
+    <string name="upgrade_name_coins_for_levels">coins for levels</string>
+    <string name="upgrade_description_coins_for_levels">get more and more coins for each passed level</string>
+    <string name="offer_group_skins">Skins</string>
+    <string name="offer_group_upgrades">Upgrades</string>
+    <string name="purchased">purchased</string>
 </resources>
