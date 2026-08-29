@@ -102,7 +102,7 @@ class SnakeShopScreenState(
 }
 
 @Composable
-fun retainSnakeSkinsScreenState(): SnakeShopScreenState {
+fun retainSnakeShopScreenState(): SnakeShopScreenState {
     return retain {
         SnakeShopScreenState(
             snakeSkinRepository,

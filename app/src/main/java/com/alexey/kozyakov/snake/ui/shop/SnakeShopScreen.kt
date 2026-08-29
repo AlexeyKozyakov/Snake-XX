@@ -51,7 +51,7 @@ fun SnakeShopScreen(
     modifier: Modifier = Modifier,
     navigateBack: () -> Unit
 ) {
-    val state = retainSnakeSkinsScreenState()
+    val state = retainSnakeShopScreenState()
     SnakeShopScreen(
         modifier,
         categories = state.categories,
