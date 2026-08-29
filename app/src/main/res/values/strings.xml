@@ -2,7 +2,6 @@
     <string name="app_name">Snake XX</string>
     <string name="remaining_length">remaining %1$d</string>
     <string name="score">score %1$d</string>
-    <string name="omnivorous_ticks">omnivorous ticks %1$d</string>
     <string name="game_over">Game Over</string>
     <string name="high_score">high score %1$d</string>
     <string name="level">Level %1$d</string>

@@ -30,7 +30,6 @@ import com.alexey.kozyakov.snake.effects.sound.SnakeGameSoundEffectsPlayer
 import com.alexey.kozyakov.snake.engine.SnakeGameEngine
 import com.alexey.kozyakov.snake.model.Direction
 import com.alexey.kozyakov.snake.model.SnakeGameModel
-import com.alexey.kozyakov.snake.model.SnakeType
 import com.alexey.kozyakov.snake.storage.SnakeGameBalanceRepository
 import com.alexey.kozyakov.snake.storage.SnakeGameHighScoreRepository
 import com.alexey.kozyakov.snake.storage.model.SnakeGameModelRepository
@@ -119,11 +118,6 @@ class SnakeGameState(
         .asComposeState(initialValue = 0)
     val gameIsOver by derivedStateOf { model.gameIsOver }
     val level by derivedStateOf { model.level }
-    val mainSnakeOmnivorousTicks by derivedStateOf {
-        model.snakes
-            .first { it.type == SnakeType.MAIN }
-            .omnivorousTicksRemaining
-    }
     val remainingLengthToGainLevel by derivedStateOf {
         model.remainingLengthToGainLevel
     }

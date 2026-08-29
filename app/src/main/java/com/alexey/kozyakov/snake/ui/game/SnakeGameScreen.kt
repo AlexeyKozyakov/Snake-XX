@@ -171,11 +171,7 @@ fun SnakeGameScreen(modifier: Modifier = Modifier) {
         )
 
         Text(
-            text = if (state.mainSnakeOmnivorousTicks > 0) {
-                stringResource(R.string.omnivorous_ticks, state.mainSnakeOmnivorousTicks)
-            } else {
-                stringResource(R.string.score, state.score)
-            },
+            text = stringResource(R.string.score, state.score),
             Modifier
                 .align(Alignment.TopEnd)
                 .padding(

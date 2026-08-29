@@ -3,7 +3,6 @@
     <string name="app_name">Snake XX</string>
     <string name="remaining_length">осталось %1$d</string>
     <string name="score">очки %1$d</string>
-    <string name="omnivorous_ticks">всеядность %1$d</string>
     <string name="game_over">Игра Окончена</string>
     <string name="high_score">максимум %1$d</string>
     <string name="level">Уровень %1$d</string>
