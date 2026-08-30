@@ -64,39 +64,52 @@ class Apple(
     }
 }
 
-enum class AppleType {
-    GOOD_1,
-    GOOD_2,
-    BAD,
-    OMNIVOROUSNESS,
-    BOMB,
-    GOLDEN,
-    COIN,
-    DIAMOND
+enum class AppleType(
+    val isGoodOrBonus: Boolean,
+    val isBonus: Boolean,
+    val isMoney: Boolean
+) {
+    GOOD_1(
+        isGoodOrBonus = true,
+        isBonus = false,
+        isMoney = false
+    ),
+    GOOD_2(
+        isGoodOrBonus = true,
+        isBonus = false,
+        isMoney = false
+    ),
+    BAD(
+        isGoodOrBonus = false,
+        isBonus = false,
+        isMoney = false
+    ),
+    OMNIVOROUSNESS(
+        isGoodOrBonus = true,
+        isBonus = true,
+        isMoney = false
+    ),
+    BOMB(
+        isGoodOrBonus = false,
+        isBonus = false,
+        isMoney = false
+    ),
+    GOLDEN(
+        isGoodOrBonus = true,
+        isBonus = true,
+        isMoney = false
+    ),
+    COIN(
+        isGoodOrBonus = true,
+        isBonus = false,
+        isMoney = true
+    ),
+    DIAMOND(
+        isGoodOrBonus = true,
+        isBonus = false,
+        isMoney = true
+    )
 }
-
-val AppleType.isGoodOrBonus
-    get() = when (this) {
-        AppleType.GOOD_1, AppleType.GOOD_2, AppleType.GOLDEN, AppleType.OMNIVOROUSNESS,
-        AppleType.COIN, AppleType.DIAMOND -> true
-
-        AppleType.BAD, AppleType.BOMB -> false
-    }
-
-val AppleType.isBonus
-    get() = when (this) {
-        AppleType.GOLDEN, AppleType.OMNIVOROUSNESS -> true
-
-        AppleType.GOOD_1, AppleType.GOOD_2, AppleType.BAD, AppleType.BOMB, AppleType.COIN,
-        AppleType.DIAMOND -> false
-    }
-
-val AppleType.isMoney
-    get() = when (this) {
-        AppleType.COIN, AppleType.DIAMOND -> true
-        AppleType.GOOD_1, AppleType.GOOD_2, AppleType.BAD, AppleType.BOMB, AppleType.OMNIVOROUSNESS,
-        AppleType.GOLDEN -> false
-    }
 
 sealed interface Wall {
     fun containsPosition(position: Position): Boolean
