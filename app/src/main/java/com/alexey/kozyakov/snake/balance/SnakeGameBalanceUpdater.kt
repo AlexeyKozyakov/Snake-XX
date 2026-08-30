@@ -35,19 +35,15 @@ class SnakeGameBalanceUpdater(
         model: SnakeGameModel,
         events: List<SnakeGameEvent>
     ): Int {
-        return events.sumOf { event ->
+        val amount = events.sumOf { event ->
             when (event) {
-                SnakeGameEvent.COIN_PICKED -> {
-                    addBalance(COIN_COST)
-                }
+                SnakeGameEvent.COIN_PICKED -> COIN_COST
 
-                SnakeGameEvent.DIAMOND_PICKED -> {
-                    addBalance(DIAMOND_COST)
-                }
+                SnakeGameEvent.DIAMOND_PICKED -> DIAMOND_COST
 
                 SnakeGameEvent.GOLDEN_APPLE_EATEN -> {
                     if (isCoinsForGoldenApplesEnabled) {
-                        addBalance(GOLDEN_APPLE_COST)
+                        GOLDEN_APPLE_COST
                     } else {
                         0
                     }
@@ -55,9 +51,7 @@ class SnakeGameBalanceUpdater(
 
                 SnakeGameEvent.LEVEL_GAINED -> {
                     if (isCoinsForLevelsEnabled) {
-                        val amount = INITIAL_LEVEL_COST *
-                                Math.powExact(LEVEL_COST_MULTIPLIER, model.level - 1)
-                        addBalance(amount)
+                        INITIAL_LEVEL_COST * Math.powExact(LEVEL_COST_MULTIPLIER, model.level - 1)
                     } else {
                         0
                     }
@@ -66,13 +60,14 @@ class SnakeGameBalanceUpdater(
                 else -> 0
             }
         }
+        addBalance(amount)
+        return amount
     }
 
-    private fun addBalance(amount: Int): Int {
+    private fun addBalance(amount: Int) {
         coroutineScope.launch {
             val balance = balanceRepository.observe().first()
             balanceRepository.store(balance + amount)
         }
-        return amount
     }
 }
