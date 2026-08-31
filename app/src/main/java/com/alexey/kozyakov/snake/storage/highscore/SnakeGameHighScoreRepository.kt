@@ -1,4 +1,4 @@
-package com.alexey.kozyakov.snake.storage
+package com.alexey.kozyakov.snake.storage.highscore
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences

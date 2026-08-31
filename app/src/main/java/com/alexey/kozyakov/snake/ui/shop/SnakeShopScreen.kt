@@ -176,12 +176,7 @@ private fun ShopItem(
                 skinBackgroundColor,
                 shape = RoundedCornerShape(36.dp)
             )
-            .alpha(
-                when (item.purchaseState) {
-                    PurchaseState.CAN_BUY, PurchaseState.BOUGHT -> 1f
-                    PurchaseState.CANNOT_BUY -> 0.4f
-                }
-            )
+            .alpha(if (item.purchaseState == PurchaseState.CANNOT_BUY) 0.4f else 1f)
             .border(
                 width = 6.dp,
                 color = if (item.selectionState == SelectionState.SELECTED) {

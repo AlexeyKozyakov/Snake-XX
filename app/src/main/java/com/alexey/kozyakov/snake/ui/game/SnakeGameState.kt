@@ -30,8 +30,8 @@ import com.alexey.kozyakov.snake.effects.sound.SnakeGameSoundEffectsPlayer
 import com.alexey.kozyakov.snake.engine.SnakeGameEngine
 import com.alexey.kozyakov.snake.model.Direction
 import com.alexey.kozyakov.snake.model.SnakeGameModel
-import com.alexey.kozyakov.snake.storage.SnakeGameBalanceRepository
-import com.alexey.kozyakov.snake.storage.SnakeGameHighScoreRepository
+import com.alexey.kozyakov.snake.storage.balance.SnakeGameBalanceRepository
+import com.alexey.kozyakov.snake.storage.highscore.SnakeGameHighScoreRepository
 import com.alexey.kozyakov.snake.storage.model.SnakeGameModelRepository
 import com.alexey.kozyakov.snake.storage.settings.SnakeGameSettingsRepository
 import com.alexey.kozyakov.snake.storage.skins.SnakeSkin
