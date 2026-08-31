@@ -41,8 +41,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.alexey.kozyakov.R
 
-private val skinBackgroundColor = Color(0xFF204821)
-private val selectedSkinBorderColor = Color(0xFFFFF216)
+private val itemBackgroundColor = Color(0xFF204821)
+private val selectedItemBorderColor = Color(0xFFFFF216)
 private val separatorColor = Color(0xFF547C54)
 private val buyButtonColor = Color(0xFF3661FE)
 
@@ -173,14 +173,14 @@ private fun ShopItem(
                 onClick = onSelectClick
             )
             .background(
-                skinBackgroundColor,
+                itemBackgroundColor,
                 shape = RoundedCornerShape(36.dp)
             )
             .alpha(if (item.purchaseState == PurchaseState.CANNOT_BUY) 0.4f else 1f)
             .border(
                 width = 6.dp,
                 color = if (item.selectionState == SelectionState.SELECTED) {
-                    selectedSkinBorderColor
+                    selectedItemBorderColor
                 } else {
                     Color.Transparent
                 },
