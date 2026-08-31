@@ -1,8 +1,9 @@
 package com.alexey.kozyakov.snake.di
 
+import com.alexey.kozyakov.snake.storage.base.CachedDataStore
 import com.alexey.kozyakov.snake.storage.shop.PurchaseRepository
-import com.alexey.kozyakov.snake.storage.SnakeGameBalanceRepository
-import com.alexey.kozyakov.snake.storage.SnakeGameHighScoreRepository
+import com.alexey.kozyakov.snake.storage.balance.SnakeGameBalanceRepository
+import com.alexey.kozyakov.snake.storage.highscore.SnakeGameHighScoreRepository
 import com.alexey.kozyakov.snake.storage.language.SnakeGameLanguageRepository
 import com.alexey.kozyakov.snake.storage.model.SnakeGameModelFileSaver
 import com.alexey.kozyakov.snake.storage.model.SnakeGameModelRepository
@@ -17,7 +18,7 @@ val context by lazy {
 }
 
 val gamePreferences by lazy {
-    context.snakeGamePreferences
+    CachedDataStore(context.snakeGamePreferences)
 }
 
 val highScoreRepository by lazy {
