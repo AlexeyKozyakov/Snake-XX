@@ -7,11 +7,10 @@ import com.alexey.kozyakov.snake.config.INITIAL_LEVEL_COST
 import com.alexey.kozyakov.snake.config.LEVEL_COST_MULTIPLIER
 import com.alexey.kozyakov.snake.model.SnakeGameEvent
 import com.alexey.kozyakov.snake.model.SnakeGameModel
-import com.alexey.kozyakov.snake.storage.SnakeGameBalanceRepository
+import com.alexey.kozyakov.snake.storage.balance.SnakeGameBalanceRepository
 import com.alexey.kozyakov.snake.storage.upgrade.SnakeUpgrade
 import com.alexey.kozyakov.snake.storage.upgrade.SnakeUpgradeRepository
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class SnakeGameBalanceUpdater(
@@ -60,14 +59,11 @@ class SnakeGameBalanceUpdater(
                 else -> 0
             }
         }
-        addBalance(amount)
-        return amount
-    }
-
-    private fun addBalance(amount: Int) {
-        coroutineScope.launch {
-            val balance = balanceRepository.observe().first()
-            balanceRepository.store(balance + amount)
+        if (amount > 0) {
+            coroutineScope.launch {
+                balanceRepository.update { balance -> balance + amount }
+            }
         }
+        return amount
     }
 }
