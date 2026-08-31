@@ -24,7 +24,6 @@ import com.alexey.kozyakov.snake.model.SnakeGameModel
 import com.alexey.kozyakov.snake.model.SnakeModel
 import com.alexey.kozyakov.snake.model.SnakeType
 import com.alexey.kozyakov.snake.model.Wall
-import com.alexey.kozyakov.snake.model.isBonus
 import com.alexey.kozyakov.snake.storage.skins.SnakeSkin
 
 

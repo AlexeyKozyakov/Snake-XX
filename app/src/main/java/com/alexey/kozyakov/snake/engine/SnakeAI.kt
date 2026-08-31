@@ -3,8 +3,6 @@ package com.alexey.kozyakov.snake.engine
 import com.alexey.kozyakov.snake.model.AppleType
 import com.alexey.kozyakov.snake.model.Direction
 import com.alexey.kozyakov.snake.model.Position
-import com.alexey.kozyakov.snake.model.isGoodOrBonus
-import com.alexey.kozyakov.snake.model.isMoney
 import kotlin.math.abs
 import kotlin.math.pow
 import kotlin.random.Random
