@@ -61,7 +61,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
 
-private val pressedButtonColor = Color(red = 211, green = 44, blue = 44, alpha = 255)
+private val pressedButtonColor = Color(0xFFD32C2C)
 private val goldColor = Color(0xFFECCA32)
 
 @Composable

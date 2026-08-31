@@ -52,9 +52,9 @@ class SnakeGameSprites(
 )
 
 class SnakeGameRenderer(private val sprites: SnakeGameSprites) {
-    private val grassColor = Color(red = 32, green = 72, blue = 33, alpha = 255)
-    private val gridColor = Color(red = 84, green = 124, blue = 84, alpha = 255)
-    private val goldColor = Color(red = 255, green = 215, blue = 0, alpha = 114)
+    private val grassColor = Color(0xFF204821)
+    private val gridColor = Color(0xFF547C54)
+    private val goldColor = Color(0x72FFD700)
 
     context(scope: DrawScope)
     fun renderSnakeGame(model: SnakeGameModel) = with(scope) {
