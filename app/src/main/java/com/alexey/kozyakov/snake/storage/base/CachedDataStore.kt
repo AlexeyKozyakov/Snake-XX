@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 
-class CachedDataStore<T>(private val source: DataStore<T>): DataStore<T> {
+class CachedDataStore<T: Any>(private val source: DataStore<T>): DataStore<T> {
     private val cache = MutableStateFlow<T?>(null)
 
     override val data: Flow<T> = cache.filterNotNull()
