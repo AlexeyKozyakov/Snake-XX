@@ -75,8 +75,6 @@ private fun SnakeShopScreen(
         modifier
             .background(Color.Black)
             .fillMaxSize()
-            .statusBarsPadding()
-            .navigationBarsPadding()
     ) {
         Column(
             Modifier
@@ -90,10 +88,16 @@ private fun SnakeShopScreen(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
-                for (category in categories) {
+                categories.forEachIndexed { index, category ->
                     item(span = { GridItemSpan(maxLineSpan) }) {
                         Text(
-                            modifier = Modifier.padding(top = 16.dp),
+                            modifier = if (index == 0) {
+                                Modifier
+                                    .padding(top = 12.dp)
+                                    .statusBarsPadding()
+                            } else {
+                                Modifier
+                            },
                             text = stringResource(category.nameResId),
                             color = Color.White,
                             fontSize = 42.sp,
@@ -120,6 +124,9 @@ private fun SnakeShopScreen(
                         )
                     }
                 }
+                item(span = { GridItemSpan(maxLineSpan) }) {
+                    Spacer(Modifier.padding(48.dp).navigationBarsPadding())
+                }
             }
         }
         Image(
@@ -137,6 +144,7 @@ private fun SnakeShopScreen(
             Modifier
                 .align(Alignment.BottomEnd)
                 .padding(36.dp)
+                .navigationBarsPadding()
                 .background(color = buyButtonColor, shape = CircleShape)
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
