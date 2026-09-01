@@ -66,7 +66,7 @@ class SnakeGameHapticFeedbackPlayer(
 }
 
 private enum class HapticFeedback(val duration: Long, val amplitude: Int) {
-    SHORT(1, 85),
-    MEDIUM(3, 120),
-    LONG(10, 160)
+    SHORT(3, 90),
+    MEDIUM(9, 120),
+    LONG(20, 180)
 }
