@@ -9,7 +9,7 @@ permissions:
 jobs:
   release:
 
-    name: Build Signed Release APK
+    name: Publish Signed Release APK
     runs-on: ubuntu-latest
 
     steps:
@@ -168,6 +168,15 @@ jobs:
           cp \
           app/build/outputs/apk/release/app-release.apk \
           app-release-v${VERSION}.apk
+
+      # ----------------------------
+      # APK Artifact
+      # ----------------------------
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release-v${{ steps.version.outputs.VERSION_NAME }}.apk
+          path: app-release-v${{ steps.version.outputs.VERSION_NAME }}.apk
 
       # ----------------------------
       # GitHub Release
