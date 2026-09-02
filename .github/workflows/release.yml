@@ -1,0 +1,185 @@
+name: Release
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+
+    name: Build Signed Release APK
+    runs-on: ubuntu-latest
+
+    steps:
+      # ----------------------------
+      # Checkout main
+      # ----------------------------
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      # ----------------------------
+      # Java
+      # ----------------------------
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      # ----------------------------
+      # Android SDK
+      # ----------------------------
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Grant Gradle permission
+        run: chmod +x ./gradlew
+
+      # ----------------------------
+      # Increase version
+      # ----------------------------
+      - name: Increment version
+        id: version
+        run: |
+          FILE=app/build.gradle.kts
+
+          CURRENT_NAME=$(grep versionName $FILE | sed 's/[^0-9.]//g')
+          CURRENT_CODE=$(grep versionCode $FILE | sed 's/[^0-9]//g')
+
+          echo "Current versionName: $CURRENT_NAME"
+          echo "Current versionCode: $CURRENT_CODE"
+
+          MAJOR=$(echo $CURRENT_NAME | cut -d. -f1)
+          MINOR=$(echo $CURRENT_NAME | cut -d. -f2)
+
+          if [ "$MINOR" -eq 9 ]; then
+            NEW_MAJOR=$((MAJOR + 1))
+            NEW_MINOR=0
+          else
+            NEW_MAJOR=$MAJOR
+            NEW_MINOR=$((MINOR + 1))
+          fi
+
+          NEW_NAME="$NEW_MAJOR.$NEW_MINOR"
+          NEW_CODE=$((CURRENT_CODE + 1))
+
+          sed -i \
+          "s/versionName = \"[^\"]*\"/versionName = \"$NEW_NAME\"/" \
+          $FILE
+
+          sed -i \
+          "s/versionCode = [0-9]*/versionCode = $NEW_CODE/" \
+          $FILE
+
+          echo "VERSION_NAME=$NEW_NAME" >> $GITHUB_OUTPUT
+          echo "VERSION_CODE=$NEW_CODE" >> $GITHUB_OUTPUT
+
+          echo "New version:"
+          echo "$NEW_NAME ($NEW_CODE)"
+
+      # ----------------------------
+      # Commit version
+      # ----------------------------
+      - name: Commit version bump
+        run: |
+          VERSION=${{ steps.version.outputs.VERSION_NAME }}
+
+          git config user.name "github-actions"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add app/build.gradle.kts
+
+          git commit \
+          -m "Release v$VERSION"
+
+          git push origin main
+
+      # ----------------------------
+      # Create git tag
+      # ----------------------------
+      - name: Create tag
+        run: |
+          VERSION=${{ steps.version.outputs.VERSION_NAME }}
+
+          git tag "v$VERSION"
+
+          git push origin "v$VERSION"
+
+      # ----------------------------
+      # Restore JKS
+      # ----------------------------
+      - name: Prepare keystore
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" \
+          | base64 --decode > release.jks
+
+      # Optional check
+      - name: Check keystore
+        run: |
+          keytool -list \
+          -keystore release.jks \
+          -storepass "${{ secrets.KEYSTORE_PASSWORD }}"
+
+      # ----------------------------
+      # Build APK
+      # ----------------------------
+      - name: Build release APK
+        env:
+          KEYSTORE_FILE: ${{ github.workspace }}/release.jks
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          ./gradlew assembleRelease \
+          -Pandroid.injected.signing.store.file=$KEYSTORE_FILE \
+          -Pandroid.injected.signing.store.password=$KEYSTORE_PASSWORD \
+          -Pandroid.injected.signing.key.alias=$KEY_ALIAS \
+          -Pandroid.injected.signing.key.password=$KEY_PASSWORD
+
+      # ----------------------------
+      # Verify signature
+      # ----------------------------
+      - name: Verify APK signature
+        run: |
+          APK=app/build/outputs/apk/release/app-release.apk
+
+          apksigner verify \
+          --verbose \
+          --print-certs \
+          $APK
+
+      # ----------------------------
+      # Rename APK
+      # ----------------------------
+      - name: Prepare APK artifact
+        run: |
+          VERSION=${{ steps.version.outputs.VERSION_NAME }}
+
+          cp \
+          app/build/outputs/apk/release/app-release.apk \
+          app-release-v${VERSION}.apk
+
+      # ----------------------------
+      # GitHub Release
+      # ----------------------------
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+
+        with:
+
+          tag_name: v${{ steps.version.outputs.VERSION_NAME }}
+
+          name: Release v${{ steps.version.outputs.VERSION_NAME }}
+
+          generate_release_notes: true
+
+          files: |
+            app-release-v${{ steps.version.outputs.VERSION_NAME }}.apk
+
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
