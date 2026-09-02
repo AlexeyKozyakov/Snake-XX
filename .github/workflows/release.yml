@@ -40,6 +40,10 @@ jobs:
       - name: Grant Gradle permission
         run: chmod +x ./gradlew
 
+      - name: Install Android build tools
+        run: |
+          sdkmanager "platform-tools" "build-tools;35.0.0"
+
       # ----------------------------
       # Increase version
       # ----------------------------
@@ -148,10 +152,11 @@ jobs:
         run: |
           APK=app/build/outputs/apk/release/app-release.apk
 
-          apksigner verify \
-          --verbose \
-          --print-certs \
-          $APK
+          $ANDROID_HOME/build-tools/35.0.0/apksigner \
+            verify \
+            --verbose \
+            --print-certs \
+            $APK
 
       # ----------------------------
       # Rename APK
