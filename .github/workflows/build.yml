@@ -1,4 +1,4 @@
-name: Build unsigned APKs
+name: Build
 
 on:
   push:
