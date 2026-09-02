@@ -78,5 +78,4 @@ dependencies {
     implementation(libs.androidx.media3.common)
     implementation(libs.androidx.navigation.compose)
     debugImplementation(libs.androidx.ui.tooling)
-    debugImplementation(libs.androidx.ui.test.manifest)
 }
