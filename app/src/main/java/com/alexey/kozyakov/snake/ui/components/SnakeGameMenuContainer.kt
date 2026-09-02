@@ -31,6 +31,7 @@ fun SnakeGameMenuContainer(
             .fillMaxSize()
             .background(color = Color.Black)
     ) {
+        val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
         FlowColumn(
             Modifier
                 .align(Alignment.Center)
@@ -39,15 +40,15 @@ fun SnakeGameMenuContainer(
             itemHorizontalAlignment = Alignment.CenterHorizontally,
             horizontalArrangement = Arrangement.spacedBy(42.dp),
             verticalArrangement = Arrangement.Center,
-            maxItemsInEachColumn = if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                3
-            } else {
-                Int.MAX_VALUE
-            }
+            maxItemsInEachColumn = if (isLandscape) 3 else Int.MAX_VALUE
         ) {
-            Spacer(Modifier.padding(6.dp).statusBarsPadding())
+            if (!isLandscape) {
+                Spacer(Modifier.padding(6.dp).statusBarsPadding())
+            }
             content()
-            Spacer(Modifier.navigationBarsPadding())
+            if (!isLandscape) {
+                Spacer(Modifier.navigationBarsPadding())
+            }
         }
     }
 }
