@@ -2,6 +2,10 @@ package com.alexey.kozyakov.snake.engine
 
 import com.alexey.kozyakov.snake.config.ADDITIONAL_SCORE_FOR_GOLDEN_APPLE
 import com.alexey.kozyakov.snake.config.ADDITIONAL_SCORE_FOR_OMNIVOROUS_APPLE
+import com.alexey.kozyakov.snake.config.APPLE_COUNT
+import com.alexey.kozyakov.snake.config.INITIAL_SNAKE_LENGTH
+import com.alexey.kozyakov.snake.config.LEVEL_GAIN_LENGTH_MULTIPLIER
+import com.alexey.kozyakov.snake.config.OMNIVOROUS_TICKS
 import com.alexey.kozyakov.snake.levels.levelWalls
 import com.alexey.kozyakov.snake.model.Apple
 import com.alexey.kozyakov.snake.model.AppleType
@@ -22,18 +26,15 @@ private const val AI_SNAKE_ID = 1
 class SnakeGameEngine private constructor(
     private var gridWidth: Int,
     private var gridHeight: Int,
-    private val initialSnakeLength: Int,
-    private val appleCount: Int,
-    private val omnivorousTicks: Int,
-    aiFailProbabilityDefault: Double,
-    aiFailDecreaseByLevelRatio: Double,
-    private val levelGainLengthMultiplier: Double,
     initialLevel: Int? = null,
     initialWalls: List<Wall>? = null,
     initialSnakes: List<Snake>? = null,
     initialApples: MutableMap<Position, Apple>? = null,
     initialScore: Int? = null
 ) {
+    private val initialSnakeLength = INITIAL_SNAKE_LENGTH
+    private val appleCount = APPLE_COUNT
+
     private var level: Int = initialLevel ?: 0
     private var walls = initialWalls ?: levelWalls(level, gridWidth, gridHeight)
     private var snakes = initialSnakes ?: initSnakes()
@@ -45,15 +46,13 @@ class SnakeGameEngine private constructor(
         get() {
             val minGridDimension = min(gridWidth, gridHeight)
             val lengthToGainLevel =
-                (minGridDimension * levelGainLengthMultiplier.pow(level)).toInt()
+                (minGridDimension * LEVEL_GAIN_LENGTH_MULTIPLIER.pow(level)).toInt()
             return lengthToGainLevel - snakes[MAIN_SNAKE_ID].length
         }
 
     private val snakeAi = SnakeAI(
         engine = this,
-        snakeId = AI_SNAKE_ID,
-        aiFailProbabilityDefault = aiFailProbabilityDefault,
-        aiFailDecreaseByLevelRatio = aiFailDecreaseByLevelRatio,
+        snakeId = AI_SNAKE_ID
     )
 
     init {
@@ -188,7 +187,7 @@ class SnakeGameEngine private constructor(
                     AppleType.OMNIVOROUSNESS -> {
                         grow()
                         addScore(snakeId, ADDITIONAL_SCORE_FOR_OMNIVOROUS_APPLE)
-                        snake.omnivorousTicksRemaining = omnivorousTicks
+                        snake.omnivorousTicksRemaining = OMNIVOROUS_TICKS
                         addEvent(snakeId, SnakeGameEvent.OMNIVOROUS_APPLE_EATEN)
                     }
 
@@ -418,36 +417,14 @@ class SnakeGameEngine private constructor(
     }
 
     companion object {
-        fun create(
-            gridWidth: Int,
-            gridHeight: Int,
-            initialSnakeLength: Int,
-            appleCount: Int,
-            omnivorousTicks: Int,
-            aiFailProbabilityDefault: Double,
-            aiFailDecreaseByLevelRatio: Double,
-            levelGainLengthMultiplier: Double
-        ): SnakeGameEngine {
+        fun create(gridWidth: Int, gridHeight: Int): SnakeGameEngine {
             return SnakeGameEngine(
                 gridWidth = gridWidth,
-                gridHeight = gridHeight,
-                initialSnakeLength = initialSnakeLength,
-                appleCount = appleCount,
-                omnivorousTicks = omnivorousTicks,
-                aiFailProbabilityDefault = aiFailProbabilityDefault,
-                aiFailDecreaseByLevelRatio = aiFailDecreaseByLevelRatio,
-                levelGainLengthMultiplier = levelGainLengthMultiplier
+                gridHeight = gridHeight
             )
         }
 
-        fun restore(
-            model: SnakeGameModel,
-            initialSnakeLength: Int,
-            omnivorousTicks: Int,
-            aiFailProbabilityDefault: Double,
-            aiFailDecreaseByLevelRatio: Double,
-            levelGainLengthMultiplier: Double,
-        ): SnakeGameEngine {
+        fun restore(model: SnakeGameModel): SnakeGameEngine {
             fun restoreSnakeElements(iterator: Iterator<Position>): SnakeElement? {
                 if (!iterator.hasNext()) {
                     return null
@@ -474,12 +451,6 @@ class SnakeGameEngine private constructor(
             return SnakeGameEngine(
                 gridWidth = model.gridWidth,
                 gridHeight = model.gridHeight,
-                initialSnakeLength = initialSnakeLength,
-                appleCount = initialApples.size,
-                omnivorousTicks = omnivorousTicks,
-                aiFailProbabilityDefault = aiFailProbabilityDefault,
-                aiFailDecreaseByLevelRatio = aiFailDecreaseByLevelRatio,
-                levelGainLengthMultiplier = levelGainLengthMultiplier,
                 initialLevel = model.level,
                 initialWalls = model.walls,
                 initialSnakes = initialSnakes,

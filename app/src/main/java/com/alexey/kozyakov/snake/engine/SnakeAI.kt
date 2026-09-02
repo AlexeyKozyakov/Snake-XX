@@ -1,5 +1,7 @@
 package com.alexey.kozyakov.snake.engine
 
+import com.alexey.kozyakov.snake.config.AI_FAIL_DECREASE_BY_LEVEL_RATIO
+import com.alexey.kozyakov.snake.config.AI_FAIL_PROBABILITY_DEFAULT
 import com.alexey.kozyakov.snake.model.AppleType
 import com.alexey.kozyakov.snake.model.Direction
 import com.alexey.kozyakov.snake.model.Position
@@ -9,16 +11,14 @@ import kotlin.random.Random
 
 class SnakeAI(
     val engine: SnakeGameEngine,
-    val snakeId: Int,
-    val aiFailProbabilityDefault: Double,
-    val aiFailDecreaseByLevelRatio: Double,
+    val snakeId: Int
 ) {
     fun step() {
         val model = engine.model
         val snake = model.snakes[snakeId]
         val snakeHead = snake.elements.last()
         val randomDirectionProbability =
-            aiFailProbabilityDefault / aiFailDecreaseByLevelRatio.pow(model.level)
+            AI_FAIL_PROBABILITY_DEFAULT / AI_FAIL_DECREASE_BY_LEVEL_RATIO.pow(model.level)
         val directionToTarget = if (Random.nextFloat() < randomDirectionProbability) {
             randomDirection()
         } else {

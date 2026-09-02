@@ -9,15 +9,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.retain.retain
 import androidx.compose.runtime.setValue
 import com.alexey.kozyakov.snake.balance.SnakeGameBalanceUpdater
-import com.alexey.kozyakov.snake.config.AI_FAIL_DECREASE_BY_LEVEL_RATIO
-import com.alexey.kozyakov.snake.config.AI_FAIL_PROBABILITY_DEFAULT
-import com.alexey.kozyakov.snake.config.APPLE_COUNT
 import com.alexey.kozyakov.snake.config.BOOST_BY_BUTTON
 import com.alexey.kozyakov.snake.config.BOOST_PER_LEVEL
-import com.alexey.kozyakov.snake.config.INITIAL_SNAKE_LENGTH
-import com.alexey.kozyakov.snake.config.LEVEL_GAIN_LENGTH_MULTIPLIER
 import com.alexey.kozyakov.snake.config.MAX_TICK_INTERVAL_MS
-import com.alexey.kozyakov.snake.config.OMNIVOROUS_TICKS
 import com.alexey.kozyakov.snake.di.balanceRepository
 import com.alexey.kozyakov.snake.di.context
 import com.alexey.kozyakov.snake.di.gameModelRepository
@@ -43,22 +37,12 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.pow
-import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
 
 class SnakeGameState(
     gridWidth: Int,
     gridHeight: Int,
-    private val initialSnakeLength: Int,
-    private val appleCount: Int,
-    private val omnivorousTicks: Int,
-    boostPerLevel: Double,
-    boostByButton: Double,
-    maxTickInterval: Duration,
-    private val aiFailProbabilityDefault: Double,
-    private val aiFailDecreaseByLevelRatio: Double,
-    private val levelGainLengthMultiplier: Double,
     private val gameModelRepository: SnakeGameModelRepository,
     private val highScoreRepository: SnakeGameHighScoreRepository,
     gameSettingsRepository: SnakeGameSettingsRepository,
@@ -69,27 +53,15 @@ class SnakeGameState(
 ) : RetainedStateHolder() {
     private var engine = gameModelRepository.observe().value.let { restoredModel ->
         if (restoredModel != null) {
-            SnakeGameEngine.restore(
-                model = restoredModel,
-                initialSnakeLength = initialSnakeLength,
-                omnivorousTicks = omnivorousTicks,
-                aiFailProbabilityDefault = aiFailProbabilityDefault,
-                aiFailDecreaseByLevelRatio = aiFailDecreaseByLevelRatio,
-                levelGainLengthMultiplier = levelGainLengthMultiplier
-            )
+            SnakeGameEngine.restore(restoredModel)
         } else {
             SnakeGameEngine.create(
                 gridWidth = gridWidth,
-                gridHeight = gridHeight,
-                initialSnakeLength = initialSnakeLength,
-                appleCount = appleCount,
-                omnivorousTicks = omnivorousTicks,
-                aiFailProbabilityDefault = aiFailProbabilityDefault,
-                aiFailDecreaseByLevelRatio = aiFailDecreaseByLevelRatio,
-                levelGainLengthMultiplier = levelGainLengthMultiplier
+                gridHeight = gridHeight
             )
         }
     }
+    private val maxTickInterval = MAX_TICK_INTERVAL_MS.milliseconds
     private val soundPlayer =
         SnakeGameSoundEffectsPlayer(context, stateHolderScope, gameSettingsRepository)
     private val hapticFeedbackPlayer =
@@ -99,8 +71,8 @@ class SnakeGameState(
 
     private val tickInterval by derivedStateOf {
         maxTickInterval /
-                boostPerLevel.pow(level) /
-                (if (boost) boostByButton else 1.0)
+                BOOST_PER_LEVEL.pow(level) /
+                (if (boost) BOOST_BY_BUTTON else 1.0)
     }
     var model by mutableStateOf(engine.model)
         private set
@@ -167,13 +139,7 @@ class SnakeGameState(
         } else {
             engine = SnakeGameEngine.create(
                 gridWidth = gridWidth,
-                gridHeight = gridHeight,
-                initialSnakeLength = initialSnakeLength,
-                appleCount = appleCount,
-                omnivorousTicks = omnivorousTicks,
-                aiFailProbabilityDefault = aiFailProbabilityDefault,
-                aiFailDecreaseByLevelRatio = aiFailDecreaseByLevelRatio,
-                levelGainLengthMultiplier = levelGainLengthMultiplier
+                gridHeight = gridHeight
             )
         }
         updateState()
@@ -275,15 +241,6 @@ fun retainSnakeGameState(
         SnakeGameState(
             gridWidth = gridWidth,
             gridHeight = gridHeight,
-            initialSnakeLength = INITIAL_SNAKE_LENGTH,
-            appleCount = APPLE_COUNT,
-            omnivorousTicks = OMNIVOROUS_TICKS,
-            boostPerLevel = BOOST_PER_LEVEL,
-            boostByButton = BOOST_BY_BUTTON,
-            maxTickInterval = MAX_TICK_INTERVAL_MS.milliseconds,
-            aiFailProbabilityDefault = AI_FAIL_PROBABILITY_DEFAULT,
-            aiFailDecreaseByLevelRatio = AI_FAIL_DECREASE_BY_LEVEL_RATIO,
-            levelGainLengthMultiplier = LEVEL_GAIN_LENGTH_MULTIPLIER,
             gameModelRepository = gameModelRepository,
             highScoreRepository = highScoreRepository,
             snakeSkinRepository = snakeSkinRepository,
