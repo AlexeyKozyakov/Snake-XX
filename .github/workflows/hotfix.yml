@@ -1,0 +1,141 @@
+name: Hotfix
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+
+    name: Replace Latest Release APK
+    runs-on: ubuntu-latest
+
+    steps:
+      # ----------------------------
+      # Checkout main
+      # ----------------------------
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      # ----------------------------
+      # Java
+      # ----------------------------
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      # ----------------------------
+      # Android SDK
+      # ----------------------------
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Grant Gradle permission
+        run: chmod +x ./gradlew
+
+      - name: Install Android build tools
+        run: |
+          sdkmanager "platform-tools" "build-tools;35.0.0"
+
+      # ----------------------------
+      # Get current version
+      # ----------------------------
+      - name: Get current version
+        id: version
+        run: |
+          FILE=app/build.gradle.kts
+
+          CURRENT_NAME=$(grep versionName $FILE | sed 's/[^0-9.]//g')
+
+          MAJOR=$(echo $CURRENT_NAME | cut -d. -f1)
+          MINOR=$(echo $CURRENT_NAME | cut -d. -f2)
+
+          echo "Current version: $MAJOR.$MINOR"
+
+          echo "VERSION_NAME=$MAJOR.$MINOR" >> $GITHUB_OUTPUT
+
+      # ----------------------------
+      # Restore JKS
+      # ----------------------------
+      - name: Prepare keystore
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" \
+          | base64 --decode > release.jks
+
+      # Optional check
+      - name: Check keystore
+        run: |
+          keytool -list \
+          -keystore release.jks \
+          -storepass "${{ secrets.KEYSTORE_PASSWORD }}"
+
+      # ----------------------------
+      # Build APK
+      # ----------------------------
+      - name: Build release APK
+        env:
+          KEYSTORE_FILE: ${{ github.workspace }}/release.jks
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          ./gradlew assembleRelease \
+          -Pandroid.injected.signing.store.file=$KEYSTORE_FILE \
+          -Pandroid.injected.signing.store.password=$KEYSTORE_PASSWORD \
+          -Pandroid.injected.signing.key.alias=$KEY_ALIAS \
+          -Pandroid.injected.signing.key.password=$KEY_PASSWORD
+
+      # ----------------------------
+      # Verify signature
+      # ----------------------------
+      - name: Verify APK signature
+        run: |
+          APK=app/build/outputs/apk/release/app-release.apk
+
+          $ANDROID_HOME/build-tools/35.0.0/apksigner \
+            verify \
+            --verbose \
+            --print-certs \
+            $APK
+
+      # ----------------------------
+      # Rename APK
+      # ----------------------------
+      - name: Prepare APK artifact
+        run: |
+          VERSION=${{ steps.version.outputs.VERSION_NAME }}
+
+          cp \
+          app/build/outputs/apk/release/app-release.apk \
+          app-release-v${VERSION}.apk
+
+      # ----------------------------
+      # APK Artifact
+      # ----------------------------
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release-v${{ steps.version.outputs.VERSION_NAME }}.apk
+          path: app-release-v${{ steps.version.outputs.VERSION_NAME }}.apk
+
+      # ----------------------------
+      # Update GitHub Release
+      # ----------------------------
+      - name: Update Latest GitHub Release
+        uses: softprops/action-gh-release@v2
+
+        with:
+          generate_release_notes: true
+
+          files: |
+            app-release-v${{ steps.version.outputs.VERSION_NAME }}.apk
+
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
