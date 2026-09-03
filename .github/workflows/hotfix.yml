@@ -1,0 +1,186 @@
+name: Hotfix
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  hotfix:
+
+    name: Replace Latest Release APK
+    runs-on: ubuntu-latest
+
+    steps:
+
+      # ----------------------------
+      # Checkout main
+      # ----------------------------
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      # ----------------------------
+      # Setup JDK
+      # ----------------------------
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      # ----------------------------
+      # Setup Android SDK
+      # ----------------------------
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android build tools
+        run: |
+          sdkmanager "platform-tools" "build-tools;35.0.0"
+
+      - name: Grant Gradle permission
+        run: chmod +x ./gradlew
+
+      # ----------------------------
+      # Get current version
+      # ----------------------------
+      - name: Get current version
+        id: version
+        run: |
+
+          FILE=app/build.gradle.kts
+
+          CURRENT_NAME=$(grep "versionName" "$FILE" | sed 's/[^0-9.]//g')
+          CURRENT_CODE=$(grep "versionCode" "$FILE" | sed 's/[^0-9]//g')
+
+          if [ -z "$CURRENT_NAME" ]; then
+            echo "Could not find versionName"
+            exit 1
+          fi
+
+          if [ -z "$CURRENT_CODE" ]; then
+            echo "Could not find versionCode"
+            exit 1
+          fi
+
+          echo "VERSION_NAME=$CURRENT_NAME" >> "$GITHUB_OUTPUT"
+          echo "VERSION_CODE=$CURRENT_CODE" >> "$GITHUB_OUTPUT"
+
+          echo "Current versionName: $CURRENT_NAME"
+          echo "Current versionCode: $CURRENT_CODE"
+
+      # ----------------------------
+      # Check release exists
+      # ----------------------------
+      - name: Check GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ steps.version.outputs.VERSION_NAME }}
+
+        run: |
+          TAG="v$VERSION"
+
+          echo "Checking release $TAG"
+
+          gh release view "$TAG"
+
+      # ----------------------------
+      # Prepare JKS
+      # ----------------------------
+      - name: Prepare keystore
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" \
+            | base64 --decode > release.jks
+
+      # ----------------------------
+      # Check JKS
+      # ----------------------------
+      - name: Check keystore
+        run: |
+          keytool -list \
+            -keystore release.jks \
+            -storepass "${{ secrets.KEYSTORE_PASSWORD }}"
+
+      # ----------------------------
+      # Build signed APK
+      # ----------------------------
+      - name: Build release APK
+        env:
+          KEYSTORE_FILE: ${{ github.workspace }}/release.jks
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+
+        run: |
+          ./gradlew assembleRelease \
+            -Pandroid.injected.signing.store.file="$KEYSTORE_FILE" \
+            -Pandroid.injected.signing.store.password="$KEYSTORE_PASSWORD" \
+            -Pandroid.injected.signing.key.alias="$KEY_ALIAS" \
+            -Pandroid.injected.signing.key.password="$KEY_PASSWORD"
+
+      # ----------------------------
+      # Verify APK signature
+      # ----------------------------
+      - name: Verify APK signature
+        run: |
+          APK=app/build/outputs/apk/release/app-release.apk
+
+          $ANDROID_HOME/build-tools/35.0.0/apksigner \
+            verify \
+            --verbose \
+            --print-certs \
+            "$APK"
+
+      # ----------------------------
+      # Rename APK
+      # ----------------------------
+      - name: Prepare APK
+        run: |
+          VERSION=${{ steps.version.outputs.VERSION_NAME }}
+
+          cp \
+            app/build/outputs/apk/release/app-release.apk \
+            "app-release-v${VERSION}.apk"
+
+      # ----------------------------
+      # Remove old APK
+      # ----------------------------
+      - name: Remove old APK from release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ steps.version.outputs.VERSION_NAME }}
+
+        run: |
+          TAG="v$VERSION"
+          APK="app-release-v${VERSION}.apk"
+
+          echo "Removing old $APK from release $TAG"
+
+          gh release delete-asset \
+            "$TAG" \
+            "$APK" \
+            --yes \
+            || true
+
+      # ----------------------------
+      # Upload new APK
+      # ----------------------------
+      - name: Upload hotfix APK
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ steps.version.outputs.VERSION_NAME }}
+
+        run: |
+          TAG="v$VERSION"
+          APK="app-release-v${VERSION}.apk"
+
+          echo "Uploading $APK to release $TAG"
+
+          gh release upload \
+            "$TAG" \
+            "$APK" \
+            --clobber
