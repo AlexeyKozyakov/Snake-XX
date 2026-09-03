@@ -60,7 +60,7 @@ jobs:
           MAJOR=$(echo "$MAJOR" | xargs)
           MINOR=$(echo "$MINOR" | xargs)
 
-          VERSION = "$MAJOR.$MINOR"
+          VERSION="$MAJOR.$MINOR"
 
           echo "Current version: $VERSION"
 
