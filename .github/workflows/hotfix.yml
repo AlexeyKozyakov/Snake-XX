@@ -57,9 +57,14 @@ jobs:
           MAJOR=$(echo $CURRENT_NAME | cut -d. -f1)
           MINOR=$(echo $CURRENT_NAME | cut -d. -f2)
 
-          echo "Current version: $MAJOR.$MINOR"
+          MAJOR=$(echo "$MAJOR" | xargs)
+          MINOR=$(echo "$MINOR" | xargs)
 
-          echo "VERSION_NAME=$MAJOR.$MINOR" >> $GITHUB_OUTPUT
+          VERSION = "$MAJOR.$MINOR"
+
+          echo "Current version: $VERSION"
+
+          echo "VERSION_NAME=$VERSION" >> $GITHUB_OUTPUT
 
       # ----------------------------
       # Restore JKS
@@ -133,8 +138,6 @@ jobs:
 
         with:
           tag_name: v${{ steps.version.outputs.VERSION_NAME }}
-
-          generate_release_notes: true
 
           files: |
             app-release-v${{ steps.version.outputs.VERSION_NAME }}.apk
