@@ -81,7 +81,6 @@ jobs:
           $FILE
 
           echo "VERSION_NAME=$NEW_NAME" >> $GITHUB_OUTPUT
-          echo "VERSION_CODE=$NEW_CODE" >> $GITHUB_OUTPUT
 
           echo "New version:"
           echo "$NEW_NAME ($NEW_CODE)"

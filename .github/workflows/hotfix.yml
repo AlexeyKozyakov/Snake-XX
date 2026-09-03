@@ -55,23 +55,18 @@ jobs:
           FILE=app/build.gradle.kts
 
           CURRENT_NAME=$(grep "versionName" "$FILE" | sed 's/[^0-9.]//g')
-          CURRENT_CODE=$(grep "versionCode" "$FILE" | sed 's/[^0-9]//g')
 
           if [ -z "$CURRENT_NAME" ]; then
             echo "Could not find versionName"
             exit 1
           fi
 
-          if [ -z "$CURRENT_CODE" ]; then
-            echo "Could not find versionCode"
-            exit 1
-          fi
+          MAJOR=$(echo $CURRENT_NAME | cut -d. -f1)
+          MINOR=$(echo $CURRENT_NAME | cut -d. -f2)
 
-          echo "VERSION_NAME=$CURRENT_NAME" >> "$GITHUB_OUTPUT"
-          echo "VERSION_CODE=$CURRENT_CODE" >> "$GITHUB_OUTPUT"
+          echo "VERSION_NAME=$MAJOR.$MINOR" >> "$GITHUB_OUTPUT"
 
-          echo "Current versionName: $CURRENT_NAME"
-          echo "Current versionCode: $CURRENT_CODE"
+          echo "Current version: $MAJOR.$MINOR"
 
       # ----------------------------
       # Check release exists
