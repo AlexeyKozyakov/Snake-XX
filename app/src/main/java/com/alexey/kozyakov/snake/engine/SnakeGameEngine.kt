@@ -250,7 +250,7 @@ private class SnakeGameEngineImpl(
                 )
                 snake.length++
                 addScore(snakeId, 1)
-                addEvent(snakeId, SnakeGameEvent.SNAKE_GROWS)
+                addStepEvent(snakeId, SnakeGameEvent.SNAKE_GROWS)
             }
             apples.remove(head.position)?.let { eatenApple ->
                 when (eatenApple.type) {
@@ -268,7 +268,7 @@ private class SnakeGameEngineImpl(
                                     snake.length--
                                 }
                             }
-                            addEvent(snakeId, SnakeGameEvent.BAD_APPLE_EATEN)
+                            addStepEvent(snakeId, SnakeGameEvent.BAD_APPLE_EATEN)
                         }
                     }
 
@@ -276,7 +276,7 @@ private class SnakeGameEngineImpl(
                         grow()
                         addScore(snakeId, ADDITIONAL_SCORE_FOR_OMNIVOROUS_APPLE)
                         snake.omnivorousTicksRemaining = OMNIVOROUS_TICKS
-                        addEvent(snakeId, SnakeGameEvent.OMNIVOROUS_APPLE_EATEN)
+                        addStepEvent(snakeId, SnakeGameEvent.OMNIVOROUS_APPLE_EATEN)
                     }
 
                     AppleType.BOMB -> {
@@ -290,7 +290,7 @@ private class SnakeGameEngineImpl(
                                     if (isMainSnake(snakeId)) 1 else snake.length
                                 }
                             shrinkSnake(snake, newSnakeLength)
-                            addEvent(snakeId, SnakeGameEvent.BOMB_EATEN)
+                            addStepEvent(snakeId, SnakeGameEvent.BOMB_EATEN)
                         }
                     }
 
@@ -298,15 +298,15 @@ private class SnakeGameEngineImpl(
                         grow()
                         addScore(snakeId, ADDITIONAL_SCORE_FOR_GOLDEN_APPLE)
                         goldAppleEaten = true
-                        addEvent(snakeId, SnakeGameEvent.GOLDEN_APPLE_EATEN)
+                        addStepEvent(snakeId, SnakeGameEvent.GOLDEN_APPLE_EATEN)
                     }
 
                     AppleType.COIN -> {
-                        addEvent(snakeId, SnakeGameEvent.COIN_PICKED)
+                        addStepEvent(snakeId, SnakeGameEvent.COIN_PICKED)
                     }
 
                     AppleType.DIAMOND -> {
-                        addEvent(snakeId, SnakeGameEvent.DIAMOND_PICKED)
+                        addStepEvent(snakeId, SnakeGameEvent.DIAMOND_PICKED)
                     }
                 }
             }
@@ -315,7 +315,7 @@ private class SnakeGameEngineImpl(
             if (touchedWalls.isNotEmpty() && isMainSnake(snakeId)) {
                 if (boostersSupplier.consumeWallEatingBooster()) {
                     grow()
-                    addEvent(snakeId, SnakeGameEvent.WALL_EATEN)
+                    addStepEvent(snakeId, SnakeGameEvent.WALL_EATEN)
                     val splittedWalls = touchedWalls.flatMap { wall -> wall.splitBy(head.position) }
                     walls = walls - touchedWalls.toSet() + splittedWalls
                 } else {
@@ -341,7 +341,7 @@ private class SnakeGameEngineImpl(
         }
     }
 
-    private fun addEvent(snakeId: Int, event: SnakeGameEvent) {
+    private fun addStepEvent(snakeId: Int, event: SnakeGameEvent) {
         if (isMainSnake(snakeId)) {
             stepEvents.add(event)
         }
@@ -366,7 +366,7 @@ private class SnakeGameEngineImpl(
             walls = levelWalls(level, gridWidth, gridHeight)
             snakes = initSnakes()
             apples = initApples(snakes, walls)
-            addEvent(MAIN_SNAKE_ID, SnakeGameEvent.LEVEL_GAINED)
+            addStepEvent(MAIN_SNAKE_ID, SnakeGameEvent.LEVEL_GAINED)
             return
         }
         snakes.forEachIndexed { snakeId, snake ->
@@ -397,7 +397,7 @@ private class SnakeGameEngineImpl(
                                         shrinkSnakeToPosition(snake, head.position)
                                     }
                                     addScore(snakeId, eatenLength)
-                                    addEvent(snakeId, SnakeGameEvent.SNAKE_PART_EATEN)
+                                    addStepEvent(snakeId, SnakeGameEvent.SNAKE_PART_EATEN)
                                 } else {
                                     gameOver()
                                 }
@@ -417,7 +417,7 @@ private class SnakeGameEngineImpl(
 
     private fun gameOver() {
         gameIsOver = true
-        addEvent(MAIN_SNAKE_ID, SnakeGameEvent.GAME_OVER)
+        addStepEvent(MAIN_SNAKE_ID, SnakeGameEvent.GAME_OVER)
     }
 
     private fun checkCollisionWithSelfOrOtherSnakes(snakeId: Int): Collision {
