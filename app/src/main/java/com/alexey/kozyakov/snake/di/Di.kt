@@ -3,6 +3,7 @@ package com.alexey.kozyakov.snake.di
 import com.alexey.kozyakov.snake.storage.base.CachedDataStore
 import com.alexey.kozyakov.snake.storage.shop.PurchaseRepository
 import com.alexey.kozyakov.snake.storage.balance.SnakeGameBalanceRepository
+import com.alexey.kozyakov.snake.storage.boosters.PurchasedSnakeBoosterRepository
 import com.alexey.kozyakov.snake.storage.highscore.SnakeGameHighScoreRepository
 import com.alexey.kozyakov.snake.storage.language.SnakeGameLanguageRepository
 import com.alexey.kozyakov.snake.storage.model.SnakeGameModelFileSaver
@@ -55,4 +56,8 @@ val purchaseRepository by lazy {
 
 val upgradeRepository by lazy {
     SnakeUpgradeRepository(purchaseRepository)
+}
+
+val purchasedBoosterRepository by lazy {
+    PurchasedSnakeBoosterRepository(gamePreferences)
 }

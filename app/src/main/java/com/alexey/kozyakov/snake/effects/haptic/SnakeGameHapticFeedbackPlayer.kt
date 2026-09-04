@@ -33,7 +33,9 @@ class SnakeGameHapticFeedbackPlayer(
         SnakeGameEvent.GOLDEN_APPLE_EATEN to HapticFeedback.MEDIUM,
         SnakeGameEvent.GAME_OVER to HapticFeedback.LONG,
         SnakeGameEvent.COIN_PICKED to HapticFeedback.MEDIUM,
-        SnakeGameEvent.DIAMOND_PICKED to HapticFeedback.LONG
+        SnakeGameEvent.DIAMOND_PICKED to HapticFeedback.LONG,
+        SnakeGameEvent.WALL_EATEN to HapticFeedback.MEDIUM,
+        SnakeGameEvent.SNAKE_PART_EATEN to HapticFeedback.MEDIUM
     )
 
     init {

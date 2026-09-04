@@ -9,5 +9,7 @@ enum class SnakeGameEvent {
     LEVEL_GAINED,
     GAME_OVER,
     COIN_PICKED,
-    DIAMOND_PICKED
+    DIAMOND_PICKED,
+    WALL_EATEN,
+    SNAKE_PART_EATEN
 }

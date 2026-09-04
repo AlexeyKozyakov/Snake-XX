@@ -9,6 +9,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.retain.retain
 import androidx.compose.runtime.setValue
 import com.alexey.kozyakov.snake.balance.SnakeGameBalanceUpdater
+import com.alexey.kozyakov.snake.boosters.PurchasedSnakeBoostersSupplier
 import com.alexey.kozyakov.snake.config.BOOST_BY_BUTTON
 import com.alexey.kozyakov.snake.config.BOOST_PER_LEVEL
 import com.alexey.kozyakov.snake.config.MAX_TICK_INTERVAL_MS
@@ -17,6 +18,7 @@ import com.alexey.kozyakov.snake.di.context
 import com.alexey.kozyakov.snake.di.gameModelRepository
 import com.alexey.kozyakov.snake.di.gameSettingsRepository
 import com.alexey.kozyakov.snake.di.highScoreRepository
+import com.alexey.kozyakov.snake.di.purchasedBoosterRepository
 import com.alexey.kozyakov.snake.di.snakeSkinRepository
 import com.alexey.kozyakov.snake.di.upgradeRepository
 import com.alexey.kozyakov.snake.effects.haptic.SnakeGameHapticFeedbackPlayer
@@ -25,6 +27,8 @@ import com.alexey.kozyakov.snake.engine.SnakeGameEngine
 import com.alexey.kozyakov.snake.model.Direction
 import com.alexey.kozyakov.snake.model.SnakeGameModel
 import com.alexey.kozyakov.snake.storage.balance.SnakeGameBalanceRepository
+import com.alexey.kozyakov.snake.storage.boosters.PurchasedSnakeBoosterRepository
+import com.alexey.kozyakov.snake.storage.boosters.SnakeBooster
 import com.alexey.kozyakov.snake.storage.highscore.SnakeGameHighScoreRepository
 import com.alexey.kozyakov.snake.storage.model.SnakeGameModelRepository
 import com.alexey.kozyakov.snake.storage.settings.SnakeGameSettingsRepository
@@ -41,27 +45,29 @@ import kotlin.time.Duration.Companion.milliseconds
 
 
 class SnakeGameState(
-    gridWidth: Int,
-    gridHeight: Int,
     private val gameModelRepository: SnakeGameModelRepository,
     private val highScoreRepository: SnakeGameHighScoreRepository,
     gameSettingsRepository: SnakeGameSettingsRepository,
     snakeSkinRepository: SnakeSkinRepository,
     balanceRepository: SnakeGameBalanceRepository,
     upgradeRepository: SnakeUpgradeRepository,
+    purchasedBoosterRepository: PurchasedSnakeBoosterRepository,
     context: Context
 ) : RetainedStateHolder() {
-    private var engine = gameModelRepository.observe().value.let { restoredModel ->
-        if (restoredModel != null) {
-            SnakeGameEngine.restore(restoredModel)
-        } else {
-            SnakeGameEngine.create(
-                gridWidth = gridWidth,
-                gridHeight = gridHeight
-            )
-        }
-    }
-    private val maxTickInterval = MAX_TICK_INTERVAL_MS.milliseconds
+    private val boostersSupplier = PurchasedSnakeBoostersSupplier(
+        coroutineScope = stateHolderScope,
+        boosterRepository = purchasedBoosterRepository,
+        onBoosterConsumed = ::showConsumedBooster
+    )
+    private var sizeInitialized = false
+    private var engine = gameModelRepository.observe().value?.let { restoredModel ->
+        sizeInitialized = true
+        SnakeGameEngine.restore(
+            model = restoredModel,
+            boostersSupplier = boostersSupplier
+        )
+    } ?: SnakeGameEngine.empty()
+
     private val soundPlayer =
         SnakeGameSoundEffectsPlayer(context, stateHolderScope, gameSettingsRepository)
     private val hapticFeedbackPlayer =
@@ -69,11 +75,18 @@ class SnakeGameState(
     private val balanceUpdater =
         SnakeGameBalanceUpdater(stateHolderScope, balanceRepository, upgradeRepository)
 
+    private val maxTickInterval = MAX_TICK_INTERVAL_MS.milliseconds
     private val tickInterval by derivedStateOf {
         maxTickInterval /
                 BOOST_PER_LEVEL.pow(level) /
                 (if (boost) BOOST_BY_BUTTON else 1.0)
     }
+
+    private val resizeDebounce = 50.milliseconds
+    private var balanceHideJob: Job? = null
+    private var resizeJob: Job? = null
+    private var resumed by mutableStateOf(true)
+
     var model by mutableStateOf(engine.model)
         private set
     var boost by mutableStateOf(false)
@@ -83,8 +96,7 @@ class SnakeGameState(
         private set
     var addedBalanceAmount by mutableIntStateOf(0)
     var addedBalanceVisible by mutableStateOf(false)
-    private var balanceHideJob: Job? = null
-    private var resumed by mutableStateOf(true)
+
     val highScore by highScoreRepository
         .observe()
         .asComposeState(initialValue = 0)
@@ -130,19 +142,17 @@ class SnakeGameState(
     }
 
     fun resize(gridWidth: Int, gridHeight: Int) {
-        val model = engine.model
-        if (gridHeight == model.gridHeight && gridWidth == model.gridWidth) {
+        if (!sizeInitialized) {
+            doResize(gridWidth, gridHeight)
+            sizeInitialized = true
             return
         }
-        if (gridHeight == model.gridWidth && gridWidth == model.gridHeight) {
-            engine.transposeGrid()
-        } else {
-            engine = SnakeGameEngine.create(
-                gridWidth = gridWidth,
-                gridHeight = gridHeight
-            )
+        resizeJob?.cancel()
+        resizeJob = stateHolderScope.launch {
+            delay(resizeDebounce)
+            doResize(gridWidth, gridHeight)
+            resizeJob = null
         }
-        updateState()
     }
 
     fun confirmRunning() {
@@ -164,6 +174,23 @@ class SnakeGameState(
     override fun dispose() {
         super.dispose()
         soundPlayer.dispose()
+    }
+
+    private fun doResize(gridWidth: Int, gridHeight: Int) {
+        val model = engine.model
+        if (gridHeight == model.gridHeight && gridWidth == model.gridWidth) {
+            return
+        }
+        if (gridHeight == model.gridWidth && gridWidth == model.gridHeight) {
+            engine.transposeGrid()
+        } else {
+            engine = SnakeGameEngine.create(
+                gridWidth = gridWidth,
+                gridHeight = gridHeight,
+                boostersSupplier = boostersSupplier
+            )
+        }
+        updateState()
     }
 
     private fun saveGame(model: SnakeGameModel) {
@@ -230,23 +257,32 @@ class SnakeGameState(
             balanceHideJob = null
         }
     }
+
+    // TODO(boosters):
+    //  1. Добавить/поменять картинки для бустеров
+    //  2. Показывать картинку и оставшееся количество при использовании
+    //  3. Добавить товары бустеров с описанием в магазин
+    //  4. Доработать логику магазина для покупки бустеров
+    // TODO(справка):
+    //  1. Добавить экран со справкой по приложению с описанием цели игры и бонусов
+    // TODO(продолжение)
+    //  1. Продолжать игру после смерти за монетки
+    private fun showConsumedBooster(booster: SnakeBooster, remaining: Int) {
+        TODO("$booster $remaining")
+    }
 }
 
 @Composable
-fun retainSnakeGameState(
-    gridWidth: Int,
-    gridHeight: Int,
-): SnakeGameState {
+fun retainSnakeGameState(): SnakeGameState {
     return retain {
         SnakeGameState(
-            gridWidth = gridWidth,
-            gridHeight = gridHeight,
             gameModelRepository = gameModelRepository,
             highScoreRepository = highScoreRepository,
             snakeSkinRepository = snakeSkinRepository,
             gameSettingsRepository = gameSettingsRepository,
             balanceRepository = balanceRepository,
             upgradeRepository = upgradeRepository,
+            purchasedBoosterRepository = purchasedBoosterRepository,
             context = context
         )
     }
