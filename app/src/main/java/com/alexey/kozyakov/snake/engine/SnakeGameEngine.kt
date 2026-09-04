@@ -26,7 +26,7 @@ interface SnakeGameEngine {
     fun step(): List<SnakeGameEvent>
     fun transposeGrid()
     fun setDirection(snakeId: Int = MAIN_SNAKE_ID, newDirection: Direction): Boolean
-    fun restartFinishedGame(): Boolean
+    fun restartFinishedGame(/*TODO: Use this param for payed continue*/keepProgress: Boolean = false): Boolean
 
     companion object {
         fun empty(): SnakeGameEngine = EmptySnakeGameEngine
@@ -105,7 +105,7 @@ private object EmptySnakeGameEngine : SnakeGameEngine {
         newDirection: Direction
     ) = false
 
-    override fun restartFinishedGame() = false
+    override fun restartFinishedGame(keepProgress: Boolean) = false
 }
 
 private const val MAIN_SNAKE_ID = 0
@@ -185,7 +185,7 @@ private class SnakeGameEngineImpl(
         snakeAi.step()
         doStep()
         applyPostStepActions()
-        return if (stepEvents.isEmpty()) emptyList() else stepEvents.toMutableList()
+        return stepEvents.toList()
     }
 
     override fun transposeGrid() {
@@ -219,12 +219,14 @@ private class SnakeGameEngineImpl(
         return true
     }
 
-    override fun restartFinishedGame(): Boolean {
+    override fun restartFinishedGame(keepProgress: Boolean): Boolean {
         if (!gameIsOver) {
             return false
         }
-        level = 0
-        score = 0
+        if (!keepProgress) {
+            level = 0
+            score = 0
+        }
         walls = levelWalls(level, gridWidth, gridHeight)
         snakes = initSnakes()
         apples = initApples(snakes, walls)
