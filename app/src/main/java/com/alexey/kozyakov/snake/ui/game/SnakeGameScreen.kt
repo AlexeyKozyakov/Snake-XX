@@ -112,11 +112,11 @@ fun SnakeGameScreen(modifier: Modifier = Modifier) {
         LevelAndConfirmation(
             showLevel = state.showLevel,
             level = state.level,
-            needsConfirmationToRun = state.needsConfirmationToRun
+            showConfirmation = state.needsConfirmationToRun
         )
 
         BoostButton(
-            boost = state.boost,
+            boostEnabled = state.boost,
             onPressed = { pressed -> state.boost = pressed }
         )
 
@@ -192,11 +192,11 @@ private fun BoxScope.BalanceDisplay(
 
 @Composable
 private fun BoxScope.RemainingLength(
-    remainingLengthToGainLevel: Int,
+    length: Int,
     modifier: Modifier = Modifier
 ) {
     Text(
-        text = stringResource(R.string.remaining_length, remainingLengthToGainLevel),
+        text = stringResource(R.string.remaining_length, length),
         modifier
             .align(Alignment.TopCenter)
             .padding(vertical = 8.dp)
@@ -267,7 +267,7 @@ private fun BoxScope.GameOver(
 private fun BoxScope.LevelAndConfirmation(
     showLevel: Boolean,
     level: Int,
-    needsConfirmationToRun: Boolean,
+    showConfirmation: Boolean,
     modifier: Modifier = Modifier
 ) {
     Column(modifier.align(Alignment.Center)) {
@@ -288,7 +288,7 @@ private fun BoxScope.LevelAndConfirmation(
             )
         }
         AnimatedVisibility(
-            needsConfirmationToRun,
+            showConfirmation,
             Modifier.align(Alignment.CenterHorizontally),
             enter = EnterTransition.None,
             exit = fadeOut(animationSpec = tween(durationMillis = 700))
@@ -311,7 +311,7 @@ private fun BoxScope.LevelAndConfirmation(
 
 @Composable
 private fun BoxScope.BoostButton(
-    boost: Boolean,
+    boostEnabled: Boolean,
     onPressed: (pressed: Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -322,7 +322,7 @@ private fun BoxScope.BoostButton(
             .padding(44.dp)
             .size(110.dp)
             .background(
-                (if (boost) pressedButtonColor else Color.LightGray).copy(alpha = 0.7f),
+                (if (boostEnabled) pressedButtonColor else Color.LightGray).copy(alpha = 0.7f),
                 CircleShape
             )
             .pointerInput(Unit) {
