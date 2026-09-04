@@ -46,7 +46,7 @@ interface SnakeGameEngine {
 
         fun restore(
             model: SnakeGameModel,
-            boostersSupplier: SnakeBoostersSupplier
+            boostersSupplier: SnakeBoostersSupplier = SnakeBoostersSupplier.Empty
         ): SnakeGameEngine {
             val initialSnakes = model.snakes.map { snakeModel ->
                 val elementsIterator = snakeModel.elements.iterator()
