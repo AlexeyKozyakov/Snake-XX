@@ -20,18 +20,109 @@ import kotlin.math.min
 import kotlin.math.pow
 import kotlin.random.Random
 
+
+interface SnakeGameEngine {
+    val model: SnakeGameModel
+    val events: List<SnakeGameEvent>
+    fun step()
+    fun transposeGrid()
+    fun setDirection(snakeId: Int = MAIN_SNAKE_ID, newDirection: Direction): Boolean
+    fun restartFinishedGame(): Boolean
+
+    companion object {
+        fun empty(): SnakeGameEngine = EmptySnakeGameEngine
+
+        fun create(
+            gridWidth: Int,
+            gridHeight: Int,
+            boostersSupplier: SnakeBoostersSupplier = SnakeBoostersSupplier.Empty
+        ): SnakeGameEngine {
+            return SnakeGameEngineImpl(
+                gridWidth = gridWidth,
+                gridHeight = gridHeight,
+                boostersSupplier = boostersSupplier
+            )
+        }
+
+        fun restore(
+            model: SnakeGameModel,
+            boostersSupplier: SnakeBoostersSupplier
+        ): SnakeGameEngine {
+            val initialSnakes = model.snakes.map { snakeModel ->
+                val elementsIterator = snakeModel.elements.iterator()
+                val tail = SnakeElement(position = elementsIterator.next())
+                var head = tail
+                while (elementsIterator.hasNext()) {
+                    head.next = SnakeElement(position = elementsIterator.next())
+                    head = head.next!!
+                }
+                Snake(
+                    head = head,
+                    tail = tail,
+                    direction = snakeModel.direction,
+                    commitedDirection = snakeModel.direction,
+                    length = snakeModel.length,
+                    omnivorousTicksRemaining = snakeModel.omnivorousTicksRemaining
+                )
+            }
+            val initialApples = mutableMapOf<Position, Apple>()
+            for (apple in model.apples) {
+                initialApples[apple.position] = apple
+            }
+            return SnakeGameEngineImpl(
+                gridWidth = model.gridWidth,
+                gridHeight = model.gridHeight,
+                boostersSupplier = boostersSupplier,
+                initialLevel = model.level,
+                initialWalls = model.walls,
+                initialSnakes = initialSnakes,
+                initialApples = initialApples,
+                initialScore = model.score
+            )
+        }
+    }
+}
+
+private object EmptySnakeGameEngine : SnakeGameEngine {
+    override val model = SnakeGameModel(
+        gridWidth = 0,
+        gridHeight = 0,
+        apples = emptySequence(),
+        snakes = emptyList(),
+        walls = emptyList(),
+        gameIsOver = false,
+        level = 0,
+        remainingLengthToGainLevel = 0,
+        appleCount = 0,
+        score = 0
+    )
+    override val events = emptyList<SnakeGameEvent>()
+
+    override fun step() = Unit
+
+    override fun transposeGrid() = Unit
+
+    override fun setDirection(
+        snakeId: Int,
+        newDirection: Direction
+    ) = false
+
+    override fun restartFinishedGame() = false
+}
+
 private const val MAIN_SNAKE_ID = 0
 private const val AI_SNAKE_ID = 1
 
-class SnakeGameEngine private constructor(
+private class SnakeGameEngineImpl(
     private var gridWidth: Int,
     private var gridHeight: Int,
+    private val boostersSupplier: SnakeBoostersSupplier = SnakeBoostersSupplier.Empty,
     initialLevel: Int? = null,
     initialWalls: List<Wall>? = null,
     initialSnakes: List<Snake>? = null,
     initialApples: MutableMap<Position, Apple>? = null,
     initialScore: Int? = null
-) {
+) : SnakeGameEngine {
     private val initialSnakeLength = INITIAL_SNAKE_LENGTH
     private val appleCount = APPLE_COUNT
 
@@ -60,7 +151,7 @@ class SnakeGameEngine private constructor(
         require(appleCount > 0)
     }
 
-    val model: SnakeGameModel
+    override val model: SnakeGameModel
         get() = SnakeGameModel(
             gridWidth = gridWidth,
             gridHeight = gridHeight,
@@ -86,10 +177,10 @@ class SnakeGameEngine private constructor(
             score = score,
         )
 
-    val events: List<SnakeGameEvent>
+    override val events: List<SnakeGameEvent>
         field = mutableListOf()
 
-    fun step() {
+    override fun step() {
         if (gameIsOver) {
             return
         }
@@ -99,7 +190,7 @@ class SnakeGameEngine private constructor(
         applyPostStepActions()
     }
 
-    fun transposeGrid() {
+    override fun transposeGrid() {
         val tmp = gridWidth
         gridWidth = gridHeight
         gridHeight = tmp
@@ -115,7 +206,7 @@ class SnakeGameEngine private constructor(
         }
     }
 
-    fun setDirection(snakeId: Int = MAIN_SNAKE_ID, newDirection: Direction): Boolean {
+    override fun setDirection(snakeId: Int, newDirection: Direction): Boolean {
         if (gameIsOver) {
             return false
         }
@@ -127,7 +218,7 @@ class SnakeGameEngine private constructor(
         return true
     }
 
-    fun restartFinishedGame(): Boolean {
+    override fun restartFinishedGame(): Boolean {
         if (!gameIsOver) {
             return false
         }
@@ -147,8 +238,8 @@ class SnakeGameEngine private constructor(
             val oldTailPosition = snake.tail.position
             var element = snake.tail
             while (element.next != null) {
-                element.position = element.next.position
-                element = element.next
+                element.position = element.next!!.position
+                element = element.next!!
             }
             val head = element
             head.position = Position(
@@ -196,10 +287,10 @@ class SnakeGameEngine private constructor(
                             grow()
                         } else {
                             val newSnakeLength =
-                                if (snake.length > initialSnakeLength || !isMainSnake(snakeId)) {
+                                if (snake.length > initialSnakeLength) {
                                     initialSnakeLength
                                 } else {
-                                    1
+                                    if (isMainSnake(snakeId)) 1 else snake.length
                                 }
                             shrinkSnake(snake, newSnakeLength)
                             addEvent(snakeId, SnakeGameEvent.BOMB_EATEN)
@@ -223,8 +314,14 @@ class SnakeGameEngine private constructor(
                 }
             }
 
-            if (walls.any { wall -> wall.containsPosition(head.position) }) {
-                if (isMainSnake(snakeId)) {
+            val touchedWalls = walls.filter { wall -> wall.containsPosition(head.position) }
+            if (touchedWalls.isNotEmpty() && isMainSnake(snakeId)) {
+                if (boostersSupplier.consumeWallEatingBooster()) {
+                    grow()
+                    addEvent(snakeId, SnakeGameEvent.WALL_EATEN)
+                    val splittedWalls = touchedWalls.flatMap { wall -> wall.splitBy(head.position) }
+                    walls = walls - touchedWalls.toSet() + splittedWalls
+                } else {
                     gameOver()
                 }
             }
@@ -280,14 +377,39 @@ class SnakeGameEngine private constructor(
             if (snake.omnivorousTicksRemaining > 0) {
                 snake.omnivorousTicksRemaining--
             }
-            if (!isMainSnake(snakeId) && checkCollisionWithSelfOrOtherSnakes(snakeId)) {
+            if (!isMainSnake(snakeId) && !checkCollisionWithSelfOrOtherSnakes(snakeId).isNone) {
                 shrinkSnake(snake, initialSnakeLength)
                 snake.omnivorousTicksRemaining = 0
             }
-            if (isMainSnake(snakeId) &&
-                (snake.length < 2 || checkCollisionWithSelfOrOtherSnakes(snakeId))
-            ) {
-                gameOver()
+            if (isMainSnake(snakeId)) {
+                if (snake.length < 2) {
+                    gameOver()
+                } else {
+                    when (val collision = checkCollisionWithSelfOrOtherSnakes(snakeId)) {
+                        is Collision.Self -> {
+                            gameOver()
+                        }
+
+                        is Collision.Other -> {
+                            if (collision.isHead) {
+                                gameOver()
+                            } else {
+                                if (boostersSupplier.consumeSnakeEatingBooster()) {
+                                    val head = snakes[snakeId].head
+                                    val eatenLength = collision.snakes.sumOf { snake ->
+                                        shrinkSnakeToPosition(snake, head.position)
+                                    }
+                                    addScore(snakeId, eatenLength)
+                                    addEvent(snakeId, SnakeGameEvent.SNAKE_PART_EATEN)
+                                } else {
+                                    gameOver()
+                                }
+                            }
+                        }
+
+                        Collision.None -> Unit
+                    }
+                }
             }
         }
     }
@@ -301,16 +423,23 @@ class SnakeGameEngine private constructor(
         addEvent(MAIN_SNAKE_ID, SnakeGameEvent.GAME_OVER)
     }
 
-    private fun checkCollisionWithSelfOrOtherSnakes(snakeId: Int): Boolean {
+    private fun checkCollisionWithSelfOrOtherSnakes(snakeId: Int): Collision {
         val snake = snakes[snakeId]
-        var snakeHead: SnakeElement = snake.tail
-        while (snakeHead.next != null) {
-            snakeHead = snakeHead.next
+        val snakeHead = snake.head
+        if (isInSnake(snake.tail, snakeHead.position, includeHead = false)) {
+            return Collision.Self
         }
-        return isInSnake(snake.tail, snakeHead.position, includeHead = false) ||
-                snakes
-                    .filterIndexed { id, _ -> id != snakeId }
-                    .any { snake -> isInSnake(snake.tail, snakeHead.position) }
+        val otherSnakes = snakes.filterIndexed { id, _ -> id != snakeId }
+        val touchedSnakes = otherSnakes.filter { snake ->
+            isInSnake(snake.tail, snakeHead.position)
+        }
+        if (touchedSnakes.isNotEmpty()) {
+            return Collision.Other(
+                snakes = touchedSnakes,
+                isHead = touchedSnakes.any { snake -> snake.head.position == snakeHead.position }
+            )
+        }
+        return Collision.None
     }
 
     private fun shrinkSnake(snake: Snake, targetLength: Int) {
@@ -320,6 +449,18 @@ class SnakeGameEngine private constructor(
         }
     }
 
+    private fun shrinkSnakeToPosition(snake: Snake, position: Position): Int {
+        var removedLength = 0
+        var lastTailPosition: Position
+        do {
+            lastTailPosition = snake.tail.position
+            snake.tail = snake.tail.next!!
+            snake.length--
+            removedLength++
+        } while (lastTailPosition != position)
+        return removedLength
+    }
+
     private fun initSnakes(): MutableList<Snake> {
         val direction = if (gridWidth > gridHeight) {
             Direction.DOWN
@@ -327,39 +468,44 @@ class SnakeGameEngine private constructor(
             Direction.RIGHT
         }
         return mutableListOf(
-            Snake(
-                tail = initSnakeElements(direction = direction, offset = 0),
+            initSnake(
                 direction = direction,
-                commitedDirection = direction,
-                length = initialSnakeLength,
-                omnivorousTicksRemaining = 0
+                offset = 0
             ),
-            Snake(
-                tail = initSnakeElements(direction = direction, offset = -4),
+            initSnake(
                 direction = direction,
-                commitedDirection = direction,
-                length = initialSnakeLength,
-                omnivorousTicksRemaining = 0
+                offset = -4
             )
         )
     }
 
-    private fun initSnakeElements(direction: Direction, offset: Int): SnakeElement {
+    private fun initSnake(
+        direction: Direction,
+        offset: Int
+    ): Snake {
         val position = Position(
             x = if (gridWidth > gridHeight) gridWidth / 2 + offset else gridWidth / 2,
             if (gridWidth > gridHeight) gridHeight / 2 else gridHeight / 2 + offset
         )
-        var element = SnakeElement(position)
+        var tail = SnakeElement(position)
+        val head = tail
         repeat(initialSnakeLength - 1) {
-            element = SnakeElement(
+            tail = SnakeElement(
                 position = Position(
-                    x = element.position.x - direction.dx,
-                    y = element.position.y - direction.dy
+                    x = tail.position.x - direction.dx,
+                    y = tail.position.y - direction.dy
                 ),
-                next = element
+                next = tail
             )
         }
-        return element
+        return Snake(
+            head = head,
+            tail = tail,
+            direction = direction,
+            commitedDirection = direction,
+            length = initialSnakeLength,
+            omnivorousTicksRemaining = 0
+        )
     }
 
     private fun initApples(snakes: List<Snake>, walls: List<Wall>): MutableMap<Position, Apple> {
@@ -415,58 +561,15 @@ class SnakeGameEngine private constructor(
         }
         return false
     }
-
-    companion object {
-        fun create(gridWidth: Int, gridHeight: Int): SnakeGameEngine {
-            return SnakeGameEngine(
-                gridWidth = gridWidth,
-                gridHeight = gridHeight
-            )
-        }
-
-        fun restore(model: SnakeGameModel): SnakeGameEngine {
-            fun restoreSnakeElements(iterator: Iterator<Position>): SnakeElement? {
-                if (!iterator.hasNext()) {
-                    return null
-                }
-                return SnakeElement(
-                    position = iterator.next(),
-                    next = restoreSnakeElements(iterator)
-                )
-            }
-
-            val initialSnakes = model.snakes.map { snakeModel ->
-                Snake(
-                    tail = restoreSnakeElements(snakeModel.elements.iterator())!!,
-                    direction = snakeModel.direction,
-                    commitedDirection = snakeModel.direction,
-                    length = snakeModel.length,
-                    omnivorousTicksRemaining = snakeModel.omnivorousTicksRemaining
-                )
-            }
-            val initialApples = mutableMapOf<Position, Apple>()
-            for (apple in model.apples) {
-                initialApples[apple.position] = apple
-            }
-            return SnakeGameEngine(
-                gridWidth = model.gridWidth,
-                gridHeight = model.gridHeight,
-                initialLevel = model.level,
-                initialWalls = model.walls,
-                initialSnakes = initialSnakes,
-                initialApples = initialApples,
-                initialScore = model.score
-            )
-        }
-    }
 }
 
 private class SnakeElement(
     var position: Position,
-    val next: SnakeElement? = null
+    var next: SnakeElement? = null
 )
 
 private class Snake(
+    val head: SnakeElement,
     var tail: SnakeElement,
     var direction: Direction,
     var commitedDirection: Direction,
@@ -483,3 +586,11 @@ private class Snake(
         commitedDirection = commitedDirection.transposed()
     }
 }
+
+private sealed interface Collision {
+    object None : Collision
+    object Self : Collision
+    class Other(val snakes: List<Snake>, val isHead: Boolean) : Collision
+}
+
+private val Collision.isNone get() = this == Collision.None

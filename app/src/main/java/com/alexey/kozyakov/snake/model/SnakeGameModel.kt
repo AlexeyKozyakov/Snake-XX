@@ -114,6 +114,7 @@ enum class AppleType(
 sealed interface Wall {
     fun containsPosition(position: Position): Boolean
     fun transposed(): Wall
+    fun splitBy(position: Position): List<Wall>
 
     class SingleBlock(val position: Position) : Wall {
         override fun containsPosition(position: Position): Boolean {
@@ -122,6 +123,11 @@ sealed interface Wall {
 
         override fun transposed(): Wall {
             return SingleBlock(position.transposed())
+        }
+
+        override fun splitBy(position: Position): List<Wall> {
+            check(containsPosition(position))
+            return emptyList()
         }
 
         companion object {
@@ -143,6 +149,44 @@ sealed interface Wall {
             return HorizontalLine(startPosition.transposed(), endPosition.transposed())
         }
 
+        override fun splitBy(position: Position): List<Wall> {
+            check(containsPosition(position))
+            return when (position) {
+                startPosition -> listOf(
+                    VerticalLine(
+                        startPosition = startPosition.copy(
+                            y = startPosition.y + 1
+                        ),
+                        endPosition = endPosition
+                    )
+                )
+
+                endPosition -> listOf(
+                    VerticalLine(
+                        startPosition = startPosition,
+                        endPosition = endPosition.copy(
+                            y = endPosition.y - 1
+                        )
+                    )
+                )
+
+                else -> listOf(
+                    VerticalLine(
+                        startPosition = startPosition,
+                        endPosition = position.copy(
+                            y = position.y - 1
+                        )
+                    ),
+                    VerticalLine(
+                        startPosition = position.copy(
+                            y = position.y + 1
+                        ),
+                        endPosition = endPosition
+                    )
+                )
+            }
+        }
+
         companion object {
             const val ORDINAL = 1
         }
@@ -160,6 +204,44 @@ sealed interface Wall {
 
         override fun transposed(): Wall {
             return VerticalLine(startPosition.transposed(), endPosition.transposed())
+        }
+
+        override fun splitBy(position: Position): List<Wall> {
+            check(containsPosition(position))
+            return when (position) {
+                startPosition -> listOf(
+                    HorizontalLine(
+                        startPosition = startPosition.copy(
+                            x = startPosition.x + 1
+                        ),
+                        endPosition = endPosition
+                    )
+                )
+
+                endPosition -> listOf(
+                    HorizontalLine(
+                        startPosition = startPosition,
+                        endPosition = endPosition.copy(
+                            x = endPosition.x - 1
+                        )
+                    )
+                )
+
+                else -> listOf(
+                    HorizontalLine(
+                        startPosition = startPosition,
+                        endPosition = position.copy(
+                            x = position.x - 1
+                        )
+                    ),
+                    HorizontalLine(
+                        startPosition = position.copy(
+                            x = position.x + 1
+                        ),
+                        endPosition = endPosition
+                    )
+                )
+            }
         }
 
         companion object {
