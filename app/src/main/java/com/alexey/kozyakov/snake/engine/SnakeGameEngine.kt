@@ -208,6 +208,9 @@ private class SnakeGameEngineImpl(
         if (gameIsOver) {
             return false
         }
+        if (snakeId < 0 || snakeId >= snakes.size) {
+            return false
+        }
         val snake = snakes[snakeId]
         if (newDirection.isOpposite(snake.committedDirection)) {
             return false
