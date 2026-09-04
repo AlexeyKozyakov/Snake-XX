@@ -23,8 +23,7 @@ import kotlin.random.Random
 
 interface SnakeGameEngine {
     val model: SnakeGameModel
-    val events: List<SnakeGameEvent>
-    fun step()
+    fun step(): List<SnakeGameEvent>
     fun transposeGrid()
     fun setDirection(snakeId: Int = MAIN_SNAKE_ID, newDirection: Direction): Boolean
     fun restartFinishedGame(): Boolean
@@ -60,7 +59,7 @@ interface SnakeGameEngine {
                     head = head,
                     tail = tail,
                     direction = snakeModel.direction,
-                    commitedDirection = snakeModel.direction,
+                    committedDirection = snakeModel.direction,
                     length = snakeModel.length,
                     omnivorousTicksRemaining = snakeModel.omnivorousTicksRemaining
                 )
@@ -96,9 +95,8 @@ private object EmptySnakeGameEngine : SnakeGameEngine {
         appleCount = 0,
         score = 0
     )
-    override val events = emptyList<SnakeGameEvent>()
 
-    override fun step() = Unit
+    override fun step() = emptyList<SnakeGameEvent>()
 
     override fun transposeGrid() = Unit
 
@@ -133,6 +131,8 @@ private class SnakeGameEngineImpl(
     private var score = initialScore ?: 0
     private var gameIsOver = false
 
+    private val stepEvents = mutableListOf<SnakeGameEvent>()
+
     private val remainingLengthToGainLevel: Int
         get() {
             val minGridDimension = min(gridWidth, gridHeight)
@@ -166,7 +166,7 @@ private class SnakeGameEngineImpl(
                     type = if (isMainSnake(snakeId)) SnakeType.MAIN else SnakeType.SECONDARY,
                     length = snake.length,
                     omnivorousTicksRemaining = snake.omnivorousTicksRemaining,
-                    direction = snake.commitedDirection
+                    direction = snake.committedDirection
                 )
             },
             gameIsOver = gameIsOver,
@@ -177,17 +177,15 @@ private class SnakeGameEngineImpl(
             score = score,
         )
 
-    override val events: List<SnakeGameEvent>
-        field = mutableListOf()
-
-    override fun step() {
+    override fun step(): List<SnakeGameEvent> {
         if (gameIsOver) {
-            return
+            return emptyList()
         }
-        events.clear()
+        stepEvents.clear()
         snakeAi.step()
         doStep()
         applyPostStepActions()
+        return if (stepEvents.isEmpty()) emptyList() else stepEvents.toMutableList()
     }
 
     override fun transposeGrid() {
@@ -211,7 +209,7 @@ private class SnakeGameEngineImpl(
             return false
         }
         val snake = snakes[snakeId]
-        if (newDirection.isOpposite(snake.commitedDirection)) {
+        if (newDirection.isOpposite(snake.committedDirection)) {
             return false
         }
         snake.direction = newDirection
@@ -222,7 +220,6 @@ private class SnakeGameEngineImpl(
         if (!gameIsOver) {
             return false
         }
-        events.clear()
         level = 0
         score = 0
         walls = levelWalls(level, gridWidth, gridHeight)
@@ -346,7 +343,7 @@ private class SnakeGameEngineImpl(
 
     private fun addEvent(snakeId: Int, event: SnakeGameEvent) {
         if (isMainSnake(snakeId)) {
-            events.add(event)
+            stepEvents.add(event)
         }
     }
 
@@ -373,7 +370,7 @@ private class SnakeGameEngineImpl(
             return
         }
         snakes.forEachIndexed { snakeId, snake ->
-            snake.commitedDirection = snake.direction
+            snake.committedDirection = snake.direction
             if (snake.omnivorousTicksRemaining > 0) {
                 snake.omnivorousTicksRemaining--
             }
@@ -502,7 +499,7 @@ private class SnakeGameEngineImpl(
             head = head,
             tail = tail,
             direction = direction,
-            commitedDirection = direction,
+            committedDirection = direction,
             length = initialSnakeLength,
             omnivorousTicksRemaining = 0
         )
@@ -572,7 +569,7 @@ private class Snake(
     val head: SnakeElement,
     var tail: SnakeElement,
     var direction: Direction,
-    var commitedDirection: Direction,
+    var committedDirection: Direction,
     var length: Int,
     var omnivorousTicksRemaining: Int,
 ) {
@@ -583,7 +580,7 @@ private class Snake(
             element = element.next
         }
         direction = direction.transposed()
-        commitedDirection = commitedDirection.transposed()
+        committedDirection = committedDirection.transposed()
     }
 }
 

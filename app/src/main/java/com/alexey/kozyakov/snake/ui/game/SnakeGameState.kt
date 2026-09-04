@@ -202,11 +202,11 @@ class SnakeGameState(
     }
 
     private fun step() {
-        engine.step()
+        val events = engine.step()
         updateState()
-        soundPlayer.playSoundEffects(engine.events)
-        hapticFeedbackPlayer.playHapticFeedback(engine.events)
-        val balanceDiff = balanceUpdater.update(model, engine.events)
+        soundPlayer.playSoundEffects(events)
+        hapticFeedbackPlayer.playHapticFeedback(events)
+        val balanceDiff = balanceUpdater.update(model, events)
         if (balanceDiff > 0) {
             showAddedBalance(balanceDiff)
         }
