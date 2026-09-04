@@ -143,7 +143,7 @@ private fun SnakeShopScreen(
         Row(
             Modifier
                 .align(Alignment.BottomEnd)
-                .padding(36.dp)
+                .padding(26.dp)
                 .navigationBarsPadding()
                 .background(color = buyButtonColor, shape = CircleShape)
                 .padding(16.dp),
