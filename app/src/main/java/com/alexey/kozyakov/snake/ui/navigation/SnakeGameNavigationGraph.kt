@@ -8,6 +8,7 @@ import androidx.navigation.compose.rememberNavController
 import com.alexey.kozyakov.snake.ui.game.SnakeGameScreen
 import com.alexey.kozyakov.snake.ui.language.SnakeGameLanguageScreen
 import com.alexey.kozyakov.snake.ui.menu.SnakeGameMenuScreen
+import com.alexey.kozyakov.snake.ui.reference.SnakeGameReferenceScreen
 import com.alexey.kozyakov.snake.ui.settings.SnakeGameSettingsScreen
 import com.alexey.kozyakov.snake.ui.shop.SnakeShopScreen
 
@@ -29,6 +30,9 @@ fun SnakeGameNavigationGraph(modifier: Modifier = Modifier) {
                 },
                 navigateToShopScreen = {
                     navController.navigate(SnakeGameDestination.ShopScreen)
+                },
+                navigateToReference = {
+                    navController.navigate(SnakeGameDestination.ReferenceScreen)
                 }
             )
         }
@@ -56,6 +60,13 @@ fun SnakeGameNavigationGraph(modifier: Modifier = Modifier) {
 
         composable<SnakeGameDestination.ShopScreen> {
             SnakeShopScreen(
+                modifier,
+                navigateBack = navController::popBackStack
+            )
+        }
+
+        composable<SnakeGameDestination.ReferenceScreen> {
+            SnakeGameReferenceScreen(
                 modifier,
                 navigateBack = navController::popBackStack
             )

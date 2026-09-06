@@ -29,7 +29,8 @@ fun SnakeGameMenuScreen(
     modifier: Modifier = Modifier,
     navigateToGameScreen: () -> Unit,
     navigateToSettingsScreen: () -> Unit,
-    navigateToShopScreen: () -> Unit
+    navigateToShopScreen: () -> Unit,
+    navigateToReference: () -> Unit
 ) {
     val state = retainSnakeGameMenuState()
     SnakeGameMenuScreen(
@@ -43,7 +44,8 @@ fun SnakeGameMenuScreen(
         },
         onContinueClick = navigateToGameScreen,
         onSettingsClick = navigateToSettingsScreen,
-        onShopClick = navigateToShopScreen
+        onShopClick = navigateToShopScreen,
+        onReferenceClick = navigateToReference
     )
 }
 
@@ -57,7 +59,8 @@ private fun SnakeGameMenuScreen(
     onNewGameClick: () -> Unit,
     onContinueClick: () -> Unit,
     onSettingsClick: () -> Unit,
-    onShopClick: () -> Unit
+    onShopClick: () -> Unit,
+    onReferenceClick: () -> Unit
 ) {
     SnakeGameMenuContainer(modifier) {
         Text(
@@ -145,10 +148,17 @@ private fun SnakeGameMenuScreen(
             onClick = onShopClick
         )
         SnakeGameMenuTextItem(
-            Modifier.fillMaxColumnWidth(),
+            Modifier.padding(bottom = 24.dp).fillMaxColumnWidth(),
             primaryText = stringResource(R.string.open_settings),
             primaryTextSize = 42.sp,
             onClick = onSettingsClick
+        )
+        SnakeGameMenuTextItem(
+            Modifier.fillMaxColumnWidth(),
+            primaryText = stringResource(R.string.open_reference),
+            secondaryText = stringResource(R.string.how_to_play),
+            primaryTextSize = 42.sp,
+            onClick = onReferenceClick
         )
     }
 }
@@ -163,6 +173,7 @@ private fun Preview() {
         onNewGameClick = { },
         onContinueClick = { },
         onSettingsClick = { },
-        onShopClick = { }
+        onShopClick = { },
+        onReferenceClick = { }
     )
 }

@@ -289,8 +289,6 @@ class SnakeGameState(
         }
     }
 
-    // TODO(справка):
-    //  1. Добавить экран со справкой по приложению с описанием цели игры и бонусов
     private fun showConsumedBooster(booster: SnakeBooster, remaining: Int) {
         consumedBoosterHideJob?.cancel()
         consumedBoosterAndRemainingCount = booster to remaining
