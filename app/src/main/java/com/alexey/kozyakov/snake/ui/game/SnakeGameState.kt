@@ -86,8 +86,8 @@ class SnakeGameState(
     }
     private val showTime = 300.milliseconds
     private val longShowTime = 500.milliseconds
-
     private val resizeDebounce = 50.milliseconds
+
     private var balanceHideJob: Job? = null
     private var resizeJob: Job? = null
     private var consumedBoosterHideJob: Job? = null

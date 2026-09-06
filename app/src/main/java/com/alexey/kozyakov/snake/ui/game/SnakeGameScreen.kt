@@ -64,13 +64,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import com.alexey.kozyakov.R
-import com.alexey.kozyakov.snake.config.MIN_MAIN_GRID_DIMENSION
 import com.alexey.kozyakov.snake.model.Direction
 import com.alexey.kozyakov.snake.storage.boosters.SnakeBooster
-import kotlin.math.max
 
 private val pressedButtonColor = Color(0xFFD32C2C)
-private val goldColor = Color(0xFFECCA32)
+private val addedBalanceColor = Color(0xFFECCA32)
 private val backgroundColor = Color(0xFF204821)
 private val gameOverButtonsColor = Color(0xFF3661FE)
 private val borderColor = Color(0xFFFFE000)
@@ -209,7 +207,7 @@ private fun BoxScope.BalanceDisplay(
         ) {
             Text(
                 text = "+$addedBalanceAmount",
-                color = goldColor,
+                color = addedBalanceColor,
                 fontFamily = FontFamily.Monospace,
                 fontSize = 16.sp,
             )
@@ -566,16 +564,4 @@ private fun BoxScope.DirectionButton(
             },
         colorFilter = ColorFilter.tint(if (pressed) pressedButtonColor else Color.White)
     )
-}
-
-private fun calculateGridDimensions(widthPx: Int, heightPx: Int): Pair<Int, Int> {
-    val gcd = widthPx.toBigInteger().gcd(heightPx.toBigInteger()).toInt()
-    val mainDimensionSizePx = max(widthPx, heightPx)
-    var cellSize = gcd
-    while (mainDimensionSizePx / cellSize < MIN_MAIN_GRID_DIMENSION && cellSize % 2 == 0) {
-        cellSize /= 2
-    }
-    val gridWidth = widthPx / cellSize
-    val gridHeight = heightPx / cellSize
-    return gridWidth to gridHeight
 }
