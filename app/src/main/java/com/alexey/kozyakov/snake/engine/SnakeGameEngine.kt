@@ -203,8 +203,8 @@ private class SnakeGameEngineImpl(
         }
         val oldApples = apples.values.toList()
         apples.clear()
-        for (apple in oldApples) {
-            apple.transpose()
+        for (oldApple in oldApples) {
+            val apple = oldApple.transposed()
             apples[apple.position] = apple
         }
     }
@@ -340,10 +340,14 @@ private class SnakeGameEngineImpl(
             initNewApple(apples, snakes, walls)
         }
         if (goldAppleEaten) {
-            apples.values.forEach { apple ->
-                if (!apple.type.isGoodOrBonus) {
-                    apple.type = randomGoodAppleType()
-                }
+            val badApples = apples.values.filter { apple ->
+                !apple.type.isGoodOrBonus
+            }
+            badApples.forEach { apple ->
+                apples[apple.position] = Apple(
+                    position = apple.position,
+                    type = randomGoodAppleType()
+                )
             }
         }
     }

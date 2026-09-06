@@ -57,11 +57,14 @@ enum class Direction(val dx: Int, val dy: Int) {
 }
 
 class Apple(
-    var position: Position,
-    var type: AppleType
+    val position: Position,
+    val type: AppleType
 ) {
-    fun transpose() {
-        position = position.transposed()
+    fun transposed(): Apple {
+        return Apple(
+            position = position.transposed(),
+            type = type
+        )
     }
 }
 
