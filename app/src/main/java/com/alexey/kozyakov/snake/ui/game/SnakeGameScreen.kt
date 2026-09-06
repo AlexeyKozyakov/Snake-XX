@@ -45,11 +45,13 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -64,14 +66,17 @@ import androidx.lifecycle.compose.LifecycleResumeEffect
 import com.alexey.kozyakov.R
 import com.alexey.kozyakov.snake.config.MIN_MAIN_GRID_DIMENSION
 import com.alexey.kozyakov.snake.model.Direction
+import com.alexey.kozyakov.snake.storage.boosters.SnakeBooster
 import kotlin.math.max
 
 private val pressedButtonColor = Color(0xFFD32C2C)
 private val goldColor = Color(0xFFECCA32)
-private val gameOverBackgroundColor = Color(0xFF204821)
+private val backgroundColor = Color(0xFF204821)
 private val gameOverButtonsColor = Color(0xFF3661FE)
-private val gameOverBorderColor = Color(0xFFFFE000)
-private val gameOverSecondBorderColor = Color(0xFFFFA040)
+private val borderColor = Color(0xFFFFE000)
+private val secondBorderColor = Color(0xFFFFA040)
+
+private const val FADE_OUT_ANIMATION_DURATION = 700
 
 @Composable
 fun SnakeGameScreen(modifier: Modifier = Modifier) {
@@ -125,6 +130,11 @@ fun SnakeGameScreen(modifier: Modifier = Modifier) {
                 onContinueClick = state::continueFinishedGame
             )
         }
+
+        ConsumedBooster(
+            visible = state.consumedBoosterVisible,
+            boosterAndRemainingCount = state.consumedBoosterAndRemainingCount,
+        )
 
         LevelAndConfirmation(
             showLevel = state.showLevel,
@@ -195,7 +205,7 @@ private fun BoxScope.BalanceDisplay(
         AnimatedVisibility(
             visible = addedBalanceVisible,
             enter = EnterTransition.None,
-            exit = fadeOut(animationSpec = tween(durationMillis = 700)),
+            exit = fadeOut(animationSpec = tween(durationMillis = FADE_OUT_ANIMATION_DURATION)),
         ) {
             Text(
                 text = "+$addedBalanceAmount",
@@ -258,17 +268,17 @@ private fun BoxScope.GameOver(
         modifier
             .align(Alignment.Center)
             .background(
-                color = gameOverBackgroundColor,
+                color = backgroundColor,
                 shape = RoundedCornerShape(36.dp)
             )
             .border(
                 width = 1.dp,
-                color = gameOverSecondBorderColor,
+                color = secondBorderColor,
                 shape = RoundedCornerShape(36.dp)
             )
             .border(
                 width = 4.dp,
-                color = gameOverBorderColor,
+                color = borderColor,
                 shape = RoundedCornerShape(36.dp)
             )
             .padding(16.dp)
@@ -300,7 +310,8 @@ private fun BoxScope.GameOver(
             fontFamily = FontFamily.Monospace,
         )
         Spacer(Modifier.size(8.dp))
-        val isPortrait = LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT
+        val isPortrait =
+            LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxWidth(fraction = if (isPortrait) 0.8f else 0.4f),
@@ -360,6 +371,61 @@ private fun BoxScope.GameOver(
 }
 
 @Composable
+private fun BoxScope.ConsumedBooster(
+    visible: Boolean,
+    boosterAndRemainingCount: Pair<SnakeBooster, Int>?,
+    modifier: Modifier = Modifier
+) {
+    val wallsEatingBitmap = ImageBitmap.imageResource(R.drawable.booster_eat_walls)
+    val snakeEatingBitmap = ImageBitmap.imageResource(R.drawable.booster_eat_snake)
+    AnimatedVisibility(
+        visible = visible,
+        enter = EnterTransition.None,
+        exit = fadeOut(animationSpec = tween(durationMillis = FADE_OUT_ANIMATION_DURATION)),
+        modifier = modifier.align(Alignment.Center)
+    ) {
+        boosterAndRemainingCount?.let { (booster, remaining) ->
+            Column(
+                Modifier
+                    .align(Alignment.Center)
+                    .background(
+                        color = backgroundColor,
+                        shape = RoundedCornerShape(36.dp)
+                    )
+                    .border(
+                        width = 1.dp,
+                        color = secondBorderColor,
+                        shape = RoundedCornerShape(36.dp)
+                    )
+                    .border(
+                        width = 4.dp,
+                        color = borderColor,
+                        shape = RoundedCornerShape(36.dp)
+                    )
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.Center
+            ) {
+                Image(
+                    bitmap = when (booster) {
+                        SnakeBooster.WALLS_EATING -> wallsEatingBitmap
+                        SnakeBooster.SNAKE_EATING -> snakeEatingBitmap
+                    },
+                    contentDescription = null,
+                    Modifier.size(150.dp)
+                )
+                Text(
+                    text = stringResource(R.string.booster_remaining_count, remaining),
+                    color = Color.White,
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Medium,
+                    fontFamily = FontFamily.Monospace
+                )
+            }
+        }
+    }
+}
+
+@Composable
 private fun BoxScope.LevelAndConfirmation(
     showLevel: Boolean,
     level: Int,
@@ -371,7 +437,7 @@ private fun BoxScope.LevelAndConfirmation(
             showLevel,
             Modifier.align(Alignment.CenterHorizontally),
             enter = EnterTransition.None,
-            exit = fadeOut(animationSpec = tween(durationMillis = 700))
+            exit = fadeOut(animationSpec = tween(durationMillis = FADE_OUT_ANIMATION_DURATION))
         ) {
             Text(
                 text = stringResource(R.string.level, level + 1),

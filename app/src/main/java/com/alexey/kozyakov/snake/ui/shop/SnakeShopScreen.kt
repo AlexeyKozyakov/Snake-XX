@@ -46,7 +46,7 @@ import com.alexey.kozyakov.R
 private val itemBackgroundColor = Color(0xFF204821)
 private val selectedItemBorderColor = Color(0xFFFFF216)
 private val separatorColor = Color(0xFF547C54)
-private val buyButtonColor = Color(0xFF3661FE)
+private val blueColor = Color(0xFF3661FE)
 
 @Composable
 fun SnakeShopScreen(
@@ -106,7 +106,7 @@ private fun SnakeShopScreen(
                             },
                             text = stringResource(category.nameResId),
                             color = Color.White,
-                            fontSize = 42.sp,
+                            fontSize = 38.sp,
                             fontWeight = FontWeight.Bold,
                             fontFamily = FontFamily.Monospace,
                             textAlign = TextAlign.Center
@@ -131,7 +131,11 @@ private fun SnakeShopScreen(
                     }
                 }
                 item(span = { GridItemSpan(maxLineSpan) }) {
-                    Spacer(Modifier.padding(48.dp).navigationBarsPadding())
+                    Spacer(
+                        Modifier
+                            .padding(48.dp)
+                            .navigationBarsPadding()
+                    )
                 }
             }
         }
@@ -152,7 +156,7 @@ private fun SnakeShopScreen(
                 .padding(26.dp)
                 .navigationBarsPadding()
                 .clip(CircleShape)
-                .background(color = buyButtonColor)
+                .background(color = blueColor)
                 .combinedClickable(
                     enabled = balanceLongClickEnabled,
                     onClick = { },
@@ -208,15 +212,33 @@ private fun ShopItem(
             )
             .padding(12.dp)
     ) {
-        Text(
-            modifier = Modifier.align(Alignment.CenterHorizontally),
-            text = stringResource(item.nameResId),
-            color = Color.White,
-            fontSize = 28.sp,
-            fontStyle = FontStyle.Normal,
-            fontFamily = FontFamily.Monospace,
-            fontWeight = FontWeight.Medium
-        )
+        Row(
+            Modifier.align(Alignment.CenterHorizontally),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = stringResource(item.nameResId),
+                color = Color.White,
+                fontSize = 28.sp,
+                fontStyle = FontStyle.Normal,
+                fontFamily = FontFamily.Monospace,
+                fontWeight = FontWeight.Medium
+            )
+            if (item.count != null) {
+                Spacer(Modifier.size(8.dp))
+                Text(
+                    text = item.count.toString(),
+                    color = Color.White,
+                    fontSize = 18.sp,
+                    fontStyle = FontStyle.Normal,
+                    fontFamily = FontFamily.Monospace,
+                    fontWeight = FontWeight.Normal,
+                    modifier = Modifier
+                        .background(blueColor, shape = CircleShape)
+                        .padding(vertical = 6.dp, horizontal = 12.dp)
+                )
+            }
+        }
         Spacer(Modifier.size(16.dp))
         Row {
             Image(
@@ -273,13 +295,19 @@ private fun BuyButton(
         modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(18.dp))
-            .background(color = buyButtonColor)
+            .background(color = blueColor)
             .clickable(
                 enabled = purchaseState == PurchaseState.CAN_BUY,
                 onClick = onClick
             )
             .alpha(
-                if (purchaseState == PurchaseState.BOUGHT) 0.35f else 1.0f
+                if (purchaseState == PurchaseState.BOUGHT ||
+                    purchaseState == PurchaseState.CANNOT_BUY_MORE
+                ) {
+                    0.35f
+                } else {
+                    1.0f
+                }
             )
             .padding(12.dp)
             .padding(horizontal = 8.dp),
@@ -303,7 +331,9 @@ private fun BuyButton(
             Image(
                 painter = painterResource(R.drawable.coin),
                 contentDescription = null,
-                Modifier.size(20.dp).align(Alignment.CenterVertically)
+                Modifier
+                    .size(20.dp)
+                    .align(Alignment.CenterVertically)
             )
         }
     }

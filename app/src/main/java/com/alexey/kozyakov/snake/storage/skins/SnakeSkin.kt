@@ -1,11 +1,12 @@
 package com.alexey.kozyakov.snake.storage.skins
 
+import androidx.annotation.DrawableRes
 import com.alexey.kozyakov.R
 
 enum class SnakeSkin(
-    val headResId: Int,
-    val headXXResId: Int,
-    val bodyResId: Int,
+    @DrawableRes val headResId: Int,
+    @DrawableRes val headXXResId: Int,
+    @DrawableRes val bodyResId: Int,
 ) {
     DEFAULT(
         headResId = R.drawable.snake_head_default,

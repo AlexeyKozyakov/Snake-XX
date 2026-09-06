@@ -84,10 +84,13 @@ class SnakeGameState(
                 BOOST_PER_LEVEL.pow(level) /
                 (if (boost) BOOST_BY_BUTTON else 1.0)
     }
+    private val showTime = 300.milliseconds
+    private val longShowTime = 500.milliseconds
 
     private val resizeDebounce = 50.milliseconds
     private var balanceHideJob: Job? = null
     private var resizeJob: Job? = null
+    private var consumedBoosterHideJob: Job? = null
     private var resumed by mutableStateOf(true)
 
     var model by mutableStateOf(engine.model)
@@ -98,7 +101,13 @@ class SnakeGameState(
     var showLevel by mutableStateOf(true)
         private set
     var addedBalanceAmount by mutableIntStateOf(0)
+        private set
     var addedBalanceVisible by mutableStateOf(false)
+        private set
+    var consumedBoosterAndRemainingCount by mutableStateOf<Pair<SnakeBooster, Int>?>(null)
+        private set
+    var consumedBoosterVisible by mutableStateOf(false)
+        private set
 
     val highScore by highScoreRepository
         .observe()
@@ -263,7 +272,7 @@ class SnakeGameState(
         showLevel = true
         if (!needsConfirmationToRun) {
             stateHolderScope.launch {
-                delay(300.milliseconds)
+                delay(showTime)
                 showLevel = false
             }
         }
@@ -274,21 +283,23 @@ class SnakeGameState(
         addedBalanceAmount = amount
         addedBalanceVisible = true
         balanceHideJob = stateHolderScope.launch {
-            delay(300.milliseconds)
+            delay(showTime)
             addedBalanceVisible = false
             balanceHideJob = null
         }
     }
 
-    // TODO(boosters):
-    //  1. Добавить/поменять картинки для бустеров
-    //  2. Показывать картинку и оставшееся количество при использовании
-    //  3. Добавить товары бустеров с описанием в магазин
-    //  4. Доработать логику магазина для покупки бустеров
     // TODO(справка):
     //  1. Добавить экран со справкой по приложению с описанием цели игры и бонусов
     private fun showConsumedBooster(booster: SnakeBooster, remaining: Int) {
-        TODO("$booster $remaining")
+        consumedBoosterHideJob?.cancel()
+        consumedBoosterAndRemainingCount = booster to remaining
+        consumedBoosterVisible = true
+        consumedBoosterHideJob = stateHolderScope.launch {
+            delay(longShowTime)
+            consumedBoosterVisible = false
+            consumedBoosterHideJob = null
+        }
     }
 }
 

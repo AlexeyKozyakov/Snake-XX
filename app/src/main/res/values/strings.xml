@@ -35,7 +35,13 @@
     <string name="upgrade_description_coins_for_levels">get more and more coins for each passed level</string>
     <string name="offer_group_skins">Skins</string>
     <string name="offer_group_upgrades">Upgrades</string>
+    <string name="offer_group_boosters">Boosters</string>
     <string name="purchased">purchased</string>
     <string name="continue_button">continue %1$d</string>
     <string name="restart_button">retry</string>
+    <string name="booster_name_walls_eating">eat the wall</string>
+    <string name="booster_name_snake_eating">eat the snake</string>
+    <string name="booster_description_walls_eating">eat the wall and grow like if you eat an apple</string>
+    <string name="booster_description_snake_eating">eat the body of the second snake and earn points for the eaten length</string>
+    <string name="booster_remaining_count">remaining: %1$d</string>
 </resources>

@@ -26,5 +26,11 @@ class PurchasedSnakeBoosterRepository(private val preferencesDataStore: DataStor
         }
     }
 
+    suspend fun update(booster: SnakeBooster, calculation: (count: Int) -> Int) {
+        preferencesDataStore.edit { preferences ->
+            preferences[booster.countKey] = calculation(preferences[booster.countKey] ?: 0)
+        }
+    }
+
     private val SnakeBooster.countKey get() = intPreferencesKey("${name}_booster_count")
 }

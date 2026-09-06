@@ -154,7 +154,7 @@ sealed interface Wall {
             check(containsPosition(position))
             return when (position) {
                 startPosition -> listOf(
-                    VerticalLine(
+                    verticalLineOrBlock(
                         startPosition = startPosition.copy(
                             y = startPosition.y + 1
                         ),
@@ -163,7 +163,7 @@ sealed interface Wall {
                 )
 
                 endPosition -> listOf(
-                    VerticalLine(
+                    verticalLineOrBlock(
                         startPosition = startPosition,
                         endPosition = endPosition.copy(
                             y = endPosition.y - 1
@@ -172,13 +172,13 @@ sealed interface Wall {
                 )
 
                 else -> listOf(
-                    VerticalLine(
+                    verticalLineOrBlock(
                         startPosition = startPosition,
                         endPosition = position.copy(
                             y = position.y - 1
                         )
                     ),
-                    VerticalLine(
+                    verticalLineOrBlock(
                         startPosition = position.copy(
                             y = position.y + 1
                         ),
@@ -211,7 +211,7 @@ sealed interface Wall {
             check(containsPosition(position))
             return when (position) {
                 startPosition -> listOf(
-                    HorizontalLine(
+                    horizontalLineOrBlock(
                         startPosition = startPosition.copy(
                             x = startPosition.x + 1
                         ),
@@ -220,7 +220,7 @@ sealed interface Wall {
                 )
 
                 endPosition -> listOf(
-                    HorizontalLine(
+                    horizontalLineOrBlock(
                         startPosition = startPosition,
                         endPosition = endPosition.copy(
                             x = endPosition.x - 1
@@ -229,13 +229,13 @@ sealed interface Wall {
                 )
 
                 else -> listOf(
-                    HorizontalLine(
+                    horizontalLineOrBlock(
                         startPosition = startPosition,
                         endPosition = position.copy(
                             x = position.x - 1
                         )
                     ),
-                    HorizontalLine(
+                    horizontalLineOrBlock(
                         startPosition = position.copy(
                             x = position.x + 1
                         ),
@@ -248,5 +248,21 @@ sealed interface Wall {
         companion object {
             const val ORDINAL = 2
         }
+    }
+}
+
+private fun horizontalLineOrBlock(startPosition: Position, endPosition: Position): Wall {
+    return if (startPosition == endPosition) {
+        Wall.SingleBlock(startPosition)
+    } else {
+        Wall.HorizontalLine(startPosition, endPosition)
+    }
+}
+
+private fun verticalLineOrBlock(startPosition: Position, endPosition: Position): Wall {
+    return if (startPosition == endPosition) {
+        Wall.SingleBlock(startPosition)
+    } else {
+        Wall.VerticalLine(startPosition, endPosition)
     }
 }

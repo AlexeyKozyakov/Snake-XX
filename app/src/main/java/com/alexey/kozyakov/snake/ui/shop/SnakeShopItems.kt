@@ -1,8 +1,12 @@
 package com.alexey.kozyakov.snake.ui.shop
 
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
+
 enum class PurchaseState {
     CAN_BUY,
     CANNOT_BUY,
+    CANNOT_BUY_MORE,
     BOUGHT
 }
 
@@ -15,14 +19,15 @@ enum class SelectionState {
 data class SnakeShopItem(
     val offerId: Int,
     val price: Int,
-    val iconResId: Int,
-    val nameResId: Int,
-    val descriptionResId: Int?,
+    val count: Int?,
+    @DrawableRes val iconResId: Int,
+    @StringRes val nameResId: Int,
+    @StringRes val descriptionResId: Int?,
     val purchaseState: PurchaseState,
     val selectionState: SelectionState
 )
 
 data class SnakeShopCategory(
-    val nameResId: Int,
+    @StringRes val nameResId: Int,
     val items: List<SnakeShopItem>
 )

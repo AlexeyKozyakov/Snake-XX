@@ -1,21 +1,25 @@
 package com.alexey.kozyakov.snake.storage.shop
 
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import com.alexey.kozyakov.R
+import com.alexey.kozyakov.snake.storage.boosters.SnakeBooster
 import com.alexey.kozyakov.snake.storage.skins.SnakeSkin
 import com.alexey.kozyakov.snake.storage.upgrade.SnakeUpgrade
 
-enum class OfferType(val groupNameResId: Int) {
+enum class OfferType(@StringRes val groupNameResId: Int) {
     SKIN(groupNameResId = R.string.offer_group_skins),
-    UPGRADE(groupNameResId = R.string.offer_group_upgrades)
+    UPGRADE(groupNameResId = R.string.offer_group_upgrades),
+    BOOSTER(groupNameResId = R.string.offer_group_boosters)
 }
 
 enum class Offer(
     val type: OfferType,
     val price: Int,
     val productId: Int,
-    val iconResId: Int,
-    val nameResId: Int,
-    val descriptionResId: Int?
+    @DrawableRes val iconResId: Int,
+    @StringRes val nameResId: Int,
+    @StringRes val descriptionResId: Int?
 ) {
     UPGRADE_COINS_FOR_APPLES(
         type = OfferType.UPGRADE,
@@ -80,5 +84,21 @@ enum class Offer(
         iconResId = SnakeSkin.KING.headResId,
         nameResId = R.string.skin_king,
         descriptionResId = null
+    ),
+    BOOSTER_WALLS_EATING(
+        type = OfferType.BOOSTER,
+        price = 50,
+        productId = SnakeBooster.WALLS_EATING.ordinal,
+        iconResId = R.drawable.booster_eat_walls,
+        nameResId = R.string.booster_name_walls_eating,
+        descriptionResId = R.string.booster_description_walls_eating
+    ),
+    BOOSTER_SNAKE_EATING(
+        type = OfferType.BOOSTER,
+        price = 100,
+        productId = SnakeBooster.SNAKE_EATING.ordinal,
+        iconResId = R.drawable.booster_eat_snake,
+        nameResId = R.string.booster_name_snake_eating,
+        descriptionResId = R.string.booster_description_snake_eating
     )
 }

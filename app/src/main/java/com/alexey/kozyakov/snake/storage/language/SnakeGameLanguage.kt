@@ -1,10 +1,11 @@
 package com.alexey.kozyakov.snake.storage.language
 
+import androidx.annotation.StringRes
 import com.alexey.kozyakov.R
 
 enum class SnakeGameLanguage(
     val code: String,
-    val nameResId: Int
+    @StringRes val nameResId: Int
 ) {
     SYSTEM(
         code = "",
