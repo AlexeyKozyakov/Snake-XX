@@ -1,5 +1,6 @@
 package com.alexey.kozyakov.snake.ui.game
 
+import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.core.tween
@@ -7,21 +8,25 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.waitForUpOrCancellation
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
@@ -37,17 +42,21 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -59,6 +68,10 @@ import kotlin.math.max
 
 private val pressedButtonColor = Color(0xFFD32C2C)
 private val goldColor = Color(0xFFECCA32)
+private val gameOverBackgroundColor = Color(0xFF204821)
+private val gameOverButtonsColor = Color(0xFF3661FE)
+private val gameOverBorderColor = Color(0xFFFFE000)
+private val gameOverSecondBorderColor = Color(0xFFFFA040)
 
 @Composable
 fun SnakeGameScreen(modifier: Modifier = Modifier) {
@@ -86,10 +99,7 @@ fun SnakeGameScreen(modifier: Modifier = Modifier) {
                     calculateGridDimensions(size.width, size.height)
                 state.resize(gridWidth, gridHeight)
             },
-            onClick = {
-                state.restartFinishedGame()
-                state.confirmRunning()
-            },
+            onClick = state::confirmRunning,
             onDraw = {
                 renderer.renderSnakeGame(state.model)
             }
@@ -106,7 +116,14 @@ fun SnakeGameScreen(modifier: Modifier = Modifier) {
         Score(state.score)
 
         if (state.gameIsOver) {
-            GameOver(state.score, state.highScore)
+            GameOver(
+                score = state.score,
+                highScore = state.highScore,
+                canContinue = state.canContinue,
+                continuePrice = state.continuePrice,
+                onRestartClick = state::restartFinishedGame,
+                onContinueClick = state::continueFinishedGame
+            )
         }
 
         LevelAndConfirmation(
@@ -231,15 +248,37 @@ private fun BoxScope.Score(
 private fun BoxScope.GameOver(
     score: Int,
     highScore: Int,
+    canContinue: Boolean,
+    continuePrice: Int,
+    onRestartClick: () -> Unit,
+    onContinueClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier.align(Alignment.Center)) {
+    Column(
+        modifier
+            .align(Alignment.Center)
+            .background(
+                color = gameOverBackgroundColor,
+                shape = RoundedCornerShape(36.dp)
+            )
+            .border(
+                width = 1.dp,
+                color = gameOverSecondBorderColor,
+                shape = RoundedCornerShape(36.dp)
+            )
+            .border(
+                width = 4.dp,
+                color = gameOverBorderColor,
+                shape = RoundedCornerShape(36.dp)
+            )
+            .padding(16.dp)
+    ) {
         Text(
             modifier = Modifier.align(Alignment.CenterHorizontally),
             text = stringResource(R.string.game_over),
             color = Color.White,
-            fontSize = 42.sp,
-            fontWeight = FontWeight.Bold,
+            fontSize = 36.sp,
+            fontWeight = FontWeight.Medium,
             fontFamily = FontFamily.Monospace,
         )
         Spacer(Modifier.size(8.dp))
@@ -247,7 +286,7 @@ private fun BoxScope.GameOver(
             modifier = Modifier.align(Alignment.CenterHorizontally),
             text = stringResource(R.string.score, score),
             color = Color.White,
-            fontSize = 32.sp,
+            fontSize = 24.sp,
             fontWeight = FontWeight.Medium,
             fontFamily = FontFamily.Monospace,
         )
@@ -256,10 +295,67 @@ private fun BoxScope.GameOver(
             modifier = Modifier.align(Alignment.CenterHorizontally),
             text = stringResource(R.string.high_score, highScore),
             color = Color.White,
-            fontSize = 32.sp,
+            fontSize = 24.sp,
             fontWeight = FontWeight.Medium,
             fontFamily = FontFamily.Monospace,
         )
+        Spacer(Modifier.size(8.dp))
+        val isPortrait = LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxWidth(fraction = if (isPortrait) 0.8f else 0.4f),
+        ) {
+            Row(
+                Modifier
+                    .padding(12.dp)
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(18.dp))
+                    .clickable(
+                        enabled = canContinue,
+                        onClick = onContinueClick
+                    )
+                    .background(color = gameOverButtonsColor)
+                    .alpha(if (canContinue) 1.0f else 0.3f)
+                    .padding(12.dp),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = stringResource(R.string.continue_button, continuePrice),
+                    color = Color.White,
+                    fontSize = 18.sp,
+                    fontStyle = FontStyle.Normal,
+                    fontFamily = FontFamily.Monospace,
+                    fontWeight = FontWeight.Normal
+                )
+                Spacer(Modifier.size(8.dp))
+                Image(
+                    painter = painterResource(R.drawable.coin),
+                    contentDescription = null,
+                    Modifier
+                        .size(22.dp)
+                        .align(Alignment.CenterVertically)
+                )
+            }
+            Text(
+                modifier = Modifier
+                    .padding(12.dp)
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(18.dp))
+                    .clickable(
+                        enabled = true,
+                        onClick = onRestartClick
+                    )
+                    .background(color = gameOverButtonsColor)
+                    .padding(12.dp),
+                text = stringResource(R.string.restart_button),
+                color = Color.White,
+                fontSize = 18.sp,
+                fontStyle = FontStyle.Normal,
+                fontFamily = FontFamily.Monospace,
+                fontWeight = FontWeight.Normal,
+                textAlign = TextAlign.Center
+            )
+        }
     }
 }
 

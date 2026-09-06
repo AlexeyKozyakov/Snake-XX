@@ -15,7 +15,7 @@ import java.io.DataInputStream
 import java.io.DataOutputStream
 import java.io.File
 
-private const val VERSION = 1
+private const val VERSION = 2
 
 class SnakeGameModelFileSaver(context: Context) {
     private val saveFile = File(context.filesDir, "snake_game.save")
@@ -73,6 +73,7 @@ class SnakeGameModelFileSaver(context: Context) {
                         }
                     }
                 }
+                writeInt(model.continueCount)
             }
         }
     }
@@ -84,7 +85,7 @@ class SnakeGameModelFileSaver(context: Context) {
             try {
                 DataInputStream(saveFile.inputStream()).use { dataInputStream ->
                     with(dataInputStream) {
-                        readInt() // VERSION
+                        val version = readInt()
                         val gridWidth = readInt()
                         val gridHeight = readInt()
                         val level = readInt()
@@ -149,6 +150,7 @@ class SnakeGameModelFileSaver(context: Context) {
                                 else -> throw IllegalStateException("Unsupported wall type: $ordinal")
                             }
                         }
+                        val continueCount = if (version >= 2) readInt() else 0
                         SnakeGameModel(
                             gridWidth = gridWidth,
                             gridHeight = gridHeight,
@@ -159,7 +161,8 @@ class SnakeGameModelFileSaver(context: Context) {
                             level = level,
                             remainingLengthToGainLevel = 0,
                             appleCount = appleCount,
-                            score = score
+                            score = score,
+                            continueCount = continueCount
                         )
                     }
                 }

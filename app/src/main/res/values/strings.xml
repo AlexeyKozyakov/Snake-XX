@@ -1,9 +1,9 @@
 <resources>
     <string name="app_name">Snake XX</string>
     <string name="remaining_length">remaining %1$d</string>
-    <string name="score">score %1$d</string>
-    <string name="game_over">Game Over</string>
-    <string name="high_score">high score %1$d</string>
+    <string name="score">score: %1$d</string>
+    <string name="game_over">game over</string>
+    <string name="high_score">high score: %1$d</string>
     <string name="level">Level %1$d</string>
     <string name="boost_button">boost</string>
     <string name="confirmation">tap to continue</string>
@@ -36,4 +36,6 @@
     <string name="offer_group_skins">Skins</string>
     <string name="offer_group_upgrades">Upgrades</string>
     <string name="purchased">purchased</string>
+    <string name="continue_button">continue %1$d</string>
+    <string name="restart_button">retry</string>
 </resources>

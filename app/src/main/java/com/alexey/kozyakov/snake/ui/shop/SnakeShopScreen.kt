@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,6 +30,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
@@ -56,9 +58,11 @@ fun SnakeShopScreen(
         modifier,
         categories = state.categories,
         balance = state.balance,
+        balanceLongClickEnabled = state.canAddBalance,
         onBackClick = navigateBack,
         onBuyClick = state::buy,
-        onSelectClick = state::select
+        onSelectClick = state::select,
+        onBalanceLongClick = state::addBalance
     )
 }
 
@@ -67,9 +71,11 @@ private fun SnakeShopScreen(
     modifier: Modifier = Modifier,
     categories: List<SnakeShopCategory>,
     balance: Int,
+    balanceLongClickEnabled: Boolean,
     onBackClick: () -> Unit,
     onBuyClick: (offerId: Int) -> Unit,
-    onSelectClick: (offerId: Int) -> Unit
+    onSelectClick: (offerId: Int) -> Unit,
+    onBalanceLongClick: () -> Unit
 ) {
     Box(
         modifier
@@ -145,7 +151,13 @@ private fun SnakeShopScreen(
                 .align(Alignment.BottomEnd)
                 .padding(26.dp)
                 .navigationBarsPadding()
-                .background(color = buyButtonColor, shape = CircleShape)
+                .clip(CircleShape)
+                .background(color = buyButtonColor)
+                .combinedClickable(
+                    enabled = balanceLongClickEnabled,
+                    onClick = { },
+                    onLongClick = onBalanceLongClick
+                )
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -260,10 +272,8 @@ private fun BuyButton(
     Row(
         modifier
             .fillMaxWidth()
-            .background(
-                color = buyButtonColor,
-                shape = RoundedCornerShape(18.dp)
-            )
+            .clip(RoundedCornerShape(18.dp))
+            .background(color = buyButtonColor)
             .clickable(
                 enabled = purchaseState == PurchaseState.CAN_BUY,
                 onClick = onClick

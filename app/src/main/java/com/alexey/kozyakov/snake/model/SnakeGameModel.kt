@@ -16,7 +16,8 @@ class SnakeGameModel(
     val level: Int,
     val remainingLengthToGainLevel: Int,
     val appleCount: Int,
-    val score: Int
+    val score: Int,
+    val continueCount: Int
 )
 
 enum class SnakeType {

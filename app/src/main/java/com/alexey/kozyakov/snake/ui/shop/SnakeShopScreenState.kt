@@ -3,6 +3,8 @@ package com.alexey.kozyakov.snake.ui.shop
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.retain.retain
+import com.alexey.kozyakov.BuildConfig
+import com.alexey.kozyakov.snake.config.BALANCE_ADD_AMOUNT_DEBUG
 import com.alexey.kozyakov.snake.di.balanceRepository
 import com.alexey.kozyakov.snake.di.purchaseRepository
 import com.alexey.kozyakov.snake.di.snakeSkinRepository
@@ -63,6 +65,8 @@ class SnakeShopScreenState(
         .observe()
         .asComposeState(initialValue = 0)
 
+    val canAddBalance = BuildConfig.DEBUG
+
     fun buy(offerId: Int) {
         stateHolderScope.launch {
             val offer = Offer.entries[offerId]
@@ -94,6 +98,15 @@ class SnakeShopScreenState(
                 OfferType.SKIN -> selectSkin(offer)
                 OfferType.UPGRADE -> Unit
             }
+        }
+    }
+
+    fun addBalance() {
+        if (!canAddBalance) {
+            return
+        }
+        stateHolderScope.launch {
+            balanceRepository.update { balance -> balance + BALANCE_ADD_AMOUNT_DEBUG }
         }
     }
 

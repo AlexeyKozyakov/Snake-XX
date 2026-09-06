@@ -341,7 +341,8 @@ private fun Preview(
         level = 1,
         remainingLengthToGainLevel = 0,
         appleCount = 0,
-        score = 123
+        score = 123,
+        continueCount = 0
     )
     Canvas(Modifier.fillMaxSize()) {
         renderer.renderSnakeGame(model)

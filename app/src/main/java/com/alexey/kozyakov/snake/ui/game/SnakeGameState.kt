@@ -12,6 +12,8 @@ import com.alexey.kozyakov.snake.balance.SnakeGameBalanceUpdater
 import com.alexey.kozyakov.snake.boosters.PurchasedSnakeBoostersSupplier
 import com.alexey.kozyakov.snake.config.BOOST_BY_BUTTON
 import com.alexey.kozyakov.snake.config.BOOST_PER_LEVEL
+import com.alexey.kozyakov.snake.config.CONTINUE_PRICE_BASE
+import com.alexey.kozyakov.snake.config.CONTINUE_PRICE_MULTIPLIER
 import com.alexey.kozyakov.snake.config.MAX_TICK_INTERVAL_MS
 import com.alexey.kozyakov.snake.di.balanceRepository
 import com.alexey.kozyakov.snake.di.context
@@ -39,6 +41,7 @@ import com.alexey.kozyakov.snake.ui.base.RetainedStateHolder
 import com.alexey.kozyakov.snake.ui.base.asComposeState
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlin.math.pow
 import kotlin.time.Duration.Companion.milliseconds
@@ -117,6 +120,12 @@ class SnakeGameState(
     val balance by balanceRepository
         .observe()
         .asComposeState(initialValue = 0)
+    val continuePrice by derivedStateOf {
+        CONTINUE_PRICE_BASE * Math.powExact(CONTINUE_PRICE_MULTIPLIER, model.continueCount)
+    }
+    val canContinue by derivedStateOf {
+        balance >= continuePrice
+    }
 
     init {
         showLevel()
@@ -132,6 +141,19 @@ class SnakeGameState(
     fun restartFinishedGame() {
         if (engine.restartFinishedGame()) {
             updateState()
+        }
+    }
+
+    fun continueFinishedGame() {
+        stateHolderScope.launch {
+            val balance = balanceRepository.observe().first()
+            if (balance < continuePrice) {
+                return@launch
+            }
+            balanceRepository.update { balance -> balance - continuePrice }
+            if (engine.restartFinishedGame(keepProgress = true)) {
+                updateState()
+            }
         }
     }
 
@@ -265,8 +287,6 @@ class SnakeGameState(
     //  4. Доработать логику магазина для покупки бустеров
     // TODO(справка):
     //  1. Добавить экран со справкой по приложению с описанием цели игры и бонусов
-    // TODO(продолжение)
-    //  1. Продолжать игру после смерти за монетки
     private fun showConsumedBooster(booster: SnakeBooster, remaining: Int) {
         TODO("$booster $remaining")
     }

@@ -26,7 +26,7 @@ interface SnakeGameEngine {
     fun step(): List<SnakeGameEvent>
     fun transposeGrid()
     fun setDirection(snakeId: Int = MAIN_SNAKE_ID, newDirection: Direction): Boolean
-    fun restartFinishedGame(/*TODO: Use this param for payed continue*/keepProgress: Boolean = false): Boolean
+    fun restartFinishedGame(keepProgress: Boolean = false): Boolean
 
     companion object {
         fun empty(): SnakeGameEngine = EmptySnakeGameEngine
@@ -76,7 +76,8 @@ interface SnakeGameEngine {
                 initialWalls = model.walls,
                 initialSnakes = initialSnakes,
                 initialApples = initialApples,
-                initialScore = model.score
+                initialScore = model.score,
+                initialContinueCount = model.continueCount
             )
         }
     }
@@ -93,7 +94,8 @@ private object EmptySnakeGameEngine : SnakeGameEngine {
         level = 0,
         remainingLengthToGainLevel = 0,
         appleCount = 0,
-        score = 0
+        score = 0,
+        continueCount = 0
     )
 
     override fun step() = emptyList<SnakeGameEvent>()
@@ -119,7 +121,8 @@ private class SnakeGameEngineImpl(
     initialWalls: List<Wall>? = null,
     initialSnakes: List<Snake>? = null,
     initialApples: MutableMap<Position, Apple>? = null,
-    initialScore: Int? = null
+    initialScore: Int? = null,
+    initialContinueCount: Int? = null
 ) : SnakeGameEngine {
     private val initialSnakeLength = INITIAL_SNAKE_LENGTH
     private val appleCount = APPLE_COUNT
@@ -129,6 +132,7 @@ private class SnakeGameEngineImpl(
     private var snakes = initialSnakes ?: initSnakes()
     private var apples = initialApples ?: initApples(snakes, walls)
     private var score = initialScore ?: 0
+    private var continueCount = initialContinueCount ?: 0
     private var gameIsOver = false
 
     private val stepEvents = mutableListOf<SnakeGameEvent>()
@@ -175,6 +179,7 @@ private class SnakeGameEngineImpl(
             remainingLengthToGainLevel = remainingLengthToGainLevel,
             appleCount = appleCount,
             score = score,
+            continueCount = continueCount
         )
 
     override fun step(): List<SnakeGameEvent> {
@@ -223,7 +228,10 @@ private class SnakeGameEngineImpl(
         if (!gameIsOver) {
             return false
         }
-        if (!keepProgress) {
+        if (keepProgress) {
+            continueCount++
+        } else {
+            continueCount = 0
             level = 0
             score = 0
         }

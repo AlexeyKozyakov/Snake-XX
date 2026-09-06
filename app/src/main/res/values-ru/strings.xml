@@ -2,9 +2,9 @@
 <resources>
     <string name="app_name">Snake XX</string>
     <string name="remaining_length">осталось %1$d</string>
-    <string name="score">очки %1$d</string>
-    <string name="game_over">Игра Окончена</string>
-    <string name="high_score">максимум %1$d</string>
+    <string name="score">очки: %1$d</string>
+    <string name="game_over">игра окончена</string>
+    <string name="high_score">максимум: %1$d</string>
     <string name="level">Уровень %1$d</string>
     <string name="boost_button">ускорение</string>
     <string name="confirmation">нажмите чтобы продолжить</string>
@@ -37,4 +37,6 @@
     <string name="offer_group_skins">Скины</string>
     <string name="offer_group_upgrades">Улучшения</string>
     <string name="purchased">куплено</string>
+    <string name="continue_button">продолжить %1$d</string>
+    <string name="restart_button">рестарт</string>
 </resources>

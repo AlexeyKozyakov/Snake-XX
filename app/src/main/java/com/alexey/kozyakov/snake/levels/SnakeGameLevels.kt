@@ -167,7 +167,8 @@ private fun Preview(
                 level = 0,
                 remainingLengthToGainLevel = 0,
                 appleCount = 0,
-                score = 0
+                score = 0,
+                continueCount = 0
             )
         )
     }
