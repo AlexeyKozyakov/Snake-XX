@@ -1,7 +1,6 @@
 package com.alexey.kozyakov.snake.ui.settings
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
@@ -9,15 +8,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
@@ -29,6 +24,7 @@ import com.alexey.kozyakov.R
 import com.alexey.kozyakov.snake.storage.language.SnakeGameLanguage
 import com.alexey.kozyakov.snake.storage.settings.SnakeGameSettings
 import com.alexey.kozyakov.snake.storage.skins.SnakeSkin
+import com.alexey.kozyakov.snake.ui.components.SnakeGameMenuBackButton
 import com.alexey.kozyakov.snake.ui.components.SnakeGameMenuContainer
 import com.alexey.kozyakov.snake.ui.components.SnakeGameMenuTextItem
 
@@ -134,16 +130,9 @@ fun SnakeGameSettingsScreen(
                 onClick = onLanguageSettingClick
             )
         }
-        Image(
-            imageVector = Icons.AutoMirrored.Default.ArrowBack,
-            contentDescription = null,
-            colorFilter = ColorFilter.tint(Color.White),
-            modifier = Modifier
-                .clickable(enabled = true, onClick = onBackClick)
-                .padding(10.dp)
-                .statusBarsPadding()
-                .size(56.dp)
-                .align(Alignment.TopStart)
+        SnakeGameMenuBackButton(
+            onClick = onBackClick,
+            Modifier.align(Alignment.TopStart)
         )
     }
 }
