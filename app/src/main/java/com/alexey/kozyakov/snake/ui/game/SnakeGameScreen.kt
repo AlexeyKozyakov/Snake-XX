@@ -382,7 +382,9 @@ private fun BoxScope.ConsumedBooster(
         visible = visible,
         enter = EnterTransition.None,
         exit = fadeOut(animationSpec = tween(durationMillis = FADE_OUT_ANIMATION_DURATION)),
-        modifier = modifier.align(Alignment.Center)
+        modifier = modifier
+            .align(Alignment.Center)
+            .alpha(0.8f)
     ) {
         boosterAndRemainingCount?.let { (booster, remaining) ->
             Column(

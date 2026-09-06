@@ -19,6 +19,7 @@ import com.alexey.kozyakov.snake.storage.skins.SnakeSkin
 import com.alexey.kozyakov.snake.storage.skins.SnakeSkinRepository
 import com.alexey.kozyakov.snake.ui.base.RetainedStateHolder
 import com.alexey.kozyakov.snake.ui.base.asComposeState
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -29,6 +30,8 @@ class SnakeShopScreenState(
     private val balanceRepository: SnakeGameBalanceRepository,
     private val boosterRepository: PurchasedSnakeBoosterRepository
 ) : RetainedStateHolder() {
+    private var updateDataJob: Job? = null
+
     val categories by combine(
         snakeSkinRepository.observe(),
         purchaseRepository.observe(),
@@ -91,15 +94,15 @@ class SnakeShopScreenState(
     val canAddBalance = BuildConfig.DEBUG
 
     fun buy(offerId: Int) {
-        stateHolderScope.launch {
+        updateData {
             val offer = Offer.entries[offerId]
             val purchases = purchaseRepository.observe().first()
             if (offer in purchases) {
-                return@launch
+                return@updateData
             }
             val balance = balanceRepository.observe().first()
             if (balance < offer.price) {
-                return@launch
+                return@updateData
             }
             balanceRepository.update { balance -> balance - offer.price }
             when (offer.type) {
@@ -120,11 +123,11 @@ class SnakeShopScreenState(
     }
 
     fun select(offerId: Int) {
-        stateHolderScope.launch {
+        updateData {
             val offer = Offer.entries[offerId]
             val purchases = purchaseRepository.observe().first()
             if (offer !in purchases) {
-                return@launch
+                return@updateData
             }
             when (offer.type) {
                 OfferType.SKIN -> selectSkin(offer)
@@ -137,7 +140,7 @@ class SnakeShopScreenState(
         if (!canAddBalance) {
             return
         }
-        stateHolderScope.launch {
+        updateData {
             balanceRepository.update { balance -> balance + BALANCE_ADD_AMOUNT_DEBUG }
         }
     }
@@ -145,6 +148,16 @@ class SnakeShopScreenState(
     private suspend fun selectSkin(offer: Offer) {
         val skin = SnakeSkin.entries[offer.productId]
         snakeSkinRepository.save(skin)
+    }
+
+    private fun updateData(update: suspend () -> Unit) {
+        if (updateDataJob?.isActive == true) {
+            return
+        }
+        updateDataJob = stateHolderScope.launch {
+            update()
+            updateDataJob = null
+        }
     }
 }
 
