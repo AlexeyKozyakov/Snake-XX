@@ -4,8 +4,12 @@ interface SnakeBoostersSupplier {
     fun consumeWallEatingBooster(): Boolean
     fun consumeSnakeEatingBooster(): Boolean
 
-    object Empty : SnakeBoostersSupplier {
-        override fun consumeWallEatingBooster() = false
-        override fun consumeSnakeEatingBooster() = false
+    companion object {
+        fun empty(): SnakeBoostersSupplier = EmptySnakeBoostersSupplier
     }
+}
+
+private object EmptySnakeBoostersSupplier : SnakeBoostersSupplier {
+    override fun consumeWallEatingBooster() = false
+    override fun consumeSnakeEatingBooster() = false
 }

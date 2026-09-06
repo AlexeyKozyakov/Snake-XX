@@ -34,7 +34,7 @@ interface SnakeGameEngine {
         fun create(
             gridWidth: Int,
             gridHeight: Int,
-            boostersSupplier: SnakeBoostersSupplier = SnakeBoostersSupplier.Empty
+            boostersSupplier: SnakeBoostersSupplier = SnakeBoostersSupplier.empty()
         ): SnakeGameEngine {
             return SnakeGameEngineImpl(
                 gridWidth = gridWidth,
@@ -45,7 +45,7 @@ interface SnakeGameEngine {
 
         fun restore(
             model: SnakeGameModel,
-            boostersSupplier: SnakeBoostersSupplier = SnakeBoostersSupplier.Empty
+            boostersSupplier: SnakeBoostersSupplier = SnakeBoostersSupplier.empty()
         ): SnakeGameEngine {
             val initialSnakes = model.snakes.map { snakeModel ->
                 val elementsIterator = snakeModel.elements.iterator()
@@ -116,7 +116,7 @@ private const val AI_SNAKE_ID = 1
 private class SnakeGameEngineImpl(
     private var gridWidth: Int,
     private var gridHeight: Int,
-    private val boostersSupplier: SnakeBoostersSupplier = SnakeBoostersSupplier.Empty,
+    private val boostersSupplier: SnakeBoostersSupplier = SnakeBoostersSupplier.empty(),
     initialLevel: Int? = null,
     initialWalls: List<Wall>? = null,
     initialSnakes: List<Snake>? = null,
