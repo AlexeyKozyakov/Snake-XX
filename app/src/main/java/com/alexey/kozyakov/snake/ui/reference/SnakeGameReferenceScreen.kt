@@ -5,11 +5,9 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -37,6 +35,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.alexey.kozyakov.R
+import com.alexey.kozyakov.snake.ui.components.BlackBox
 import com.alexey.kozyakov.snake.ui.components.SnakeGameMenuBackButton
 
 private val itemBackgroundColor = Color(0xFF204821)
@@ -46,20 +45,8 @@ fun SnakeGameReferenceScreen(
     modifier: Modifier = Modifier,
     navigateBack: () -> Unit
 ) {
-    Box(
-        modifier
-            .fillMaxSize()
-            .background(color = Color.Black)
-    ) {
-        LazyVerticalGrid(
-            columns = GridCells.Adaptive(minSize = 300.dp),
-            Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center
-        ) {
-            item(span = { GridItemSpan(maxLineSpan) }) {
-                Spacer(Modifier.statusBarsPadding().padding(top = 18.dp))
-            }
-
+    BlackBox(modifier) {
+        ReferenceGrid {
             headerItem(textResId = R.string.reference_header_how_to_play)
 
             referenceItem(
@@ -137,12 +124,33 @@ fun SnakeGameReferenceScreen(
                 imageResId = R.drawable.diamond,
                 imageSize = 70.dp
             )
-            item(span = { GridItemSpan(maxLineSpan) }) {
-                Spacer(Modifier.navigationBarsPadding())
-            }
         }
 
         SnakeGameMenuBackButton(onClick = navigateBack)
+    }
+}
+
+@Composable
+private fun ReferenceGrid(
+    modifier: Modifier = Modifier,
+    content: LazyGridScope.() -> Unit
+) {
+    LazyVerticalGrid(
+        columns = GridCells.Adaptive(minSize = 300.dp),
+        modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center
+    ) {
+        item(span = { GridItemSpan(maxLineSpan) }) {
+            Spacer(
+                Modifier
+                    .statusBarsPadding()
+                    .padding(top = 18.dp)
+            )
+        }
+        content()
+        item(span = { GridItemSpan(maxLineSpan) }) {
+            Spacer(Modifier.navigationBarsPadding())
+        }
     }
 }
 
@@ -194,7 +202,9 @@ private fun LazyGridScope.referenceItem(
                 Image(
                     painter = painterResource(imageResId),
                     contentDescription = null,
-                    Modifier.size(imageSize).align(Alignment.CenterVertically)
+                    Modifier
+                        .size(imageSize)
+                        .align(Alignment.CenterVertically)
                 )
                 Spacer(Modifier.width(14.dp))
                 Text(

@@ -6,7 +6,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -41,6 +40,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.alexey.kozyakov.R
+import com.alexey.kozyakov.snake.ui.components.BlackBox
 import com.alexey.kozyakov.snake.ui.components.SnakeGameMenuBackButton
 
 private val itemBackgroundColor = Color(0xFF204821)
@@ -77,7 +77,7 @@ private fun SnakeShopScreen(
     onSelectClick: (offerId: Int) -> Unit,
     onBalanceLongClick: () -> Unit
 ) {
-    Box(modifier.background(Color.Black).fillMaxSize()) {
+    BlackBox(modifier) {
         ShopItemsGrid {
             categories.forEachIndexed { index, category ->
                 item(span = { GridItemSpan(maxLineSpan) }) {
