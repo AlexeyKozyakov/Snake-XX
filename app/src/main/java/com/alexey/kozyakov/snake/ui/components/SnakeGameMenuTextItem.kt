@@ -8,14 +8,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
@@ -52,22 +49,18 @@ fun SnakeGameMenuTextItem(
             .alpha(if (enabled) 0.75f else 0.15f),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
+        MonospaceText(
             text = primaryText,
             color = Color.Black,
             fontSize = primaryTextSize,
-            fontFamily = FontFamily.Monospace,
-            fontStyle = FontStyle.Normal,
             textAlign = TextAlign.Center
         )
         if (secondaryText != null) {
             Spacer(Modifier.size(4.dp))
-            Text(
+            MonospaceText(
                 text = secondaryText,
                 color = Color.Black.copy(alpha = 0.3f),
                 fontSize = secondaryTextSize,
-                fontFamily = FontFamily.Monospace,
-                fontStyle = FontStyle.Normal,
                 textAlign = TextAlign.Center
             )
         }

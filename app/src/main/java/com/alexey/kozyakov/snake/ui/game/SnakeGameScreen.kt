@@ -32,7 +32,6 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -54,9 +53,6 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntSize
@@ -66,6 +62,7 @@ import androidx.lifecycle.compose.LifecycleResumeEffect
 import com.alexey.kozyakov.R
 import com.alexey.kozyakov.snake.model.Direction
 import com.alexey.kozyakov.snake.storage.boosters.SnakeBooster
+import com.alexey.kozyakov.snake.ui.components.MonospaceText
 
 private val pressedButtonColor = Color(0xFFD32C2C)
 private val addedBalanceColor = Color(0xFFECCA32)
@@ -193,11 +190,9 @@ private fun BoxScope.BalanceDisplay(
             Modifier.size(24.dp)
         )
         Spacer(Modifier.size(8.dp))
-        Text(
+        MonospaceText(
             text = balance.toString(),
-            color = Color.White,
-            fontFamily = FontFamily.Monospace,
-            fontSize = 16.sp,
+            fontSize = 16.sp
         )
         Spacer(Modifier.size(4.dp))
         AnimatedVisibility(
@@ -205,11 +200,10 @@ private fun BoxScope.BalanceDisplay(
             enter = EnterTransition.None,
             exit = fadeOut(animationSpec = tween(durationMillis = FADE_OUT_ANIMATION_DURATION)),
         ) {
-            Text(
+            MonospaceText(
                 text = "+$addedBalanceAmount",
                 color = addedBalanceColor,
-                fontFamily = FontFamily.Monospace,
-                fontSize = 16.sp,
+                fontSize = 16.sp
             )
         }
     }
@@ -220,15 +214,13 @@ private fun BoxScope.RemainingLength(
     length: Int,
     modifier: Modifier = Modifier
 ) {
-    Text(
+    MonospaceText(
         text = stringResource(R.string.remaining_length, length),
-        modifier
+        fontSize = 16.sp,
+        modifier = modifier
             .align(Alignment.TopCenter)
             .padding(vertical = 8.dp)
             .statusBarsPadding(),
-        fontFamily = FontFamily.Monospace,
-        fontSize = 16.sp,
-        color = Color.White
     )
 }
 
@@ -237,18 +229,16 @@ private fun BoxScope.Score(
     score: Int,
     modifier: Modifier = Modifier
 ) {
-    Text(
+    MonospaceText(
         text = stringResource(R.string.score, score),
-        modifier
+        fontSize = 16.sp,
+        modifier = modifier
             .align(Alignment.TopEnd)
             .padding(
                 horizontal = 8.dp,
                 vertical = 8.dp
             )
             .statusBarsPadding(),
-        color = Color.White,
-        fontFamily = FontFamily.Monospace,
-        fontSize = 16.sp,
     )
 }
 
@@ -281,31 +271,25 @@ private fun BoxScope.GameOver(
             )
             .padding(16.dp)
     ) {
-        Text(
-            modifier = Modifier.align(Alignment.CenterHorizontally),
+        MonospaceText(
             text = stringResource(R.string.game_over),
-            color = Color.White,
             fontSize = 36.sp,
             fontWeight = FontWeight.Medium,
-            fontFamily = FontFamily.Monospace,
+            modifier = Modifier.align(Alignment.CenterHorizontally)
         )
         Spacer(Modifier.size(8.dp))
-        Text(
-            modifier = Modifier.align(Alignment.CenterHorizontally),
+        MonospaceText(
             text = stringResource(R.string.score, score),
-            color = Color.White,
             fontSize = 24.sp,
             fontWeight = FontWeight.Medium,
-            fontFamily = FontFamily.Monospace,
+            modifier = Modifier.align(Alignment.CenterHorizontally)
         )
         Spacer(Modifier.size(8.dp))
-        Text(
-            modifier = Modifier.align(Alignment.CenterHorizontally),
+        MonospaceText(
             text = stringResource(R.string.high_score, highScore),
-            color = Color.White,
             fontSize = 24.sp,
             fontWeight = FontWeight.Medium,
-            fontFamily = FontFamily.Monospace,
+            modifier = Modifier.align(Alignment.CenterHorizontally)
         )
         Spacer(Modifier.size(8.dp))
         val isPortrait =
@@ -328,13 +312,8 @@ private fun BoxScope.GameOver(
                     .padding(12.dp),
                 horizontalArrangement = Arrangement.Center
             ) {
-                Text(
-                    text = stringResource(R.string.continue_button, continuePrice),
-                    color = Color.White,
-                    fontSize = 18.sp,
-                    fontStyle = FontStyle.Normal,
-                    fontFamily = FontFamily.Monospace,
-                    fontWeight = FontWeight.Normal
+                MonospaceText(
+                    text = stringResource(R.string.continue_button, continuePrice)
                 )
                 Spacer(Modifier.size(8.dp))
                 Image(
@@ -345,7 +324,9 @@ private fun BoxScope.GameOver(
                         .align(Alignment.CenterVertically)
                 )
             }
-            Text(
+            MonospaceText(
+                text = stringResource(R.string.restart_button),
+                textAlign = TextAlign.Center,
                 modifier = Modifier
                     .padding(12.dp)
                     .fillMaxWidth()
@@ -356,13 +337,6 @@ private fun BoxScope.GameOver(
                     )
                     .background(color = gameOverButtonsColor)
                     .padding(12.dp),
-                text = stringResource(R.string.restart_button),
-                color = Color.White,
-                fontSize = 18.sp,
-                fontStyle = FontStyle.Normal,
-                fontFamily = FontFamily.Monospace,
-                fontWeight = FontWeight.Normal,
-                textAlign = TextAlign.Center
             )
         }
     }
@@ -413,12 +387,10 @@ private fun BoxScope.ConsumedBooster(
                     contentDescription = null,
                     Modifier.size(150.dp)
                 )
-                Text(
+                MonospaceText(
                     text = stringResource(R.string.booster_remaining_count, remaining),
-                    color = Color.White,
                     fontSize = 24.sp,
-                    fontWeight = FontWeight.Medium,
-                    fontFamily = FontFamily.Monospace
+                    fontWeight = FontWeight.Medium
                 )
             }
         }
@@ -439,14 +411,10 @@ private fun BoxScope.LevelAndConfirmation(
             enter = EnterTransition.None,
             exit = fadeOut(animationSpec = tween(durationMillis = FADE_OUT_ANIMATION_DURATION))
         ) {
-            Text(
+            MonospaceText(
                 text = stringResource(R.string.level, level + 1),
-                style = TextStyle(
-                    color = Color.White,
-                    fontSize = 42.sp,
-                    fontWeight = FontWeight.Bold,
-                    fontFamily = FontFamily.Monospace
-                ),
+                fontSize = 42.sp,
+                fontWeight = FontWeight.Bold,
             )
         }
         AnimatedVisibility(
@@ -455,14 +423,9 @@ private fun BoxScope.LevelAndConfirmation(
             enter = EnterTransition.None,
             exit = fadeOut(animationSpec = tween(durationMillis = 700))
         ) {
-            Text(
+            MonospaceText(
                 text = stringResource(R.string.confirmation),
-                style = TextStyle(
-                    color = Color.White,
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Normal,
-                    fontFamily = FontFamily.Monospace
-                ),
+                fontSize = 24.sp,
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .padding(top = 16.dp)
@@ -496,10 +459,10 @@ private fun BoxScope.BoostButton(
                 }
             }
     ) {
-        Text(
+        MonospaceText(
             text = stringResource(R.string.boost_button),
-            color = Color.White,
-            modifier = Modifier.align(Alignment.Center),
+            fontSize = 14.sp,
+            modifier = Modifier.align(Alignment.Center)
         )
     }
 }

@@ -9,20 +9,18 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.alexey.kozyakov.R
 import com.alexey.kozyakov.snake.storage.language.SnakeGameLanguage
+import com.alexey.kozyakov.snake.ui.components.MonospaceText
 import com.alexey.kozyakov.snake.ui.components.SnakeGameMenuBackButton
 import com.alexey.kozyakov.snake.ui.components.SnakeGameMenuContainer
 import com.alexey.kozyakov.snake.ui.components.SnakeGameMenuTextItem
@@ -63,15 +61,13 @@ private fun SnakeGameLanguageScreen(
 
 @Composable
 private fun FlowColumnScope.LanguagesHeader() {
-    Text(
-        modifier = Modifier
-            .align(Alignment.CenterHorizontally)
-            .padding(bottom = 38.dp),
+    MonospaceText(
         text = stringResource(R.string.language_settings_screen),
-        color = Color.White,
         fontSize = 42.sp,
         fontWeight = FontWeight.Bold,
-        fontFamily = FontFamily.Monospace,
+        modifier = Modifier
+            .align(Alignment.CenterHorizontally)
+            .padding(bottom = 38.dp)
     )
     Row {
         Image(
