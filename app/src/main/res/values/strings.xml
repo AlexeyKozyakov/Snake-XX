@@ -54,7 +54,7 @@
     <string name="reference_title_collect_coins">collect coins</string>
     <string name="reference_text_collect_coins">- collect coins and diamonds on game field\n\n- buy skins, upgrades and boosters for earned coins</string>
     <string name="reference_title_avoid_reduction">avoid reduction</string>
-    <string name="reference_text_avoid_reduction">- avoid walls, enemy snake, bad apples and your tail\n\n- this things reduce your size or finish game</string>
+    <string name="reference_text_avoid_reduction">- avoid walls, enemy snake, bad items and your tail\n\n- this things reduce your size or finish game</string>
     <string name="reference_header_apple_and_item_types">Apples and items</string>
     <string name="reference_title_green_apple">green apple</string>
     <string name="reference_text_green_apple">- increases snake length by one\n\n- gives you one game point</string>
@@ -63,11 +63,11 @@
     <string name="reference_title_bad_apple">stone</string>
     <string name="reference_text_bad_apple">- decreases snake length by one\n\n- game will be finished if snake length became less than two</string>
     <string name="reference_title_omnivorousness_apple">omnivorousness egg</string>
-    <string name="reference_text_omnivorousness_apple">- activates omnivorousness mode where you can eat any apple type and grow\n\n- the mode continues until the snake\'s head changes back to the normal one\n\n- increases snake length by one</string>
+    <string name="reference_text_omnivorousness_apple">- activates omnivorousness mode where you can eat any items and grow\n\n- the mode continues until the snake\'s head changes back to the normal one\n\n- increases snake length by one</string>
     <string name="reference_title_golden_apple">golden apple</string>
-    <string name="reference_text_golden_apple">- turn all bad apples on the screen to good\n\n- increases snake length by one</string>
+    <string name="reference_text_golden_apple">- turn all bad items on the screen to apples\n\n- increases snake length by one</string>
     <string name="reference_title_bomb">bomb</string>
-    <string name="reference_text_bomb">- shrinks snake length to initial\n\n- if snake is already has initial length than game will be finished</string>
+    <string name="reference_text_bomb">- shrinks snake length to initial\n\n- than game will be finished if snake is already has initial length</string>
     <string name="reference_title_coin">coin</string>
     <string name="reference_text_coin">- adds 2 coins to balance</string>
     <string name="reference_title_diamond">diamond</string>

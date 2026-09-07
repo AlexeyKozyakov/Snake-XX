@@ -4,6 +4,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,8 +16,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyGridScope
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -48,36 +51,40 @@ fun SnakeGameReferenceScreen(
             .fillMaxSize()
             .background(color = Color.Black)
     ) {
-        LazyColumn(
+        LazyVerticalGrid(
+            columns = GridCells.Adaptive(minSize = 300.dp),
             Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalArrangement = Arrangement.Center
         ) {
-            item { Spacer(Modifier.statusBarsPadding().padding(top = 18.dp)) }
+            item(span = { GridItemSpan(maxLineSpan) }) {
+                Spacer(Modifier.statusBarsPadding().padding(top = 18.dp))
+            }
 
             headerItem(textResId = R.string.reference_header_how_to_play)
 
             referenceItem(
                 titleResId = R.string.reference_title_grow_snake,
                 textResId = R.string.reference_text_grow_snake,
-                imageResId = R.drawable.eat_apples
+                imageResId = R.drawable.eat_apples,
+                imageSize = 120.dp,
             )
             referenceItem(
                 titleResId = R.string.reference_title_pass_levels,
                 textResId = R.string.reference_text_pass_levels,
                 imageResId = R.drawable.wall_block_0,
-                imageSize = 120.dp
+                imageSize = 100.dp
             )
             referenceItem(
                 titleResId = R.string.reference_title_collect_coins,
                 textResId = R.string.reference_text_collect_coins,
                 imageResId = R.drawable.coin,
-                imageSize = 120.dp
+                imageSize = 100.dp
             )
             referenceItem(
                 titleResId = R.string.reference_title_avoid_reduction,
                 textResId = R.string.reference_text_avoid_reduction,
                 imageResId = R.drawable.snake_yellow_xx,
-                imageSize = 120.dp
+                imageSize = 100.dp
             )
 
             headerItem(textResId = R.string.reference_header_apple_and_item_types)
@@ -86,51 +93,53 @@ fun SnakeGameReferenceScreen(
                 titleResId = R.string.reference_title_green_apple,
                 textResId = R.string.reference_text_green_apple,
                 imageResId = R.drawable.apple_green,
-                imageSize = 110.dp
+                imageSize = 70.dp
             )
             referenceItem(
                 titleResId = R.string.reference_title_red_apple,
                 textResId = R.string.reference_text_red_apple,
                 imageResId = R.drawable.apple_alt,
-                imageSize = 110.dp
+                imageSize = 70.dp
             )
             referenceItem(
                 titleResId = R.string.reference_title_omnivorousness_apple,
                 textResId = R.string.reference_text_omnivorousness_apple,
                 imageResId = R.drawable.easter_egg,
-                imageSize = 110.dp
+                imageSize = 70.dp
             )
             referenceItem(
                 titleResId = R.string.reference_title_golden_apple,
                 textResId = R.string.reference_text_golden_apple,
                 imageResId = R.drawable.apple_gold_64,
-                imageSize = 110.dp
+                imageSize = 70.dp
             )
             referenceItem(
                 titleResId = R.string.reference_title_bad_apple,
                 textResId = R.string.reference_text_bad_apple,
                 imageResId = R.drawable.oliebol_64,
-                imageSize = 110.dp
+                imageSize = 70.dp
             )
             referenceItem(
                 titleResId = R.string.reference_title_bomb,
                 textResId = R.string.reference_text_bomb,
                 imageResId = R.drawable.bomb,
-                imageSize = 110.dp
+                imageSize = 70.dp
             )
             referenceItem(
                 titleResId = R.string.reference_title_coin,
                 textResId = R.string.reference_text_coin,
                 imageResId = R.drawable.coin,
-                imageSize = 100.dp
+                imageSize = 70.dp
             )
             referenceItem(
                 titleResId = R.string.reference_title_diamond,
                 textResId = R.string.reference_text_diamond,
                 imageResId = R.drawable.diamond,
-                imageSize = 100.dp
+                imageSize = 70.dp
             )
-            item { Spacer(Modifier.navigationBarsPadding()) }
+            item(span = { GridItemSpan(maxLineSpan) }) {
+                Spacer(Modifier.navigationBarsPadding())
+            }
         }
 
         SnakeGameMenuBackButton(
@@ -140,25 +149,27 @@ fun SnakeGameReferenceScreen(
     }
 }
 
-private fun LazyListScope.headerItem(@StringRes textResId: Int) {
-    item {
-        Text(
-            text = stringResource(textResId),
-            color = Color.White,
-            fontSize = 32.sp,
-            fontWeight = FontWeight.Bold,
-            fontFamily = FontFamily.Monospace,
-            textAlign = TextAlign.Center
-        )
-        Spacer(Modifier.size(16.dp))
+private fun LazyGridScope.headerItem(@StringRes textResId: Int) {
+    item(span = { GridItemSpan(maxLineSpan) }) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(
+                text = stringResource(textResId),
+                color = Color.White,
+                fontSize = 32.sp,
+                fontWeight = FontWeight.Bold,
+                fontFamily = FontFamily.Monospace,
+                textAlign = TextAlign.Center
+            )
+            Spacer(Modifier.size(16.dp))
+        }
     }
 }
 
-private fun LazyListScope.referenceItem(
+private fun LazyGridScope.referenceItem(
     @StringRes titleResId: Int,
     @StringRes textResId: Int,
     @DrawableRes imageResId: Int,
-    imageSize: Dp = 150.dp
+    imageSize: Dp
 ) {
     item {
         Column(
