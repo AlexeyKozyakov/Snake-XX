@@ -2,6 +2,7 @@ package com.alexey.kozyakov.snake.ui.menu
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
@@ -49,7 +50,6 @@ fun SnakeGameMenuScreen(
     )
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun SnakeGameMenuScreen(
     modifier: Modifier = Modifier,
@@ -63,104 +63,137 @@ private fun SnakeGameMenuScreen(
     onReferenceClick: () -> Unit
 ) {
     SnakeGameMenuContainer(modifier) {
-        Text(
-            text = stringResource(R.string.app_name),
-            color = Color.White,
-            fontSize = 42.sp,
-            fontWeight = FontWeight.Bold,
-            fontFamily = FontFamily.Monospace,
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(bottom = 38.dp)
-        )
-        Row(
-            Modifier.padding(bottom = 32.dp)
-        ) {
-            Image(
-                painter = painterResource(skin.headResId),
-                contentDescription = null,
-                Modifier
-                    .size(60.dp)
-                    .scale(1.2f)
-            )
-            Image(
-                painter = painterResource(skin.bodyResId),
-                contentDescription = null,
-                Modifier
-                    .size(60.dp)
-                    .scale(1.2f)
-            )
-            Image(
-                painter = painterResource(skin.bodyResId),
-                contentDescription = null,
-                Modifier
-                    .size(60.dp)
-                    .scale(1.2f)
-            )
-        }
-        Row(Modifier.padding(bottom = 42.dp)) {
-            Image(
-                painter = painterResource(R.drawable.snake_yellow_xx),
-                contentDescription = null,
-                Modifier
-                    .size(60.dp)
-                    .scale(1.2f)
-            )
-            Image(
-                painter = painterResource(R.drawable.snake_yellow_blob),
-                contentDescription = null,
-                Modifier
-                    .size(60.dp)
-                    .scale(1.2f)
-            )
-            Image(
-                painter = painterResource(R.drawable.snake_yellow_blob),
-                contentDescription = null,
-                Modifier
-                    .size(60.dp)
-                    .scale(1.2f)
-            )
-        }
-        SnakeGameMenuTextItem(
-            Modifier.padding(bottom = 24.dp).fillMaxColumnWidth(),
-            primaryText = stringResource(R.string.new_game),
-            primaryTextSize = 42.sp,
-            onClick = onNewGameClick
-        )
-        SnakeGameMenuTextItem(
-            Modifier.fillMaxColumnWidth(),
-            primaryText = stringResource(R.string.continue_game),
-            secondaryText = if (continueButtonEnabled) {
-                stringResource(R.string.level_menu_item, level)
-            } else {
-                null
-            },
-            primaryTextSize = 42.sp,
-            enabled = continueButtonEnabled,
-            onClick = onContinueClick
-        )
-        Spacer(Modifier.size(24.dp))
-        SnakeGameMenuTextItem(
-            Modifier.padding(bottom = 24.dp).fillMaxColumnWidth(),
-            primaryText = stringResource(R.string.shop_menu_item),
-            primaryTextSize = 42.sp,
-            enabled = true,
-            onClick = onShopClick
-        )
-        SnakeGameMenuTextItem(
-            Modifier.padding(bottom = 24.dp).fillMaxColumnWidth(),
-            primaryText = stringResource(R.string.open_settings),
-            primaryTextSize = 42.sp,
-            onClick = onSettingsClick
-        )
-        SnakeGameMenuTextItem(
-            Modifier.fillMaxColumnWidth(),
-            primaryText = stringResource(R.string.open_reference),
-            secondaryText = stringResource(R.string.how_to_play),
-            primaryTextSize = 42.sp,
-            onClick = onReferenceClick
+        MenuHeader(skin)
+        MenuItems(
+            continueButtonEnabled = continueButtonEnabled,
+            level = level,
+            onNewGameClick = onNewGameClick,
+            onContinueClick = onContinueClick,
+            onSettingsClick = onSettingsClick,
+            onShopClick = onShopClick,
+            onReferenceClick = onReferenceClick
         )
     }
+}
+
+@Composable
+private fun FlowColumnScope.MenuHeader(skin: SnakeSkin) {
+    Text(
+        text = stringResource(R.string.app_name),
+        color = Color.White,
+        fontSize = 42.sp,
+        fontWeight = FontWeight.Bold,
+        fontFamily = FontFamily.Monospace,
+        modifier = Modifier
+            .align(Alignment.CenterHorizontally)
+            .padding(bottom = 38.dp)
+    )
+    Row(
+        Modifier.padding(bottom = 32.dp)
+    ) {
+        Image(
+            painter = painterResource(skin.headResId),
+            contentDescription = null,
+            Modifier
+                .size(60.dp)
+                .scale(1.2f)
+        )
+        Image(
+            painter = painterResource(skin.bodyResId),
+            contentDescription = null,
+            Modifier
+                .size(60.dp)
+                .scale(1.2f)
+        )
+        Image(
+            painter = painterResource(skin.bodyResId),
+            contentDescription = null,
+            Modifier
+                .size(60.dp)
+                .scale(1.2f)
+        )
+    }
+    Row(Modifier.padding(bottom = 42.dp)) {
+        Image(
+            painter = painterResource(R.drawable.snake_yellow_xx),
+            contentDescription = null,
+            Modifier
+                .size(60.dp)
+                .scale(1.2f)
+        )
+        Image(
+            painter = painterResource(R.drawable.snake_yellow_blob),
+            contentDescription = null,
+            Modifier
+                .size(60.dp)
+                .scale(1.2f)
+        )
+        Image(
+            painter = painterResource(R.drawable.snake_yellow_blob),
+            contentDescription = null,
+            Modifier
+                .size(60.dp)
+                .scale(1.2f)
+        )
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun FlowColumnScope.MenuItems(
+    continueButtonEnabled: Boolean,
+    level: Int,
+    onNewGameClick: () -> Unit,
+    onContinueClick: () -> Unit,
+    onSettingsClick: () -> Unit,
+    onShopClick: () -> Unit,
+    onReferenceClick: () -> Unit
+) {
+    SnakeGameMenuTextItem(
+        Modifier
+            .padding(bottom = 24.dp)
+            .fillMaxColumnWidth(),
+        primaryText = stringResource(R.string.new_game),
+        primaryTextSize = 42.sp,
+        onClick = onNewGameClick
+    )
+    SnakeGameMenuTextItem(
+        Modifier.fillMaxColumnWidth(),
+        primaryText = stringResource(R.string.continue_game),
+        secondaryText = if (continueButtonEnabled) {
+            stringResource(R.string.level_menu_item, level)
+        } else {
+            null
+        },
+        primaryTextSize = 42.sp,
+        enabled = continueButtonEnabled,
+        onClick = onContinueClick
+    )
+    Spacer(Modifier.size(24.dp))
+    SnakeGameMenuTextItem(
+        Modifier
+            .padding(bottom = 24.dp)
+            .fillMaxColumnWidth(),
+        primaryText = stringResource(R.string.shop_menu_item),
+        primaryTextSize = 42.sp,
+        enabled = true,
+        onClick = onShopClick
+    )
+    SnakeGameMenuTextItem(
+        Modifier
+            .padding(bottom = 24.dp)
+            .fillMaxColumnWidth(),
+        primaryText = stringResource(R.string.open_settings),
+        primaryTextSize = 42.sp,
+        onClick = onSettingsClick
+    )
+    SnakeGameMenuTextItem(
+        Modifier.fillMaxColumnWidth(),
+        primaryText = stringResource(R.string.open_reference),
+        secondaryText = stringResource(R.string.how_to_play),
+        primaryTextSize = 42.sp,
+        onClick = onReferenceClick
+    )
 }
 
 @Preview

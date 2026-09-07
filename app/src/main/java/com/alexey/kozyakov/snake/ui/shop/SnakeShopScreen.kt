@@ -7,6 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -19,6 +20,7 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
@@ -75,103 +77,85 @@ private fun SnakeShopScreen(
     onSelectClick: (offerId: Int) -> Unit,
     onBalanceLongClick: () -> Unit
 ) {
-    Box(
-        modifier
-            .background(Color.Black)
-            .fillMaxSize()
-    ) {
-        Column(
-            Modifier
-                .fillMaxSize()
-                .padding(horizontal = 12.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            LazyVerticalGrid(
-                columns = GridCells.Adaptive(minSize = 150.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-            ) {
-                categories.forEachIndexed { index, category ->
-                    item(span = { GridItemSpan(maxLineSpan) }) {
-                        Text(
-                            modifier = if (index == 0) {
-                                Modifier
-                                    .padding(top = 12.dp)
-                                    .statusBarsPadding()
-                            } else {
-                                Modifier
-                            },
-                            text = stringResource(category.nameResId),
-                            color = Color.White,
-                            fontSize = 38.sp,
-                            fontWeight = FontWeight.Bold,
-                            fontFamily = FontFamily.Monospace,
-                            textAlign = TextAlign.Center
-                        )
-                    }
-                    items(
-                        category.items,
-                        span = { item ->
-                            if (item.descriptionResId != null) {
-                                GridItemSpan(2)
-                            } else {
-                                GridItemSpan(1)
-                            }
-                        },
-                        key = { item -> item.offerId }
-                    ) { item ->
-                        ShopItem(
-                            item = item,
-                            onSelectClick = { onSelectClick(item.offerId) },
-                            onBuyClick = { onBuyClick(item.offerId) }
-                        )
-                    }
-                }
+    Box(modifier.background(Color.Black).fillMaxSize()) {
+        ShopItemsGrid {
+            categories.forEachIndexed { index, category ->
                 item(span = { GridItemSpan(maxLineSpan) }) {
-                    Spacer(
-                        Modifier
-                            .padding(48.dp)
-                            .navigationBarsPadding()
+                    CategoryHeader(
+                        nameResId = category.nameResId,
+                        modifier = if (index == 0) {
+                            Modifier
+                                .padding(top = 12.dp)
+                                .statusBarsPadding()
+                        } else {
+                            Modifier
+                        }
                     )
                 }
+                items(
+                    category.items,
+                    span = { item ->
+                        GridItemSpan(if (item.descriptionResId != null) 2 else 1)
+                    },
+                    key = { item -> item.offerId }
+                ) { item ->
+                    ShopItem(
+                        item = item,
+                        onSelectClick = { onSelectClick(item.offerId) },
+                        onBuyClick = { onBuyClick(item.offerId) }
+                    )
+                }
+            }
+            item(span = { GridItemSpan(maxLineSpan) }) {
+                Spacer(
+                    Modifier
+                        .padding(48.dp)
+                        .navigationBarsPadding()
+                )
             }
         }
         SnakeGameMenuBackButton(
             onClick = onBackClick,
             Modifier.align(Alignment.TopStart)
         )
-        Row(
-            Modifier
-                .align(Alignment.BottomEnd)
-                .padding(26.dp)
-                .navigationBarsPadding()
-                .clip(CircleShape)
-                .background(color = blueColor)
-                .combinedClickable(
-                    enabled = balanceLongClickEnabled,
-                    onClick = { },
-                    onLongClick = onBalanceLongClick
-                )
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = balance.toString(),
-                color = Color.White,
-                fontSize = 36.sp,
-                fontStyle = FontStyle.Normal,
-                fontFamily = FontFamily.Monospace,
-                fontWeight = FontWeight.Normal
-            )
-            Spacer(Modifier.size(6.dp))
-            Image(
-                painter = painterResource(R.drawable.coin),
-                contentDescription = null,
-                Modifier.size(38.dp)
-            )
-        }
+        CurrentBalance(
+            balance = balance,
+            longClickEnabled = balanceLongClickEnabled,
+            onBalanceLongClick = onBalanceLongClick
+        )
     }
+}
+
+@Composable
+private fun ShopItemsGrid(
+    modifier: Modifier = Modifier,
+    content: LazyGridScope.() -> Unit
+) {
+    LazyVerticalGrid(
+        columns = GridCells.Adaptive(minSize = 150.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = modifier
+            .fillMaxSize()
+            .padding(horizontal = 12.dp),
+        content = content
+    )
+}
+
+@Composable
+private fun CategoryHeader(
+    nameResId: Int,
+    modifier: Modifier = Modifier
+) {
+    Text(
+        modifier = modifier,
+        text = stringResource(nameResId),
+        color = Color.White,
+        fontSize = 38.sp,
+        fontWeight = FontWeight.Bold,
+        fontFamily = FontFamily.Monospace,
+        textAlign = TextAlign.Center
+    )
 }
 
 @Composable
@@ -327,5 +311,44 @@ private fun BuyButton(
                     .align(Alignment.CenterVertically)
             )
         }
+    }
+}
+
+@Composable
+private fun BoxScope.CurrentBalance(
+    balance: Int,
+    longClickEnabled: Boolean,
+    onBalanceLongClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier
+            .align(Alignment.BottomEnd)
+            .padding(26.dp)
+            .navigationBarsPadding()
+            .clip(CircleShape)
+            .background(color = blueColor)
+            .combinedClickable(
+                enabled = longClickEnabled,
+                onClick = { },
+                onLongClick = onBalanceLongClick
+            )
+            .padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = balance.toString(),
+            color = Color.White,
+            fontSize = 36.sp,
+            fontStyle = FontStyle.Normal,
+            fontFamily = FontFamily.Monospace,
+            fontWeight = FontWeight.Normal
+        )
+        Spacer(Modifier.size(6.dp))
+        Image(
+            painter = painterResource(R.drawable.coin),
+            contentDescription = null,
+            Modifier.size(38.dp)
+        )
     }
 }

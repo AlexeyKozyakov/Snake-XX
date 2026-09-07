@@ -3,6 +3,7 @@ package com.alexey.kozyakov.snake.ui.language
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -40,7 +41,6 @@ fun SnakeGameLanguageScreen(
     )
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun SnakeGameLanguageScreen(
     modifier: Modifier = Modifier,
@@ -50,52 +50,69 @@ private fun SnakeGameLanguageScreen(
 ) {
     Box(modifier.fillMaxSize()) {
         SnakeGameMenuContainer(modifier) {
-            Text(
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .padding(bottom = 38.dp),
-                text = stringResource(R.string.language_settings_screen),
-                color = Color.White,
-                fontSize = 42.sp,
-                fontWeight = FontWeight.Bold,
-                fontFamily = FontFamily.Monospace,
-            )
-            Row {
-                Image(
-                    painter = painterResource(R.drawable.snake_yellow_xx),
-                    contentDescription = null,
-                    Modifier
-                        .padding(end = 18.dp)
-                        .size(64.dp),
-                )
-                Image(
-                    painter = painterResource(R.drawable.apple_alt),
-                    contentDescription = null,
-                    Modifier
-                        .padding(end = 18.dp)
-                        .size(64.dp),
-                )
-                Image(
-                    painter = painterResource(R.drawable.apple_green),
-                    contentDescription = null,
-                    Modifier.size(64.dp),
-                )
-            }
+            LanguagesHeader()
             Spacer(Modifier.size(32.dp))
-            languages.forEach { (language, selected) ->
-                SnakeGameMenuTextItem(
-                    Modifier
-                        .padding(bottom = 24.dp)
-                        .fillMaxColumnWidth(),
-                    primaryText = stringResource(language.nameResId),
-                    onClick = { onLanguageClick(language) },
-                    selected = selected
-                )
-            }
+            Languages(
+                languages = languages,
+                onLanguageClick = onLanguageClick
+            )
         }
         SnakeGameMenuBackButton(
             onClick = onBackClick,
             Modifier.align(Alignment.TopStart)
+        )
+    }
+}
+
+@Composable
+private fun FlowColumnScope.LanguagesHeader() {
+    Text(
+        modifier = Modifier
+            .align(Alignment.CenterHorizontally)
+            .padding(bottom = 38.dp),
+        text = stringResource(R.string.language_settings_screen),
+        color = Color.White,
+        fontSize = 42.sp,
+        fontWeight = FontWeight.Bold,
+        fontFamily = FontFamily.Monospace,
+    )
+    Row {
+        Image(
+            painter = painterResource(R.drawable.snake_yellow_xx),
+            contentDescription = null,
+            Modifier
+                .padding(end = 18.dp)
+                .size(64.dp),
+        )
+        Image(
+            painter = painterResource(R.drawable.apple_alt),
+            contentDescription = null,
+            Modifier
+                .padding(end = 18.dp)
+                .size(64.dp),
+        )
+        Image(
+            painter = painterResource(R.drawable.apple_green),
+            contentDescription = null,
+            Modifier.size(64.dp),
+        )
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun FlowColumnScope.Languages(
+    languages: List<LanguageItem>,
+    onLanguageClick: (SnakeGameLanguage) -> Unit
+) {
+    languages.forEach { (language, selected) ->
+        SnakeGameMenuTextItem(
+            Modifier
+                .padding(bottom = 24.dp)
+                .fillMaxColumnWidth(),
+            primaryText = stringResource(language.nameResId),
+            onClick = { onLanguageClick(language) },
+            selected = selected
         )
     }
 }

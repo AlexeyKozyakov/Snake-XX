@@ -3,6 +3,7 @@ package com.alexey.kozyakov.snake.ui.settings
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -48,7 +49,6 @@ fun SnakeGameSettingsScreen(
     )
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun SnakeGameSettingsScreen(
     modifier: Modifier = Modifier,
@@ -63,71 +63,15 @@ fun SnakeGameSettingsScreen(
 ) {
     Box(modifier.fillMaxSize()) {
         SnakeGameMenuContainer(Modifier.align(Alignment.Center)) {
-            Text(
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .padding(bottom = 38.dp),
-                text = stringResource(R.string.settings_screen),
-                color = Color.White,
-                fontSize = 42.sp,
-                fontWeight = FontWeight.Bold,
-                fontFamily = FontFamily.Monospace,
-            )
-            Row {
-                Image(
-                    painter = painterResource(skin.headXXResId),
-                    contentDescription = null,
-                    Modifier
-                        .padding(end = 18.dp)
-                        .size(64.dp),
-                )
-                Image(
-                    painter = painterResource(R.drawable.wall_block_0),
-                    contentDescription = null,
-                    Modifier
-                        .padding(end = 18.dp)
-                        .size(64.dp),
-                )
-                Image(
-                    painter = painterResource(R.drawable.snake_yellow_blob),
-                    contentDescription = null,
-                    Modifier.size(64.dp),
-                )
-            }
+            SettingsHeader(skin)
             Spacer(Modifier.size(32.dp))
-            SnakeGameMenuTextItem(
-                Modifier
-                    .padding(bottom = 24.dp)
-                    .fillMaxColumnWidth(),
-                primaryText = stringResource(R.string.vibration_setting),
-                secondaryText = enabledText(settings.vibrationEnabled),
-                secondaryTextSize = 22.sp,
-                onClick = onVibrationSettingClick
-            )
-            SnakeGameMenuTextItem(
-                Modifier
-                    .fillMaxColumnWidth(),
-                primaryText = stringResource(R.string.music_setting),
-                secondaryText = enabledText(settings.musicEnabled),
-                secondaryTextSize = 22.sp,
-                onClick = onMusicSettingClick
-            )
-            Spacer(Modifier.size(24.dp))
-            SnakeGameMenuTextItem(
-                modifier = Modifier
-                    .padding(bottom = 24.dp)
-                    .fillMaxColumnWidth(),
-                primaryText = stringResource(R.string.sound_effects_setting),
-                secondaryText = enabledText(settings.soundEffectsEnabled),
-                secondaryTextSize = 22.sp,
-                onClick = onSoundEffectsSettingClick
-            )
-            SnakeGameMenuTextItem(
-                modifier = Modifier.fillMaxColumnWidth(),
-                primaryText = stringResource(R.string.language_settings_item),
-                secondaryText = stringResource(language.nameResId),
-                secondaryTextSize = 22.sp,
-                onClick = onLanguageSettingClick
+            SettingsItems(
+                settings = settings,
+                language = language,
+                onVibrationSettingClick = onVibrationSettingClick,
+                onMusicSettingClick = onMusicSettingClick,
+                onSoundEffectsSettingClick = onSoundEffectsSettingClick,
+                onLanguageSettingClick = onLanguageSettingClick
             )
         }
         SnakeGameMenuBackButton(
@@ -135,6 +79,87 @@ fun SnakeGameSettingsScreen(
             Modifier.align(Alignment.TopStart)
         )
     }
+}
+
+@Composable
+private fun FlowColumnScope.SettingsHeader(skin: SnakeSkin) {
+    Text(
+        modifier = Modifier
+            .align(Alignment.CenterHorizontally)
+            .padding(bottom = 38.dp),
+        text = stringResource(R.string.settings_screen),
+        color = Color.White,
+        fontSize = 42.sp,
+        fontWeight = FontWeight.Bold,
+        fontFamily = FontFamily.Monospace,
+    )
+    Row {
+        Image(
+            painter = painterResource(skin.headXXResId),
+            contentDescription = null,
+            Modifier
+                .padding(end = 18.dp)
+                .size(64.dp),
+        )
+        Image(
+            painter = painterResource(R.drawable.wall_block_0),
+            contentDescription = null,
+            Modifier
+                .padding(end = 18.dp)
+                .size(64.dp),
+        )
+        Image(
+            painter = painterResource(R.drawable.snake_yellow_blob),
+            contentDescription = null,
+            Modifier.size(64.dp),
+        )
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun FlowColumnScope.SettingsItems(
+    settings: SnakeGameSettings,
+    language: SnakeGameLanguage,
+    onVibrationSettingClick: () -> Unit,
+    onMusicSettingClick: () -> Unit,
+    onSoundEffectsSettingClick: () -> Unit,
+    onLanguageSettingClick: () -> Unit
+) {
+    SnakeGameMenuTextItem(
+        Modifier
+            .padding(bottom = 24.dp)
+            .fillMaxColumnWidth(),
+        primaryText = stringResource(R.string.vibration_setting),
+        secondaryText = enabledText(settings.vibrationEnabled),
+        secondaryTextSize = 22.sp,
+        onClick = onVibrationSettingClick
+    )
+    SnakeGameMenuTextItem(
+        Modifier
+            .fillMaxColumnWidth(),
+        primaryText = stringResource(R.string.music_setting),
+        secondaryText = enabledText(settings.musicEnabled),
+        secondaryTextSize = 22.sp,
+        onClick = onMusicSettingClick
+    )
+    Spacer(Modifier.size(24.dp))
+    SnakeGameMenuTextItem(
+        modifier = Modifier
+            .padding(bottom = 24.dp)
+            .fillMaxColumnWidth(),
+        primaryText = stringResource(R.string.sound_effects_setting),
+        secondaryText = enabledText(settings.soundEffectsEnabled),
+        secondaryTextSize = 22.sp,
+        onClick = onSoundEffectsSettingClick
+    )
+    SnakeGameMenuTextItem(
+        modifier = Modifier.fillMaxColumnWidth(),
+        primaryText = stringResource(R.string.language_settings_item),
+        secondaryText = stringResource(language.nameResId),
+        secondaryTextSize = 22.sp,
+        onClick = onLanguageSettingClick
+    )
 }
 
 @Composable
