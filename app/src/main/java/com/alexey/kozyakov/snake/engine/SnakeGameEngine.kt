@@ -340,9 +340,7 @@ private class SnakeGameEngineImpl(
             initNewApple(apples, snakes, walls)
         }
         if (goldAppleEaten) {
-            val badApples = apples.values.filter { apple ->
-                !apple.type.isGoodOrBonus
-            }
+            val badApples = apples.values.filter { apple -> apple.isBad }
             badApples.forEach { apple ->
                 apples[apple.position] = Apple(
                     position = apple.position,

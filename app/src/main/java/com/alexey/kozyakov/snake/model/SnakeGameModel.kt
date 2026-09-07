@@ -60,6 +60,10 @@ class Apple(
     val position: Position,
     val type: AppleType
 ) {
+    val isBad get() = type.group == AppleGroup.BAD
+    val isBonus get() = type.group == AppleGroup.BONUS
+    val isMoney get() = type.group == AppleGroup.MONEY
+
     fun transposed(): Apple {
         return Apple(
             position = position.transposed(),
@@ -68,51 +72,19 @@ class Apple(
     }
 }
 
-enum class AppleType(
-    val isGoodOrBonus: Boolean,
-    val isBonus: Boolean,
-    val isMoney: Boolean
-) {
-    GOOD_1(
-        isGoodOrBonus = true,
-        isBonus = false,
-        isMoney = false
-    ),
-    GOOD_2(
-        isGoodOrBonus = true,
-        isBonus = false,
-        isMoney = false
-    ),
-    BAD(
-        isGoodOrBonus = false,
-        isBonus = false,
-        isMoney = false
-    ),
-    OMNIVOROUSNESS(
-        isGoodOrBonus = true,
-        isBonus = true,
-        isMoney = false
-    ),
-    BOMB(
-        isGoodOrBonus = false,
-        isBonus = false,
-        isMoney = false
-    ),
-    GOLDEN(
-        isGoodOrBonus = true,
-        isBonus = true,
-        isMoney = false
-    ),
-    COIN(
-        isGoodOrBonus = true,
-        isBonus = false,
-        isMoney = true
-    ),
-    DIAMOND(
-        isGoodOrBonus = true,
-        isBonus = false,
-        isMoney = true
-    )
+enum class AppleGroup {
+    GOOD, BONUS, MONEY, BAD
+}
+
+enum class AppleType(val group: AppleGroup) {
+    GOOD_1(group = AppleGroup.GOOD),
+    GOOD_2(group = AppleGroup.GOOD),
+    BAD(group = AppleGroup.BAD),
+    OMNIVOROUSNESS(group = AppleGroup.BONUS),
+    BOMB(group = AppleGroup.BAD),
+    GOLDEN(group = AppleGroup.BONUS),
+    COIN(group = AppleGroup.MONEY),
+    DIAMOND(group = AppleGroup.MONEY);
 }
 
 sealed interface Wall {

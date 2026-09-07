@@ -119,7 +119,7 @@ class SnakeGameRenderer(private val sprites: SnakeGameSprites) {
                 AppleType.COIN -> sprites.coin
                 AppleType.DIAMOND -> sprites.diamond
             }
-            if (apple.type.isBonus) {
+            if (apple.isBonus) {
                 drawCircle(
                     color = goldColor,
                     radius = cellSize,

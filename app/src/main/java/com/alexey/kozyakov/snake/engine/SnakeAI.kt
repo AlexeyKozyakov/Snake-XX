@@ -25,9 +25,9 @@ class SnakeAI(
             val targetApple = model.apples
                 .filter { apple ->
                     if (snake.omnivorousTicksRemaining > 0) {
-                        apple.type != AppleType.GOLDEN && !apple.type.isMoney
+                        apple.type != AppleType.GOLDEN && !apple.isMoney
                     } else {
-                        apple.type.isGoodOrBonus && !apple.type.isMoney
+                        !apple.isBad && !apple.isMoney
                     }
                 }
                 .minByOrNull { apple ->
@@ -59,7 +59,7 @@ class SnakeAI(
             || model.walls
                 .any { wall -> wall.containsPosition(nextPosition) }
             || snake.omnivorousTicksRemaining <= 0 && model.apples
-                .filter { apple -> !apple.type.isGoodOrBonus }
+                .filter { apple -> apple.isBad }
                 .any { apple -> nextPosition == apple.position }
         ) {
             directionToTarget.opposite()
