@@ -142,10 +142,7 @@ fun SnakeGameReferenceScreen(
             }
         }
 
-        SnakeGameMenuBackButton(
-            onClick = navigateBack,
-            Modifier.align(Alignment.TopStart)
-        )
+        SnakeGameMenuBackButton(onClick = navigateBack)
     }
 }
 

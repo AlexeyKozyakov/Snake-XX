@@ -114,14 +114,11 @@ private fun SnakeShopScreen(
                 )
             }
         }
-        SnakeGameMenuBackButton(
-            onClick = onBackClick,
-            Modifier.align(Alignment.TopStart)
-        )
+        SnakeGameMenuBackButton(onClick = onBackClick)
         CurrentBalance(
             balance = balance,
             longClickEnabled = balanceLongClickEnabled,
-            onBalanceLongClick = onBalanceLongClick
+            onLongClick = onBalanceLongClick
         )
     }
 }
@@ -318,7 +315,7 @@ private fun BuyButton(
 private fun BoxScope.CurrentBalance(
     balance: Int,
     longClickEnabled: Boolean,
-    onBalanceLongClick: () -> Unit,
+    onLongClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -331,7 +328,7 @@ private fun BoxScope.CurrentBalance(
             .combinedClickable(
                 enabled = longClickEnabled,
                 onClick = { },
-                onLongClick = onBalanceLongClick
+                onLongClick = onLongClick
             )
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically

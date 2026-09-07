@@ -57,10 +57,7 @@ private fun SnakeGameLanguageScreen(
                 onLanguageClick = onLanguageClick
             )
         }
-        SnakeGameMenuBackButton(
-            onClick = onBackClick,
-            Modifier.align(Alignment.TopStart)
-        )
+        SnakeGameMenuBackButton(onClick = onBackClick)
     }
 }
 
