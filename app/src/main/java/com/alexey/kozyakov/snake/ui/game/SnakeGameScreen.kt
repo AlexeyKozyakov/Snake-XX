@@ -2,6 +2,7 @@ package com.alexey.kozyakov.snake.ui.game
 
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeOut
@@ -195,11 +196,7 @@ private fun BoxScope.BalanceDisplay(
             fontSize = 16.sp
         )
         Spacer(Modifier.size(4.dp))
-        AnimatedVisibility(
-            visible = addedBalanceVisible,
-            enter = EnterTransition.None,
-            exit = fadeOut(animationSpec = tween(durationMillis = FADE_OUT_ANIMATION_DURATION)),
-        ) {
+        FadeOut(visible = addedBalanceVisible) {
             MonospaceText(
                 text = "+$addedBalanceAmount",
                 color = addedBalanceColor,
@@ -350,10 +347,8 @@ private fun BoxScope.ConsumedBooster(
 ) {
     val wallsEatingBitmap = ImageBitmap.imageResource(R.drawable.booster_eat_walls)
     val snakeEatingBitmap = ImageBitmap.imageResource(R.drawable.booster_eat_snake)
-    AnimatedVisibility(
+    FadeOut(
         visible = visible,
-        enter = EnterTransition.None,
-        exit = fadeOut(animationSpec = tween(durationMillis = FADE_OUT_ANIMATION_DURATION)),
         modifier = modifier
             .align(Alignment.Center)
             .alpha(0.8f)
@@ -405,11 +400,9 @@ private fun BoxScope.LevelAndConfirmation(
     modifier: Modifier = Modifier
 ) {
     Column(modifier.align(Alignment.Center)) {
-        AnimatedVisibility(
-            showLevel,
-            Modifier.align(Alignment.CenterHorizontally),
-            enter = EnterTransition.None,
-            exit = fadeOut(animationSpec = tween(durationMillis = FADE_OUT_ANIMATION_DURATION))
+        FadeOut(
+            visible = showLevel,
+            modifier = Modifier.align(Alignment.CenterHorizontally)
         ) {
             MonospaceText(
                 text = stringResource(R.string.level, level + 1),
@@ -417,11 +410,9 @@ private fun BoxScope.LevelAndConfirmation(
                 fontWeight = FontWeight.Bold,
             )
         }
-        AnimatedVisibility(
-            showConfirmation,
-            Modifier.align(Alignment.CenterHorizontally),
-            enter = EnterTransition.None,
-            exit = fadeOut(animationSpec = tween(durationMillis = 700))
+        FadeOut(
+            visible = showConfirmation,
+            modifier = Modifier.align(Alignment.CenterHorizontally),
         ) {
             MonospaceText(
                 text = stringResource(R.string.confirmation),
@@ -526,5 +517,20 @@ private fun BoxScope.DirectionButton(
                 }
             },
         colorFilter = ColorFilter.tint(if (pressed) pressedButtonColor else Color.White)
+    )
+}
+
+@Composable
+private fun FadeOut(
+    visible: Boolean,
+    modifier: Modifier = Modifier,
+    content: @Composable AnimatedVisibilityScope.() -> Unit
+) {
+    AnimatedVisibility(
+        visible,
+        modifier,
+        enter = EnterTransition.None,
+        exit = fadeOut(animationSpec = tween(durationMillis = FADE_OUT_ANIMATION_DURATION)),
+        content = content
     )
 }
