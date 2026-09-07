@@ -146,62 +146,86 @@ class SnakeGameRenderer(private val sprites: SnakeGameSprites) {
                 }
 
                 is Wall.HorizontalLine -> {
-                    renderScaledSprite(
-                        position = wall.startPosition,
-                        cellSize = cellSize,
-                        sprite = sprites.leftWall,
-                        scale = 1.2f
-                    )
-                    if (wall.startPosition.x + 1 < wall.endPosition.x) {
-                        drawImage(
-                            image = sprites.horizontalWall,
-                            dstOffset = IntOffset(
-                                x = ((wall.startPosition.x + 1) * cellSize).toInt(),
-                                y = (wall.startPosition.y * cellSize - cellSize * 0.1f).toInt()
-                            ),
-                            dstSize = IntSize(
-                                width = (cellSize * (wall.endPosition.x - wall.startPosition.x - 1)).toInt(),
-                                height = (cellSize * 1.2f).toInt()
-                            )
-                        )
-                    }
-                    renderScaledSprite(
-                        position = wall.endPosition,
-                        cellSize = cellSize,
-                        sprite = sprites.rightWall,
-                        scale = 1.2f
+                    renderHorizontalWall(
+                        startPosition = wall.startPosition,
+                        endPosition = wall.endPosition,
+                        cellSize = cellSize
                     )
                 }
 
                 is Wall.VerticalLine -> {
-                    renderScaledSprite(
-                        position = wall.startPosition,
-                        cellSize = cellSize,
-                        sprite = sprites.topWall,
-                        scale = 1.2f
-                    )
-                    if (wall.startPosition.y + 1 < wall.endPosition.y) {
-                        drawImage(
-                            image = sprites.verticalWall,
-                            dstOffset = IntOffset(
-                                x = (wall.startPosition.x * cellSize - cellSize * 0.1f).toInt(),
-                                y = ((wall.startPosition.y + 1) * cellSize).toInt()
-                            ),
-                            dstSize = IntSize(
-                                width = (cellSize * 1.2f).toInt(),
-                                height = ((wall.endPosition.y - wall.startPosition.y - 1) * cellSize).toInt()
-                            )
-                        )
-                    }
-                    renderScaledSprite(
-                        position = wall.endPosition,
-                        cellSize = cellSize,
-                        sprite = sprites.bottomWall,
-                        scale = 1.2f
+                    renderVerticalWall(
+                        startPosition = wall.startPosition,
+                        endPosition = wall.endPosition,
+                        cellSize = cellSize
                     )
                 }
             }
         }
+    }
+
+    private fun DrawScope.renderHorizontalWall(
+        startPosition: Position,
+        endPosition: Position,
+        cellSize: Float
+    ) {
+        renderScaledSprite(
+            position = startPosition,
+            cellSize = cellSize,
+            sprite = sprites.leftWall,
+            scale = 1.2f
+        )
+        if (startPosition.x + 1 < endPosition.x) {
+            drawImage(
+                image = sprites.horizontalWall,
+                dstOffset = IntOffset(
+                    x = ((startPosition.x + 1) * cellSize).toInt(),
+                    y = (startPosition.y * cellSize - cellSize * 0.1f).toInt()
+                ),
+                dstSize = IntSize(
+                    width = (cellSize * (endPosition.x - startPosition.x - 1)).toInt(),
+                    height = (cellSize * 1.2f).toInt()
+                )
+            )
+        }
+        renderScaledSprite(
+            position = endPosition,
+            cellSize = cellSize,
+            sprite = sprites.rightWall,
+            scale = 1.2f
+        )
+    }
+
+    private fun DrawScope.renderVerticalWall(
+        startPosition: Position,
+        endPosition: Position,
+        cellSize: Float
+    ) {
+        renderScaledSprite(
+            position = startPosition,
+            cellSize = cellSize,
+            sprite = sprites.topWall,
+            scale = 1.2f
+        )
+        if (startPosition.y + 1 < endPosition.y) {
+            drawImage(
+                image = sprites.verticalWall,
+                dstOffset = IntOffset(
+                    x = (startPosition.x * cellSize - cellSize * 0.1f).toInt(),
+                    y = ((startPosition.y + 1) * cellSize).toInt()
+                ),
+                dstSize = IntSize(
+                    width = (cellSize * 1.2f).toInt(),
+                    height = ((endPosition.y - startPosition.y - 1) * cellSize).toInt()
+                )
+            )
+        }
+        renderScaledSprite(
+            position = endPosition,
+            cellSize = cellSize,
+            sprite = sprites.bottomWall,
+            scale = 1.2f
+        )
     }
 
     private fun DrawScope.renderScaledSprite(

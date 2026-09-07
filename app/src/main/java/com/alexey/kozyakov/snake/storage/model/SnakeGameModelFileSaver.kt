@@ -147,7 +147,7 @@ class SnakeGameModelFileSaver(context: Context) {
                                     )
                                 }
 
-                                else -> throw IllegalStateException("Unsupported wall type: $ordinal")
+                                else -> error("Unsupported wall type: $ordinal")
                             }
                         }
                         val continueCount = if (version >= 2) readInt() else 0
