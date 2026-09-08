@@ -1,5 +1,5 @@
 ## Snake XX
-<img src="./app/src/main/res/drawable/app_icon.png" alt="Game logo" width="150" height="150">
+<img src="./app_icon.png" alt="Game logo" width="150" height="150">
 Snake XX is the classic snake game for android with some additional mechanics written using Jetpack Compose.
 
 ## How to play
