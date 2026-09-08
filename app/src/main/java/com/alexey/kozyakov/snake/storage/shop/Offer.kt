@@ -87,7 +87,7 @@ enum class Offer(
     ),
     BOOSTER_WALLS_EATING(
         type = OfferType.BOOSTER,
-        price = 50,
+        price = 25,
         productId = SnakeBooster.WALLS_EATING.ordinal,
         iconResId = R.drawable.booster_eat_walls,
         nameResId = R.string.booster_name_walls_eating,
@@ -95,7 +95,7 @@ enum class Offer(
     ),
     BOOSTER_SNAKE_EATING(
         type = OfferType.BOOSTER,
-        price = 100,
+        price = 50,
         productId = SnakeBooster.SNAKE_EATING.ordinal,
         iconResId = R.drawable.booster_eat_snake,
         nameResId = R.string.booster_name_snake_eating,
