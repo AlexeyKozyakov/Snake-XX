@@ -65,9 +65,10 @@ class SnakeGameRenderer(private val sprites: SnakeGameSprites) {
         drawRect(color = Color.Black, topLeft = Offset(0f, 0f), size = size)
         renderGrid(model.gridWidth, model.gridHeight, cellSize)
         renderWalls(model.walls, cellSize)
-        model.snakes.reversed().forEach { snake ->
-            if (!model.gameIsOver || snake.type != SnakeType.MAIN) {
-                renderSnake(snake, cellSize)
+        model.snakes.asReversed().forEach { snake ->
+            when (snake.type) {
+                SnakeType.MAIN -> if (!model.gameIsOver) renderSnake(snake, cellSize)
+                SnakeType.SECONDARY -> renderSnake(snake, cellSize)
             }
         }
         renderApples(model.apples, cellSize)
