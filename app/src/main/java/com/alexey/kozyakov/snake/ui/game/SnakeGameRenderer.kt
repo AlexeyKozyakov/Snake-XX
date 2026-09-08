@@ -29,34 +29,15 @@ import com.alexey.kozyakov.snake.storage.skins.SnakeSkin
 import kotlin.math.min
 
 
-class SnakeGameSprites(
-    val redApple: ImageBitmap,
-    val greenApple: ImageBitmap,
-    val goldApple: ImageBitmap,
-    val badApple: ImageBitmap,
-    val coin: ImageBitmap,
-    val diamond: ImageBitmap,
-    val mainSnakeBody: ImageBitmap,
-    val mainSnakeHead: ImageBitmap,
-    val mainSnakeHeadXX: ImageBitmap,
-    val secondarySnakeBody: ImageBitmap,
-    val secondarySnakeHead: ImageBitmap,
-    val secondarySnakeHeadXX: ImageBitmap,
-    val easterEgg: ImageBitmap,
-    val bomb: ImageBitmap,
-    val blockWall: ImageBitmap,
-    val leftWall: ImageBitmap,
-    val horizontalWall: ImageBitmap,
-    val rightWall: ImageBitmap,
-    val bottomWall: ImageBitmap,
-    val verticalWall: ImageBitmap,
-    val topWall: ImageBitmap
-)
+private const val MAIN_SPRITES_SCALE = 1.35f
+private const val WALL_SPRITES_SCALE = 1.2f
+private const val NO_SCALE = 1.0f
+
+private val grassColor = Color(0xFF204821)
+private val gridColor = Color(0xFF547C54)
+private val goldColor = Color(0x72FFD700)
 
 class SnakeGameRenderer(private val sprites: SnakeGameSprites) {
-    private val grassColor = Color(0xFF204821)
-    private val gridColor = Color(0xFF547C54)
-    private val goldColor = Color(0x72FFD700)
 
     context(scope: DrawScope)
     fun renderSnakeGame(model: SnakeGameModel) = with(scope) {
@@ -114,7 +95,7 @@ class SnakeGameRenderer(private val sprites: SnakeGameSprites) {
         while (iterator.hasNext()) {
             val position = iterator.next()
             val sprite = if (iterator.hasNext()) bodySprite else headSprite
-            renderScaledSprite(position, cellSize, sprite, scale = 1.35f)
+            renderScaledSprite(position, cellSize, sprite, MAIN_SPRITES_SCALE)
         }
     }
 
@@ -140,7 +121,7 @@ class SnakeGameRenderer(private val sprites: SnakeGameSprites) {
                     )
                 )
             }
-            renderScaledSprite(apple.position, cellSize, sprite, scale = 1.35f)
+            renderScaledSprite(apple.position, cellSize, sprite, MAIN_SPRITES_SCALE)
         }
     }
 
@@ -152,7 +133,7 @@ class SnakeGameRenderer(private val sprites: SnakeGameSprites) {
                         position = wall.position,
                         cellSize = cellSize,
                         sprite = sprites.blockWall,
-                        scale = 1.2f
+                        scale = WALL_SPRITES_SCALE
                     )
                 }
 
@@ -184,18 +165,26 @@ class SnakeGameRenderer(private val sprites: SnakeGameSprites) {
             position = startPosition,
             cellSize = cellSize,
             sprite = sprites.leftWall,
-            scale = 1.2f
+            scale = WALL_SPRITES_SCALE
         )
         if (startPosition.x + 1 < endPosition.x) {
             drawImage(
                 image = sprites.horizontalWall,
                 dstOffset = IntOffset(
-                    x = ((startPosition.x + 1) * cellSize).toInt(),
-                    y = (startPosition.y * cellSize - cellSize * 0.1f).toInt()
+                    x = calculateDstOffset(
+                        gridPosition = startPosition.x + 1,
+                        cellSize = cellSize,
+                        spriteScale = NO_SCALE
+                    ),
+                    y = calculateDstOffset(
+                        gridPosition = startPosition.y,
+                        cellSize = cellSize,
+                        spriteScale = WALL_SPRITES_SCALE
+                    )
                 ),
                 dstSize = IntSize(
                     width = (cellSize * (endPosition.x - startPosition.x - 1)).toInt(),
-                    height = (cellSize * 1.2f).toInt()
+                    height = (cellSize * WALL_SPRITES_SCALE).toInt()
                 )
             )
         }
@@ -203,7 +192,7 @@ class SnakeGameRenderer(private val sprites: SnakeGameSprites) {
             position = endPosition,
             cellSize = cellSize,
             sprite = sprites.rightWall,
-            scale = 1.2f
+            scale = WALL_SPRITES_SCALE
         )
     }
 
@@ -216,17 +205,25 @@ class SnakeGameRenderer(private val sprites: SnakeGameSprites) {
             position = startPosition,
             cellSize = cellSize,
             sprite = sprites.topWall,
-            scale = 1.2f
+            scale = WALL_SPRITES_SCALE
         )
         if (startPosition.y + 1 < endPosition.y) {
             drawImage(
                 image = sprites.verticalWall,
                 dstOffset = IntOffset(
-                    x = (startPosition.x * cellSize - cellSize * 0.1f).toInt(),
-                    y = ((startPosition.y + 1) * cellSize).toInt()
+                    x = calculateDstOffset(
+                        gridPosition = startPosition.x,
+                        cellSize = cellSize,
+                        spriteScale = WALL_SPRITES_SCALE
+                    ),
+                    y = calculateDstOffset(
+                        gridPosition = startPosition.y + 1,
+                        cellSize = cellSize,
+                        spriteScale = NO_SCALE
+                    )
                 ),
                 dstSize = IntSize(
-                    width = (cellSize * 1.2f).toInt(),
+                    width = (cellSize * WALL_SPRITES_SCALE).toInt(),
                     height = ((endPosition.y - startPosition.y - 1) * cellSize).toInt()
                 )
             )
@@ -235,7 +232,7 @@ class SnakeGameRenderer(private val sprites: SnakeGameSprites) {
             position = endPosition,
             cellSize = cellSize,
             sprite = sprites.bottomWall,
-            scale = 1.2f
+            scale = WALL_SPRITES_SCALE
         )
     }
 
@@ -248,8 +245,16 @@ class SnakeGameRenderer(private val sprites: SnakeGameSprites) {
         drawImage(
             image = sprite,
             dstOffset = IntOffset(
-                x = (position.x * cellSize - cellSize * (scale - 1) / 2).toInt(),
-                y = (position.y * cellSize - cellSize * (scale - 1) / 2).toInt()
+                x = calculateDstOffset(
+                    gridPosition = position.x,
+                    cellSize = cellSize,
+                    spriteScale = scale
+                ),
+                y = calculateDstOffset(
+                    gridPosition = position.y,
+                    cellSize = cellSize,
+                    spriteScale = scale
+                )
             ),
             dstSize = IntSize(
                 width = (cellSize * scale).toInt(),
@@ -257,7 +262,39 @@ class SnakeGameRenderer(private val sprites: SnakeGameSprites) {
             )
         )
     }
+
+    private fun calculateDstOffset(
+        gridPosition: Int,
+        cellSize: Float,
+        spriteScale: Float
+    ): Int {
+        return (gridPosition * cellSize - cellSize * (spriteScale - 1) / 2).toInt()
+    }
 }
+
+class SnakeGameSprites(
+    val redApple: ImageBitmap,
+    val greenApple: ImageBitmap,
+    val goldApple: ImageBitmap,
+    val badApple: ImageBitmap,
+    val coin: ImageBitmap,
+    val diamond: ImageBitmap,
+    val mainSnakeBody: ImageBitmap,
+    val mainSnakeHead: ImageBitmap,
+    val mainSnakeHeadXX: ImageBitmap,
+    val secondarySnakeBody: ImageBitmap,
+    val secondarySnakeHead: ImageBitmap,
+    val secondarySnakeHeadXX: ImageBitmap,
+    val easterEgg: ImageBitmap,
+    val bomb: ImageBitmap,
+    val blockWall: ImageBitmap,
+    val leftWall: ImageBitmap,
+    val horizontalWall: ImageBitmap,
+    val rightWall: ImageBitmap,
+    val bottomWall: ImageBitmap,
+    val verticalWall: ImageBitmap,
+    val topWall: ImageBitmap
+)
 
 @Composable
 fun rememberSnakeGameRenderer(snakeSkin: SnakeSkin): SnakeGameRenderer {
