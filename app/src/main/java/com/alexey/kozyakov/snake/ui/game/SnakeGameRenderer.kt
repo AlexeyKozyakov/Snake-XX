@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.drawscope.DrawScope
@@ -25,6 +26,7 @@ import com.alexey.kozyakov.snake.model.SnakeModel
 import com.alexey.kozyakov.snake.model.SnakeType
 import com.alexey.kozyakov.snake.model.Wall
 import com.alexey.kozyakov.snake.storage.skins.SnakeSkin
+import kotlin.math.min
 
 
 class SnakeGameSprites(
@@ -58,8 +60,9 @@ class SnakeGameRenderer(private val sprites: SnakeGameSprites) {
 
     context(scope: DrawScope)
     fun renderSnakeGame(model: SnakeGameModel) = with(scope) {
-        val cellSize = size.width / model.gridWidth
-        drawRect(color = grassColor, topLeft = Offset(0f, 0f), size = size)
+        val cellSize =
+            min(size.width, size.height) / min(model.gridWidth, model.gridHeight)
+        drawRect(color = Color.Black, topLeft = Offset(0f, 0f), size = size)
         renderGrid(model.gridWidth, model.gridHeight, cellSize)
         renderWalls(model.walls, cellSize)
         model.snakes.reversed().forEach { snake ->
@@ -71,18 +74,25 @@ class SnakeGameRenderer(private val sprites: SnakeGameSprites) {
     }
 
     private fun DrawScope.renderGrid(width: Int, height: Int, cellSize: Float) {
+        val widthPx = width * cellSize
+        val heightPx = height * cellSize
+        drawRect(
+            color = grassColor,
+            topLeft = Offset(0f, 0f),
+            size = Size(width = widthPx, height = heightPx)
+        )
         for (i in 0..width) {
             drawLine(
                 color = gridColor,
                 start = Offset(x = i * cellSize, y = 0f),
-                end = Offset(x = i * cellSize, y = size.height)
+                end = Offset(x = i * cellSize, y = heightPx)
             )
         }
         for (i in 0..height) {
             drawLine(
                 color = gridColor,
                 start = Offset(x = 0f, y = i * cellSize),
-                end = Offset(x = size.width, y = i * cellSize)
+                end = Offset(x = widthPx, y = i * cellSize)
             )
         }
     }
