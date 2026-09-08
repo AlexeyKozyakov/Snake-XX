@@ -15,9 +15,9 @@ import com.alexey.kozyakov.snake.ui.components.BlackBox
 fun SnakeSplashScreen(modifier: Modifier = Modifier) {
     BlackBox(modifier) {
         Image(
-            painter = painterResource(R.drawable.snake_head_xx_default),
+            painter = painterResource(R.drawable.splash_screen_icon),
             contentDescription = null,
-            Modifier.align(Alignment.Center).size(160.dp)
+            Modifier.align(Alignment.Center).size(288.dp)
         )
     }
 }
