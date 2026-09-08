@@ -41,18 +41,20 @@ class SnakeGameRenderer(private val sprites: SnakeGameSprites) {
 
     context(scope: DrawScope)
     fun renderSnakeGame(model: SnakeGameModel) = with(scope) {
-        val cellSize =
-            min(size.width, size.height) / min(model.gridWidth, model.gridHeight)
-        drawRect(color = Color.Black, topLeft = Offset(0f, 0f), size = size)
+        val cellSize = calculateCellSize(model.gridWidth, model.gridHeight)
+        renderBackground()
         renderGrid(model.gridWidth, model.gridHeight, cellSize)
         renderWalls(model.walls, cellSize)
-        model.snakes.asReversed().forEach { snake ->
-            when (snake.type) {
-                SnakeType.MAIN -> if (!model.gameIsOver) renderSnake(snake, cellSize)
-                SnakeType.SECONDARY -> renderSnake(snake, cellSize)
-            }
-        }
+        renderSnakes(model.snakes, model.gameIsOver, cellSize)
         renderApples(model.apples, cellSize)
+    }
+
+    private fun DrawScope.calculateCellSize(gridWidth: Int, gridHeight: Int): Float {
+        return min(size.width, size.height) / min(gridWidth, gridHeight)
+    }
+
+    private fun DrawScope.renderBackground() {
+        drawRect(color = Color.Black, topLeft = Offset(0f, 0f), size = size)
     }
 
     private fun DrawScope.renderGrid(width: Int, height: Int, cellSize: Float) {
@@ -76,52 +78,6 @@ class SnakeGameRenderer(private val sprites: SnakeGameSprites) {
                 start = Offset(x = 0f, y = i * cellSize),
                 end = Offset(x = widthPx, y = i * cellSize)
             )
-        }
-    }
-
-    private fun DrawScope.renderSnake(snake: SnakeModel, cellSize: Float) {
-        val headSprite = when (snake.type) {
-            SnakeType.MAIN ->
-                if (snake.omnivorousTicksRemaining > 0) sprites.mainSnakeHeadXX else sprites.mainSnakeHead
-
-            SnakeType.SECONDARY ->
-                if (snake.omnivorousTicksRemaining > 0) sprites.secondarySnakeHeadXX else sprites.secondarySnakeHead
-        }
-        val bodySprite = when (snake.type) {
-            SnakeType.MAIN -> sprites.mainSnakeBody
-            SnakeType.SECONDARY -> sprites.secondarySnakeBody
-        }
-        val iterator = snake.elements.iterator()
-        while (iterator.hasNext()) {
-            val position = iterator.next()
-            val sprite = if (iterator.hasNext()) bodySprite else headSprite
-            renderScaledSprite(position, cellSize, sprite, MAIN_SPRITES_SCALE)
-        }
-    }
-
-    private fun DrawScope.renderApples(apples: Sequence<Apple>, cellSize: Float) {
-        for (apple in apples) {
-            val sprite = when (apple.type) {
-                AppleType.GOOD_1 -> sprites.redApple
-                AppleType.GOOD_2 -> sprites.greenApple
-                AppleType.BAD -> sprites.badApple
-                AppleType.OMNIVOROUSNESS -> sprites.easterEgg
-                AppleType.BOMB -> sprites.bomb
-                AppleType.GOLDEN -> sprites.goldApple
-                AppleType.COIN -> sprites.coin
-                AppleType.DIAMOND -> sprites.diamond
-            }
-            if (apple.isBonus) {
-                drawCircle(
-                    color = goldColor,
-                    radius = cellSize,
-                    center = Offset(
-                        x = apple.position.x * cellSize + cellSize / 2,
-                        y = apple.position.y * cellSize + cellSize / 2
-                    )
-                )
-            }
-            renderScaledSprite(apple.position, cellSize, sprite, MAIN_SPRITES_SCALE)
         }
     }
 
@@ -234,6 +190,65 @@ class SnakeGameRenderer(private val sprites: SnakeGameSprites) {
             sprite = sprites.bottomWall,
             scale = WALL_SPRITES_SCALE
         )
+    }
+
+    private fun DrawScope.renderSnakes(
+        snakes: List<SnakeModel>,
+        gameIsOver: Boolean,
+        cellSize: Float
+    ) {
+        snakes.asReversed().forEach { snake ->
+            when (snake.type) {
+                SnakeType.MAIN -> if (!gameIsOver) renderSnake(snake, cellSize)
+                SnakeType.SECONDARY -> renderSnake(snake, cellSize)
+            }
+        }
+    }
+
+    private fun DrawScope.renderSnake(snake: SnakeModel, cellSize: Float) {
+        val headSprite = when (snake.type) {
+            SnakeType.MAIN ->
+                if (snake.omnivorousTicksRemaining > 0) sprites.mainSnakeHeadXX else sprites.mainSnakeHead
+
+            SnakeType.SECONDARY ->
+                if (snake.omnivorousTicksRemaining > 0) sprites.secondarySnakeHeadXX else sprites.secondarySnakeHead
+        }
+        val bodySprite = when (snake.type) {
+            SnakeType.MAIN -> sprites.mainSnakeBody
+            SnakeType.SECONDARY -> sprites.secondarySnakeBody
+        }
+        val iterator = snake.elements.iterator()
+        while (iterator.hasNext()) {
+            val position = iterator.next()
+            val sprite = if (iterator.hasNext()) bodySprite else headSprite
+            renderScaledSprite(position, cellSize, sprite, MAIN_SPRITES_SCALE)
+        }
+    }
+
+    private fun DrawScope.renderApples(apples: Sequence<Apple>, cellSize: Float) {
+        for (apple in apples) {
+            val sprite = when (apple.type) {
+                AppleType.GOOD_1 -> sprites.redApple
+                AppleType.GOOD_2 -> sprites.greenApple
+                AppleType.BAD -> sprites.badApple
+                AppleType.OMNIVOROUSNESS -> sprites.easterEgg
+                AppleType.BOMB -> sprites.bomb
+                AppleType.GOLDEN -> sprites.goldApple
+                AppleType.COIN -> sprites.coin
+                AppleType.DIAMOND -> sprites.diamond
+            }
+            if (apple.isBonus) {
+                drawCircle(
+                    color = goldColor,
+                    radius = cellSize,
+                    center = Offset(
+                        x = apple.position.x * cellSize + cellSize / 2,
+                        y = apple.position.y * cellSize + cellSize / 2
+                    )
+                )
+            }
+            renderScaledSprite(apple.position, cellSize, sprite, MAIN_SPRITES_SCALE)
+        }
     }
 
     private fun DrawScope.renderScaledSprite(
