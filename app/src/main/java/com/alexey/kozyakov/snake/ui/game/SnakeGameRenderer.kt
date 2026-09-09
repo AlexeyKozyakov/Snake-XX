@@ -217,10 +217,9 @@ class SnakeGameRenderer(private val sprites: SnakeGameSprites) {
             SnakeType.MAIN -> sprites.mainSnakeBody
             SnakeType.SECONDARY -> sprites.secondarySnakeBody
         }
-        val iterator = snake.elements.iterator()
-        while (iterator.hasNext()) {
-            val position = iterator.next()
-            val sprite = if (iterator.hasNext()) bodySprite else headSprite
+        snake.elements.forEachIndexed { index, position ->
+            val isBody = index < snake.length - 1
+            val sprite = if (isBody) bodySprite else headSprite
             renderScaledSprite(position, cellSize, sprite, MAIN_SPRITES_SCALE)
         }
     }
@@ -378,6 +377,14 @@ private fun Preview(
             Apple(
                 position = Position(x = 11, y = 1),
                 type = AppleType.GOLDEN
+            ),
+            Apple(
+                position = Position(x = 13, y = 1),
+                type = AppleType.COIN
+            ),
+            Apple(
+                position = Position(x = 1, y = 3),
+                type = AppleType.DIAMOND
             )
         ),
         snakes = listOf(
@@ -408,7 +415,7 @@ private fun Preview(
                 type = SnakeType.SECONDARY,
                 omnivorousTicksRemaining = 1,
                 direction = Direction.DOWN,
-                length = 7
+                length = 6
             )
         ),
         walls = listOf(

@@ -48,16 +48,20 @@ interface SnakeGameEngine {
             boostersSupplier: SnakeBoostersSupplier = SnakeBoostersSupplier.empty()
         ): SnakeGameEngine {
             val initialSnakes = model.snakes.map { snakeModel ->
-                val elementsIterator = snakeModel.elements.iterator()
-                val tail = SnakeElement(position = elementsIterator.next())
-                var head = tail
-                while (elementsIterator.hasNext()) {
-                    head.next = SnakeElement(position = elementsIterator.next())
-                    head = head.next!!
+                var head: SnakeElement? = null
+                var tail: SnakeElement? = null
+                for (position in snakeModel.elements) {
+                    if (head == null) {
+                        head = SnakeElement(position = position)
+                        tail = head
+                    } else {
+                        head.next = SnakeElement(position = position)
+                        head = head.next
+                    }
                 }
                 Snake(
-                    head = head,
-                    tail = tail,
+                    head = head!!,
+                    tail = tail!!,
                     direction = snakeModel.direction,
                     committedDirection = snakeModel.direction,
                     length = snakeModel.length,
@@ -116,7 +120,7 @@ private const val AI_SNAKE_ID = 1
 private class SnakeGameEngineImpl(
     private var gridWidth: Int,
     private var gridHeight: Int,
-    private val boostersSupplier: SnakeBoostersSupplier = SnakeBoostersSupplier.empty(),
+    private val boostersSupplier: SnakeBoostersSupplier,
     initialLevel: Int? = null,
     initialWalls: List<Wall>? = null,
     initialSnakes: List<Snake>? = null,
