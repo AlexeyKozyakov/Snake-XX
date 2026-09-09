@@ -104,7 +104,7 @@ class SnakeGameState(
         private set
     var addedBalanceVisible by mutableStateOf(false)
         private set
-    var consumedBoosterAndRemainingCount by mutableStateOf<Pair<SnakeBooster, Int>?>(null)
+    var consumedBooster by mutableStateOf(ConsumedBooster.default())
         private set
     var consumedBoosterVisible by mutableStateOf(false)
         private set
@@ -291,7 +291,7 @@ class SnakeGameState(
 
     private fun showConsumedBooster(booster: SnakeBooster, remaining: Int) {
         consumedBoosterHideJob?.cancel()
-        consumedBoosterAndRemainingCount = booster to remaining
+        consumedBooster = ConsumedBooster(booster, remaining)
         consumedBoosterVisible = true
         consumedBoosterHideJob = stateHolderScope.launch {
             delay(longShowTime)

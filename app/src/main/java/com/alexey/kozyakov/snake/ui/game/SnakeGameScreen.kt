@@ -129,7 +129,7 @@ fun SnakeGameScreen(modifier: Modifier = Modifier) {
 
         ConsumedBooster(
             visible = state.consumedBoosterVisible,
-            boosterAndRemainingCount = state.consumedBoosterAndRemainingCount,
+            consumedBooster = state.consumedBooster,
         )
 
         LevelAndConfirmation(
@@ -342,7 +342,7 @@ private fun BoxScope.GameOver(
 @Composable
 private fun BoxScope.ConsumedBooster(
     visible: Boolean,
-    boosterAndRemainingCount: Pair<SnakeBooster, Int>?,
+    consumedBooster: ConsumedBooster,
     modifier: Modifier = Modifier
 ) {
     val wallsEatingBitmap = ImageBitmap.imageResource(R.drawable.booster_eat_walls)
@@ -353,41 +353,40 @@ private fun BoxScope.ConsumedBooster(
             .align(Alignment.Center)
             .alpha(0.8f)
     ) {
-        boosterAndRemainingCount?.let { (booster, remaining) ->
-            Column(
-                Modifier
-                    .align(Alignment.Center)
-                    .background(
-                        color = backgroundColor,
-                        shape = RoundedCornerShape(36.dp)
-                    )
-                    .border(
-                        width = 1.dp,
-                        color = secondBorderColor,
-                        shape = RoundedCornerShape(36.dp)
-                    )
-                    .border(
-                        width = 4.dp,
-                        color = borderColor,
-                        shape = RoundedCornerShape(36.dp)
-                    )
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.Center
-            ) {
-                Image(
-                    bitmap = when (booster) {
-                        SnakeBooster.WALLS_EATING -> wallsEatingBitmap
-                        SnakeBooster.SNAKE_EATING -> snakeEatingBitmap
-                    },
-                    contentDescription = null,
-                    Modifier.size(150.dp)
+        val (booster, remaining) = consumedBooster
+        Column(
+            Modifier
+                .align(Alignment.Center)
+                .background(
+                    color = backgroundColor,
+                    shape = RoundedCornerShape(36.dp)
                 )
-                MonospaceText(
-                    text = stringResource(R.string.booster_remaining_count, remaining),
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Medium
+                .border(
+                    width = 1.dp,
+                    color = secondBorderColor,
+                    shape = RoundedCornerShape(36.dp)
                 )
-            }
+                .border(
+                    width = 4.dp,
+                    color = borderColor,
+                    shape = RoundedCornerShape(36.dp)
+                )
+                .padding(16.dp),
+            verticalArrangement = Arrangement.Center
+        ) {
+            Image(
+                bitmap = when (booster) {
+                    SnakeBooster.WALLS_EATING -> wallsEatingBitmap
+                    SnakeBooster.SNAKE_EATING -> snakeEatingBitmap
+                },
+                contentDescription = null,
+                Modifier.size(150.dp)
+            )
+            MonospaceText(
+                text = stringResource(R.string.booster_remaining_count, remaining),
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Medium
+            )
         }
     }
 }
