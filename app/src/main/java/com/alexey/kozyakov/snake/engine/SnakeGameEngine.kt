@@ -60,8 +60,8 @@ interface SnakeGameEngine {
                     }
                 }
                 Snake(
-                    head = head!!,
-                    tail = tail!!,
+                    head = requireNotNull(head),
+                    tail = requireNotNull(tail),
                     direction = snakeModel.direction,
                     committedDirection = snakeModel.direction,
                     length = snakeModel.length,
