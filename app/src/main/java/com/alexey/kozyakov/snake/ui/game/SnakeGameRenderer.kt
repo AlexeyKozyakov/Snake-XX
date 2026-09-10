@@ -342,6 +342,13 @@ private class PreviewGameIsOverProvider : PreviewParameterProvider<Boolean> {
     override val values: Sequence<Boolean>
         get() = sequenceOf(false, true)
 
+    override fun getDisplayName(index: Int): String? {
+        return when(index) {
+            0 -> "Game in progress"
+            1 -> "Game is over"
+            else -> error("GameIsOver param has only two states")
+        }
+    }
 }
 
 @Preview
