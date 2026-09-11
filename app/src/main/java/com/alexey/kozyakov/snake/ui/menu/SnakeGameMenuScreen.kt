@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.alexey.kozyakov.R
 import com.alexey.kozyakov.snake.storage.skins.SnakeSkin
+import com.alexey.kozyakov.snake.ui.components.BlackBox
 import com.alexey.kozyakov.snake.ui.components.MonospaceText
 import com.alexey.kozyakov.snake.ui.components.SnakeGameMenuContainer
 import com.alexey.kozyakov.snake.ui.components.SnakeGameMenuTextItem
@@ -60,17 +61,19 @@ private fun SnakeGameMenuScreen(
     onShopClick: () -> Unit,
     onReferenceClick: () -> Unit
 ) {
-    SnakeGameMenuContainer(modifier) {
-        MenuHeader(skin)
-        MenuItems(
-            continueButtonEnabled = continueButtonEnabled,
-            level = level,
-            onNewGameClick = onNewGameClick,
-            onContinueClick = onContinueClick,
-            onSettingsClick = onSettingsClick,
-            onShopClick = onShopClick,
-            onReferenceClick = onReferenceClick
-        )
+    BlackBox(modifier) {
+        SnakeGameMenuContainer {
+            MenuHeader(skin)
+            MenuItems(
+                continueButtonEnabled = continueButtonEnabled,
+                level = level,
+                onNewGameClick = onNewGameClick,
+                onContinueClick = onContinueClick,
+                onSettingsClick = onSettingsClick,
+                onShopClick = onShopClick,
+                onReferenceClick = onReferenceClick
+            )
+        }
     }
 }
 

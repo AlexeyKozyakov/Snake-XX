@@ -112,12 +112,12 @@ private fun SnakeShopScreen(
                 )
             }
         }
-        SnakeGameMenuBackButton(onClick = onBackClick)
         CurrentBalance(
             balance = balance,
             longClickEnabled = balanceLongClickEnabled,
             onLongClick = onBalanceLongClick
         )
+        SnakeGameMenuBackButton(onClick = onBackClick)
     }
 }
 

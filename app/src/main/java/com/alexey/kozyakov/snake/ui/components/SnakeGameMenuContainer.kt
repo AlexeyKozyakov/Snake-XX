@@ -3,6 +3,7 @@ package com.alexey.kozyakov.snake.ui.components
 import android.content.res.Configuration
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.FlowColumn
 import androidx.compose.foundation.layout.FlowColumnScope
 import androidx.compose.foundation.layout.Spacer
@@ -18,29 +19,29 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun SnakeGameMenuContainer(
+fun BoxScope.SnakeGameMenuContainer(
     modifier: Modifier = Modifier,
     content: @Composable FlowColumnScope.() -> Unit
 ) {
-    BlackBox(modifier) {
-        val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
-        FlowColumn(
-            Modifier
-                .align(Alignment.Center)
-                .verticalScroll(rememberScrollState())
-                .horizontalScroll(rememberScrollState()),
-            itemHorizontalAlignment = Alignment.CenterHorizontally,
-            horizontalArrangement = Arrangement.spacedBy(42.dp),
-            verticalArrangement = Arrangement.Center,
-            maxItemsInEachColumn = if (isLandscape) 3 else Int.MAX_VALUE
-        ) {
-            if (!isLandscape) {
-                Spacer(Modifier.padding(6.dp).statusBarsPadding())
-            }
-            content()
-            if (!isLandscape) {
-                Spacer(Modifier.navigationBarsPadding())
-            }
+    val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
+    FlowColumn(
+        modifier
+            .align(Alignment.Center)
+            .verticalScroll(rememberScrollState())
+            .horizontalScroll(rememberScrollState()),
+        itemHorizontalAlignment = Alignment.CenterHorizontally,
+        horizontalArrangement = Arrangement.spacedBy(42.dp),
+        verticalArrangement = Arrangement.Center,
+        maxItemsInEachColumn = if (isLandscape) 3 else Int.MAX_VALUE
+    ) {
+        if (!isLandscape) {
+            Spacer(Modifier
+                .padding(6.dp)
+                .statusBarsPadding())
+        }
+        content()
+        if (!isLandscape) {
+            Spacer(Modifier.navigationBarsPadding())
         }
     }
 }

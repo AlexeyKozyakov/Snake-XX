@@ -26,8 +26,8 @@ fun BoxScope.SnakeGameMenuBackButton(
         colorFilter = ColorFilter.tint(Color.White),
         modifier = modifier
             .align(Alignment.TopStart)
-            .clickable(enabled = true, onClick = onClick)
             .padding(10.dp)
+            .clickable(enabled = true, onClick = onClick)
             .statusBarsPadding()
             .size(56.dp)
     )

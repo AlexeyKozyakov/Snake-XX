@@ -1,12 +1,10 @@
 package com.alexey.kozyakov.snake.ui.settings
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
@@ -22,6 +20,7 @@ import com.alexey.kozyakov.R
 import com.alexey.kozyakov.snake.storage.language.SnakeGameLanguage
 import com.alexey.kozyakov.snake.storage.settings.SnakeGameSettings
 import com.alexey.kozyakov.snake.storage.skins.SnakeSkin
+import com.alexey.kozyakov.snake.ui.components.BlackBox
 import com.alexey.kozyakov.snake.ui.components.MonospaceText
 import com.alexey.kozyakov.snake.ui.components.SnakeGameMenuBackButton
 import com.alexey.kozyakov.snake.ui.components.SnakeGameMenuContainer
@@ -59,8 +58,8 @@ fun SnakeGameSettingsScreen(
     onSoundEffectsSettingClick: () -> Unit,
     onLanguageSettingClick: () -> Unit
 ) {
-    Box(modifier.fillMaxSize()) {
-        SnakeGameMenuContainer(Modifier.align(Alignment.Center)) {
+    BlackBox(modifier) {
+        SnakeGameMenuContainer {
             SettingsHeader(skin)
             Spacer(Modifier.size(32.dp))
             SettingsItems(
