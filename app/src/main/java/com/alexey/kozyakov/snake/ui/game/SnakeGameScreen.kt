@@ -297,11 +297,10 @@ private fun BoxScope.GameOver(
             SnakeGameActionButton(
                 Modifier.padding(12.dp),
                 enabled = canContinue,
-                alpha = if (canContinue) 1.0f else 0.3f,
                 onClick = onContinueClick
             ) {
                 Row(
-                    Modifier.fillMaxWidth(),
+                    Modifier.fillMaxWidth().padding(12.dp),
                     horizontalArrangement = Arrangement.Center
                 ) {
                     MonospaceText(
@@ -323,7 +322,7 @@ private fun BoxScope.GameOver(
                 onClick = onRestartClick
             ) {
                 MonospaceText(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().padding(12.dp),
                     text = stringResource(R.string.restart_button),
                     textAlign = TextAlign.Center
                 )

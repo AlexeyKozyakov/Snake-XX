@@ -259,7 +259,7 @@ private fun BuyButton(
         onClick = onClick
     ) {
         Row(
-            Modifier.fillMaxWidth(),
+            Modifier.fillMaxWidth().padding(12.dp),
             horizontalArrangement = Arrangement.Center
         ) {
             MonospaceText(

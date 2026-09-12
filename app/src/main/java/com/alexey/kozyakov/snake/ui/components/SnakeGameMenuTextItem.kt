@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.sp
 
 private val menuItemBackgroundColor = Color(0xFF00C000)
 private val menuItemBorderColor = Color(0xFFFFF216)
+private val secondaryTextColor = Color(0x4D000000)
 private val menuItemCornerRadius = 32.dp
 
 @Composable
@@ -59,7 +60,7 @@ fun SnakeGameMenuTextItem(
             Spacer(Modifier.size(4.dp))
             MonospaceText(
                 text = secondaryText,
-                color = Color.Black.copy(alpha = 0.3f),
+                color = secondaryTextColor,
                 fontSize = secondaryTextSize,
                 textAlign = TextAlign.Center
             )
