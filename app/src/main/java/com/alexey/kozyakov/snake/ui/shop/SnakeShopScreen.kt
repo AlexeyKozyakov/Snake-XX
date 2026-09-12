@@ -34,11 +34,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.alexey.kozyakov.R
 import com.alexey.kozyakov.snake.ui.components.BlackBox
 import com.alexey.kozyakov.snake.ui.components.MonospaceText
+import com.alexey.kozyakov.snake.ui.components.SnakeGameActionButton
 import com.alexey.kozyakov.snake.ui.components.SnakeGameMenuBackButton
 
 private val itemBackgroundColor = Color(0xFF204821)
@@ -247,45 +249,37 @@ private fun BuyButton(
     purchaseState: PurchaseState,
     onClick: () -> Unit
 ) {
-    Row(
-        modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(18.dp))
-            .background(color = blueColor)
-            .clickable(
-                enabled = purchaseState == PurchaseState.CAN_BUY,
-                onClick = onClick
-            )
-            .alpha(
-                if (purchaseState == PurchaseState.BOUGHT ||
-                    purchaseState == PurchaseState.CANNOT_BUY_MORE
-                ) {
-                    0.35f
+    SnakeGameActionButton(
+        modifier,
+        enabled = purchaseState == PurchaseState.CAN_BUY,
+        alpha = when (purchaseState) {
+            PurchaseState.BOUGHT, PurchaseState.CANNOT_BUY_MORE -> 0.3f
+            else -> 1.0f
+        },
+        onClick = onClick
+    ) {
+        Row(
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            MonospaceText(
+                modifier = Modifier.align(Alignment.CenterVertically),
+                text = if (purchaseState == PurchaseState.BOUGHT) {
+                    stringResource(R.string.purchased)
                 } else {
-                    1.0f
+                    price.toString()
                 }
             )
-            .padding(12.dp)
-            .padding(horizontal = 8.dp),
-        horizontalArrangement = Arrangement.Center
-    ) {
-        MonospaceText(
-            modifier = Modifier.align(Alignment.CenterVertically),
-            text = if (purchaseState == PurchaseState.BOUGHT) {
-                stringResource(R.string.purchased)
-            } else {
-                price.toString()
+            if (purchaseState != PurchaseState.BOUGHT) {
+                Spacer(Modifier.size(8.dp))
+                Image(
+                    painter = painterResource(R.drawable.coin),
+                    contentDescription = null,
+                    Modifier
+                        .size(20.dp)
+                        .align(Alignment.CenterVertically)
+                )
             }
-        )
-        if (purchaseState != PurchaseState.BOUGHT) {
-            Spacer(Modifier.size(8.dp))
-            Image(
-                painter = painterResource(R.drawable.coin),
-                contentDescription = null,
-                Modifier
-                    .size(20.dp)
-                    .align(Alignment.CenterVertically)
-            )
         }
     }
 }
@@ -323,4 +317,44 @@ private fun BoxScope.CurrentBalance(
             Modifier.size(38.dp)
         )
     }
+}
+
+@Preview
+@Composable
+private fun Preview() {
+    SnakeShopScreen(
+        categories = listOf(
+            SnakeShopCategory(
+                nameResId = R.string.offer_group_upgrades,
+                items = listOf(
+                    SnakeShopItem(
+                        offerId = 0,
+                        price = 50,
+                        count = null,
+                        iconResId = R.drawable.upgrade_coins_for_apples,
+                        nameResId = R.string.upgrade_name_coins_for_apples,
+                        descriptionResId = R.string.upgrade_description_coins_for_apples,
+                        purchaseState = PurchaseState.CAN_BUY,
+                        selectionState = SelectionState.CANNOT_SELECT
+                    ),
+                    SnakeShopItem(
+                        offerId = 1,
+                        price = 250,
+                        count = null,
+                        iconResId = R.drawable.upgrade_coins_for_levels,
+                        nameResId = R.string.upgrade_name_coins_for_levels,
+                        descriptionResId = R.string.upgrade_description_coins_for_levels,
+                        purchaseState = PurchaseState.BOUGHT,
+                        selectionState = SelectionState.CANNOT_SELECT
+                    )
+                )
+            )
+        ),
+        balance = 128,
+        balanceLongClickEnabled = false,
+        onBackClick = { },
+        onBuyClick = { },
+        onSelectClick = { },
+        onBalanceLongClick = { }
+    )
 }

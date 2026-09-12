@@ -42,7 +42,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ImageBitmap
@@ -64,11 +63,11 @@ import com.alexey.kozyakov.R
 import com.alexey.kozyakov.snake.model.Direction
 import com.alexey.kozyakov.snake.storage.boosters.SnakeBooster
 import com.alexey.kozyakov.snake.ui.components.MonospaceText
+import com.alexey.kozyakov.snake.ui.components.SnakeGameActionButton
 
 private val pressedButtonColor = Color(0xFFD32C2C)
 private val addedBalanceColor = Color(0xFFECCA32)
 private val backgroundColor = Color(0xFF204821)
-private val gameOverButtonsColor = Color(0xFF3661FE)
 private val borderColor = Color(0xFFFFE000)
 private val secondBorderColor = Color(0xFFFFA040)
 
@@ -295,46 +294,40 @@ private fun BoxScope.GameOver(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxWidth(fraction = if (isPortrait) 0.8f else 0.4f),
         ) {
-            Row(
-                Modifier
-                    .padding(12.dp)
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(18.dp))
-                    .clickable(
-                        enabled = canContinue,
-                        onClick = onContinueClick
+            SnakeGameActionButton(
+                Modifier.padding(12.dp),
+                enabled = canContinue,
+                alpha = if (canContinue) 1.0f else 0.3f,
+                onClick = onContinueClick
+            ) {
+                Row(
+                    Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    MonospaceText(
+                        text = stringResource(R.string.continue_button, continuePrice)
                     )
-                    .background(color = gameOverButtonsColor)
-                    .alpha(if (canContinue) 1.0f else 0.3f)
-                    .padding(12.dp),
-                horizontalArrangement = Arrangement.Center
+                    Spacer(Modifier.size(8.dp))
+                    Image(
+                        painter = painterResource(R.drawable.coin),
+                        contentDescription = null,
+                        Modifier
+                            .size(22.dp)
+                            .align(Alignment.CenterVertically)
+                    )
+                }
+            }
+            SnakeGameActionButton(
+                Modifier.padding(12.dp),
+                enabled = true,
+                onClick = onRestartClick
             ) {
                 MonospaceText(
-                    text = stringResource(R.string.continue_button, continuePrice)
-                )
-                Spacer(Modifier.size(8.dp))
-                Image(
-                    painter = painterResource(R.drawable.coin),
-                    contentDescription = null,
-                    Modifier
-                        .size(22.dp)
-                        .align(Alignment.CenterVertically)
+                    modifier = Modifier.fillMaxWidth(),
+                    text = stringResource(R.string.restart_button),
+                    textAlign = TextAlign.Center
                 )
             }
-            MonospaceText(
-                text = stringResource(R.string.restart_button),
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .padding(12.dp)
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(18.dp))
-                    .clickable(
-                        enabled = true,
-                        onClick = onRestartClick
-                    )
-                    .background(color = gameOverButtonsColor)
-                    .padding(12.dp),
-            )
         }
     }
 }
