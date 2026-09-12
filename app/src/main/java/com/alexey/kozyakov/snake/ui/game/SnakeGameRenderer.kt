@@ -26,6 +26,7 @@ import com.alexey.kozyakov.snake.model.SnakeModel
 import com.alexey.kozyakov.snake.model.SnakeType
 import com.alexey.kozyakov.snake.model.Wall
 import com.alexey.kozyakov.snake.storage.skins.SnakeSkin
+import com.alexey.kozyakov.snake.ui.components.grassColor
 import kotlin.math.min
 
 
@@ -33,7 +34,6 @@ private const val MAIN_SPRITES_SCALE = 1.35f
 private const val WALL_SPRITES_SCALE = 1.2f
 private const val NO_SCALE = 1.0f
 
-private val grassColor = Color(0xFF204821)
 private val gridColor = Color(0xFF547C54)
 private val goldColor = Color(0x72FFD700)
 

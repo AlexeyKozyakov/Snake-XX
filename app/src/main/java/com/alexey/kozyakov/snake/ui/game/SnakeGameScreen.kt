@@ -64,10 +64,10 @@ import com.alexey.kozyakov.snake.model.Direction
 import com.alexey.kozyakov.snake.storage.boosters.SnakeBooster
 import com.alexey.kozyakov.snake.ui.components.MonospaceText
 import com.alexey.kozyakov.snake.ui.components.SnakeGameActionButton
+import com.alexey.kozyakov.snake.ui.components.grassColor
 
 private val pressedButtonColor = Color(0xFFD32C2C)
 private val addedBalanceColor = Color(0xFFECCA32)
-private val backgroundColor = Color(0xFF204821)
 private val borderColor = Color(0xFFFFE000)
 private val secondBorderColor = Color(0xFFFFA040)
 
@@ -252,7 +252,7 @@ private fun BoxScope.GameOver(
         modifier
             .align(Alignment.Center)
             .background(
-                color = backgroundColor,
+                color = grassColor,
                 shape = RoundedCornerShape(36.dp)
             )
             .border(
@@ -350,7 +350,7 @@ private fun BoxScope.ConsumedBooster(
             Modifier
                 .align(Alignment.Center)
                 .background(
-                    color = backgroundColor,
+                    color = grassColor,
                     shape = RoundedCornerShape(36.dp)
                 )
                 .border(

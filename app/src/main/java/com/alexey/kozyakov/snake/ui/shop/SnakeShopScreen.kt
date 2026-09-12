@@ -42,11 +42,10 @@ import com.alexey.kozyakov.snake.ui.components.BlackBox
 import com.alexey.kozyakov.snake.ui.components.MonospaceText
 import com.alexey.kozyakov.snake.ui.components.SnakeGameActionButton
 import com.alexey.kozyakov.snake.ui.components.SnakeGameMenuBackButton
+import com.alexey.kozyakov.snake.ui.components.blueColor
+import com.alexey.kozyakov.snake.ui.components.grassColor
+import com.alexey.kozyakov.snake.ui.components.yellowColor
 
-private val itemBackgroundColor = Color(0xFF204821)
-private val selectedItemBorderColor = Color(0xFFFFF216)
-private val separatorColor = Color(0xFF547C54)
-private val blueColor = Color(0xFF3661FE)
 
 @Composable
 fun SnakeShopScreen(
@@ -167,14 +166,14 @@ private fun ShopItem(
                 onClick = onSelectClick
             )
             .background(
-                itemBackgroundColor,
+                grassColor,
                 shape = RoundedCornerShape(36.dp)
             )
             .alpha(if (item.purchaseState == PurchaseState.CANNOT_BUY) 0.4f else 1f)
             .border(
                 width = 6.dp,
                 color = if (item.selectionState == SelectionState.SELECTED) {
-                    selectedItemBorderColor
+                    yellowColor
                 } else {
                     Color.Transparent
                 },
@@ -209,13 +208,7 @@ private fun ShopItem(
                 Modifier.size(150.dp)
             )
             if (item.descriptionResId != null) {
-                Spacer(Modifier.width(6.dp))
-                Spacer(
-                    Modifier
-                        .background(color = separatorColor)
-                        .width(2.dp)
-                )
-                Spacer(Modifier.width(6.dp))
+                Spacer(Modifier.width(14.dp))
                 Column(Modifier.align(Alignment.CenterVertically)) {
                     MonospaceText(
                         text = stringResource(item.descriptionResId),
@@ -259,7 +252,9 @@ private fun BuyButton(
         onClick = onClick
     ) {
         Row(
-            Modifier.fillMaxWidth().padding(12.dp),
+            Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
             horizontalArrangement = Arrangement.Center
         ) {
             MonospaceText(
@@ -345,6 +340,31 @@ private fun Preview() {
                         nameResId = R.string.upgrade_name_coins_for_levels,
                         descriptionResId = R.string.upgrade_description_coins_for_levels,
                         purchaseState = PurchaseState.BOUGHT,
+                        selectionState = SelectionState.CANNOT_SELECT
+                    )
+                )
+            ),
+            SnakeShopCategory(
+                nameResId = R.string.offer_group_skins,
+                items = listOf(
+                    SnakeShopItem(
+                        offerId = 2,
+                        price = 50,
+                        count = null,
+                        iconResId = R.drawable.snake_head_slime,
+                        nameResId = R.string.skin_slime,
+                        descriptionResId = null,
+                        purchaseState = PurchaseState.BOUGHT,
+                        selectionState = SelectionState.SELECTED
+                    ),
+                    SnakeShopItem(
+                        offerId = 3,
+                        price = 100,
+                        count = null,
+                        iconResId = R.drawable.snake_head_magma,
+                        nameResId = R.string.skin_magma,
+                        descriptionResId = null,
+                        purchaseState = PurchaseState.CAN_BUY,
                         selectionState = SelectionState.CANNOT_SELECT
                     )
                 )

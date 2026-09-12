@@ -19,7 +19,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 private val menuItemBackgroundColor = Color(0xFF00C000)
-private val menuItemBorderColor = Color(0xFFFFF216)
 private val secondaryTextColor = Color(0x4D000000)
 private val menuItemCornerRadius = 32.dp
 
@@ -38,12 +37,12 @@ fun SnakeGameMenuTextItem(
         modifier
             .clickable(enabled = enabled, onClick = onClick)
             .background(
-                color =if (selected) menuItemBorderColor else menuItemBackgroundColor,
+                color = if (selected) yellowColor else menuItemBackgroundColor,
                 shape = RoundedCornerShape(menuItemCornerRadius)
             )
             .border(
                 width = 6.dp,
-                color = menuItemBorderColor,
+                color = yellowColor,
                 shape = RoundedCornerShape(menuItemCornerRadius)
             )
             .padding(24.dp)

@@ -22,7 +22,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -35,8 +34,8 @@ import com.alexey.kozyakov.R
 import com.alexey.kozyakov.snake.ui.components.BlackBox
 import com.alexey.kozyakov.snake.ui.components.MonospaceText
 import com.alexey.kozyakov.snake.ui.components.SnakeGameMenuBackButton
+import com.alexey.kozyakov.snake.ui.components.grassColor
 
-private val itemBackgroundColor = Color(0xFF204821)
 
 @Composable
 fun SnakeGameReferenceScreen(
@@ -179,7 +178,7 @@ private fun LazyGridScope.referenceItem(
                 .padding(horizontal = 16.dp)
                 .padding(bottom = 16.dp)
                 .background(
-                    itemBackgroundColor,
+                    grassColor,
                     shape = RoundedCornerShape(36.dp)
                 )
                 .padding(12.dp)
