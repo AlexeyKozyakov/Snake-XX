@@ -1,3 +1,5 @@
+import com.android.build.api.dsl.ApplicationBuildType
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.compose.compiler)
@@ -29,11 +31,18 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            screenshotMode(enabled = false)
         }
 
         debug {
             applicationIdSuffix = ".debug"
             versionNameSuffix = ".debug"
+            screenshotMode(enabled = false)
+        }
+
+        create("screenshot") {
+            initWith(getByName("debug"))
+            screenshotMode(enabled = true)
         }
     }
     compileOptions {
@@ -79,4 +88,8 @@ dependencies {
     implementation(libs.androidx.media3.common)
     implementation(libs.androidx.navigation.compose)
     debugImplementation(libs.androidx.ui.tooling)
+}
+
+private fun ApplicationBuildType.screenshotMode(enabled: Boolean) {
+    buildConfigField("Boolean", "SCREENSHOT_MODE", enabled.toString())
 }

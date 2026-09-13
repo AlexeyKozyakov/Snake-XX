@@ -7,6 +7,8 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import com.alexey.kozyakov.BuildConfig
+import com.alexey.kozyakov.snake.ui.base.hideSystemBars
 import com.alexey.kozyakov.snake.ui.main.SnakeMainScreen
 
 class SnakeMainActivity : AppCompatActivity() {
@@ -17,6 +19,7 @@ class SnakeMainActivity : AppCompatActivity() {
             statusBarStyle = SystemBarStyle.dark(scrim = Color.TRANSPARENT),
             navigationBarStyle = SystemBarStyle.dark(scrim = Color.TRANSPARENT)
         )
+        if (BuildConfig.SCREENSHOT_MODE) hideSystemBars()
         setContent {
             SnakeMainScreen()
         }
