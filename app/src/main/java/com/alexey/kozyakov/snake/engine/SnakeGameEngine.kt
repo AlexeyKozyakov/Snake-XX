@@ -3,6 +3,7 @@ package com.alexey.kozyakov.snake.engine
 import com.alexey.kozyakov.snake.config.ADDITIONAL_SCORE_FOR_GOLDEN_APPLE
 import com.alexey.kozyakov.snake.config.ADDITIONAL_SCORE_FOR_OMNIVOROUS_APPLE
 import com.alexey.kozyakov.snake.config.APPLE_COUNT
+import com.alexey.kozyakov.snake.config.INITIAL_LEVEL
 import com.alexey.kozyakov.snake.config.INITIAL_SNAKE_LENGTH
 import com.alexey.kozyakov.snake.config.LEVEL_GAIN_LENGTH_MULTIPLIER
 import com.alexey.kozyakov.snake.config.OMNIVOROUS_TICKS
@@ -131,7 +132,7 @@ private class SnakeGameEngineImpl(
     private val initialSnakeLength = INITIAL_SNAKE_LENGTH
     private val appleCount = APPLE_COUNT
 
-    private var level: Int = initialLevel ?: 0
+    private var level: Int = initialLevel ?: INITIAL_LEVEL
     private var walls = initialWalls ?: levelWalls(level, gridWidth, gridHeight)
     private var snakes = initialSnakes ?: initSnakes()
     private var apples = initialApples ?: initApples(snakes, walls)
@@ -236,7 +237,7 @@ private class SnakeGameEngineImpl(
             continueCount++
         } else {
             continueCount = 0
-            level = 0
+            level = INITIAL_LEVEL
             score = 0
         }
         walls = levelWalls(level, gridWidth, gridHeight)
