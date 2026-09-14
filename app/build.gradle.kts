@@ -1,5 +1,3 @@
-import com.android.build.api.dsl.ApplicationBuildType
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.compose.compiler)
@@ -24,14 +22,6 @@ android {
     }
 
     buildTypes {
-        fun ApplicationBuildType.screenshotMode(enabled: Boolean) {
-            buildConfigField(
-                type = "Boolean",
-                name = "SCREENSHOT_MODE",
-                value = enabled.toString()
-            )
-        }
-
         release {
             isMinifyEnabled = true
             isShrinkResources = true
@@ -39,18 +29,15 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            screenshotMode(enabled = false)
         }
 
         debug {
             applicationIdSuffix = ".debug"
             versionNameSuffix = ".debug"
-            screenshotMode(enabled = false)
         }
 
         create("screenshot") {
             initWith(getByName("debug"))
-            screenshotMode(enabled = true)
         }
     }
     compileOptions {

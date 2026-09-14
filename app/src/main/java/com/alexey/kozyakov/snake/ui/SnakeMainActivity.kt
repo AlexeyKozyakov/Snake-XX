@@ -19,7 +19,7 @@ class SnakeMainActivity : AppCompatActivity() {
             statusBarStyle = SystemBarStyle.dark(scrim = Color.TRANSPARENT),
             navigationBarStyle = SystemBarStyle.dark(scrim = Color.TRANSPARENT)
         )
-        if (BuildConfig.SCREENSHOT_MODE) hideSystemBars()
+        if (BuildConfig.BUILD_TYPE == "screenshot") hideSystemBars()
         setContent {
             SnakeMainScreen()
         }
