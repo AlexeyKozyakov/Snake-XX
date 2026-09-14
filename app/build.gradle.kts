@@ -24,6 +24,14 @@ android {
     }
 
     buildTypes {
+        fun ApplicationBuildType.screenshotMode(enabled: Boolean) {
+            buildConfigField(
+                type = "Boolean",
+                name = "SCREENSHOT_MODE",
+                value = enabled.toString()
+            )
+        }
+
         release {
             isMinifyEnabled = true
             isShrinkResources = true
@@ -88,8 +96,4 @@ dependencies {
     implementation(libs.androidx.media3.common)
     implementation(libs.androidx.navigation.compose)
     debugImplementation(libs.androidx.ui.tooling)
-}
-
-private fun ApplicationBuildType.screenshotMode(enabled: Boolean) {
-    buildConfigField("Boolean", "SCREENSHOT_MODE", enabled.toString())
 }
